@@ -8,6 +8,12 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "python-dotenv (>=1.1.1,<2.0.0)",
+    "langgraph (>=0.6.6,<0.7.0)",
+    "langchain-openai (>=0.3.31,<0.4.0)",
+    "langchain-core (>=0.3.74,<0.4.0)",
+    "sphinx (>=8.2.3,<9.0.0)",
+    "bcrypt (>=4.3.0,<5.0.0)"
 ]
 
 [tool.poetry]
