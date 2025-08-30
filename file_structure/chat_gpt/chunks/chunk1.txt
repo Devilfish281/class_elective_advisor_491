@@ -1,0 +1,205 @@
+ROLE: Python programmer.
+Operating System: Windows 11.
+IDE: Microsoft Visual Code.
+Programming language: Python (I have installed the program).
+Interface: Command Prompt (standard Python) (I have installed the program).
+Manages virtual environments: Poetry (I have installed the program).
+Package installer for Python: Poetry.
+Documentation generator: Sphinx.
+Framework: LangGraph
+Version control: git (I have installed the program).
+Online version control: GitHub.
+Database: None.
+AI: openai.
+OpenAI models: GPT-4o and GPT-4o mini are available for standard and global-standard model deployment. Dated 12/5/2024.
+ChatOpenAI model: gpt-4o.
+Project Title: a test bed for LangGraph
+Project Dir: self_reflective_rag\src\agent
+
+**Instructions:**
+- **When adding code**, add a comment at the end of the added line: ``
+- **When changing code**, add a comment at the end of the changed line: `#Changed Code`
+- **Do not** add `` or `#Changed Code` to comment lines or blank lines.
+
+**Check my code for errors and suggest improvements.**
+
+
+The File structure for my program is BELOW:
+├── C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491/
+│   ├── .env
+│   ├── .env.example
+│   ├── .gitignore
+│   ├── README.md
+│   ├── app.log
+│   ├── main.py
+│   ├── poetry.lock
+│   └── pyproject.toml
+    ├── ai_integration/
+    │   └── ai_module.py
+    ├── database/
+    │   └── db_setup.py
+    ├── src/
+        └── class_elective_advisor_491/
+            └── __init__.py
+    ├── ui/
+    │   └── gui.py
+    └── utilities/
+        ├── __init__.py
+        ├── load_env.py
+        └── logger_setup.py
+
+########################################
+Here is my code for main.py BELOW:
+########################################
+
+```python
+# main.py
+import logging
+
+from ai_integration.ai_module import main_int_ai
+from database.db_setup import main_int_db
+from ui.gui import main_int_ui
+from utilities.load_env import load_environment
+from utilities.logger_setup import setup_logger
+
+logger = logging.getLogger(__name__)
+
+
+def main():
+
+    setup_logger()
+
+    try:
+        load_environment()
+    except ValueError as e:
+        logger.error(f"Error loading environment: {e}")
+        print(f"Error: {e}")
+
+    main_int_db()
+
+    main_int_ai()
+
+    main_int_ui()
+
+
+if __name__ == "__main__":
+    main()```
+
+########################################
+Here is my code for ai_module.py BELOW:
+########################################
+
+```python
+import json
+import logging
+import os
+import re
+import sys
+
+logger = logging.getLogger(__name__)
+
+
+def main_int_ai():
+    """
+    Main function to initialize AI integration.
+    """
+    logger.info(f"initializing AI Module...")```
+
+########################################
+Here is my code for db_setup.py BELOW:
+########################################
+
+```python
+import logging
+import os
+
+logger = logging.getLogger(__name__)
+
+
+def main_int_db():
+    logger.info("Starting database setup...")```
+
+########################################
+Here is my code for __init__.py BELOW:
+########################################
+
+```python
+```
+
+########################################
+Here is my code for gui.py BELOW:
+########################################
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def main_int_ui():
+    """Initializes and runs the main interface of the Smart Elective Advisor."""
+
+    logger.info("Initializing the Smart Elective Advisor GUI.")```
+
+########################################
+Here is my code for __init__.py BELOW:
+########################################
+
+```python
+```
+
+########################################
+Here is my code for load_env.py BELOW:
+########################################
+
+```python
+# utilities/load_env.py
+
+
+import logging
+import os
+import re
+
+from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
+
+
+def load_environment():
+    print("Loading Environment variables.")
+
+    load_dotenv()
+
+    apikey = os.getenv("OPENAI_API_KEY")
+    if not apikey:
+        logger.error("OPENAI_API_KEY environment variable not set")
+        raise ValueError("OPENAI_API_KEY environment variable not set")
+
+    if not re.search(r"\d", apikey):
+        logger.error("OPENAI_API_KEY must contain at least one numeric character")
+        raise ValueError("OPENAI_API_KEY must contain at least one numeric character")
+
+    logger.info("API Key loaded successfully.")
+    print("API Key loaded successfully.")```
+
+########################################
+Here is my code for logger_setup.py BELOW:
+########################################
+
+```python
+# utilities/logger_setup.py
+
+import logging
+
+
+
+def setup_logger():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler("app.log", mode="a"),
+        ],
+    )
+    return logging.getLogger(__name__)```
