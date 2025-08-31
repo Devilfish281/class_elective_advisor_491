@@ -19,9 +19,15 @@ def main_int_ui() -> None:
     label = tk.Label(root, text="Welcome to Smart Elective Advisor")
     label.pack(padx=20, pady=20)
 
+    def _on_close():  # Added Code
+        logger.info("GUI received close request; shutting down.")  # Added Code
+        root.destroy()  # Added Code
+
+    root.protocol("WM_DELETE_WINDOW", _on_close)  # Added Code
+
     # Start the Tk mainloop (this call blocks until the window closes)
     try:
         root.mainloop()
-    except Exception as e:
-        logger.exception("Error in GUI mainloop: %s", e)
+    except Exception:
+        logger.exception("Error in GUI mainloop")
         raise

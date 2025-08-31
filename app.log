@@ -11,3 +11,12 @@
 2025-08-30 07:26:43,264 INFO ai_integration.ai_module:17 Initializing AI Module...
 2025-08-30 07:26:43,316 INFO ui.gui:11 Initializing the Smart Elective Advisor GUI.
 2025-08-30 07:27:05,497 INFO __main__:60 Program finished successfully.
+2025-08-30 10:32:25,010 INFO utilities.load_env:34 Loading environment variables.
+2025-08-30 10:32:25,013 INFO utilities.load_env:52 API Key loaded successfully.
+2025-08-30 10:32:26,703 INFO database.db_setup:46 Starting database setup...
+2025-08-30 10:32:26,707 INFO database.db_setup:15 Connected to SQLite database: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\db\smart_elective_advisor.db
+2025-08-30 10:32:26,711 INFO database.db_setup:38 All tables created successfully.
+2025-08-30 10:32:26,711 INFO database.db_setup:74 Database setup completed. Database file: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\db\smart_elective_advisor.db
+2025-08-30 10:32:26,713 INFO ai_integration.ai_module:17 Initializing AI Module...
+2025-08-30 10:32:26,754 INFO ui.gui:11 Initializing the Smart Elective Advisor GUI.
+2025-08-30 10:32:32,303 INFO __main__:60 Program finished successfully.

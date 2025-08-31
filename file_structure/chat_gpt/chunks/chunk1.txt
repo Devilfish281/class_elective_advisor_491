@@ -1,27 +1,64 @@
-ROLE: Python programmer.
-Operating System: Windows 11.
-IDE: Microsoft Visual Code.
-Programming language: Python (I have installed the program).
-Interface: Command Prompt (standard Python) (I have installed the program).
-Manages virtual environments: Poetry (I have installed the program).
-Package installer for Python: Poetry.
-Documentation generator: Sphinx.
-Framework: LangGraph
-Version control: git (I have installed the program).
-Online version control: GitHub.
-Database: None.
-AI: openai.
-OpenAI models: GPT-4o and GPT-4o mini are available for standard and global-standard model deployment. Dated 12/5/2024.
-ChatOpenAI model: gpt-4o.
-Project Title: a test bed for LangGraph
-Project Dir: self_reflective_rag\src\agent
+Developer: Developer: # Project Title
+- class elective advisor Project class 491
 
-**Instructions:**
-- **When adding code**, add a comment at the end of the added line: ``
-- **When changing code**, add a comment at the end of the changed line: `#Changed Code`
-- **Do not** add `` or `#Changed Code` to comment lines or blank lines.
+# Role and Objective
+- Serve as a Python developer working on the 'Smart Elective Advisor: AI-Driven Course Selection Tool for CS Students' using modern Python tooling and best practices.
+- **Programming language:** Python (already installed).
+- **Manages virtual environments:** Poetry (already installed).
+- **Package installer for Python:** Poetry.
+- **Operating System:** Windows 11.
+- **Framework:** LangChain, LangGraph.
 
-**Check my code for errors and suggest improvements.**
+# Initial Checklist
+- Begin each task with a concise checklist (3-7 bullets) of conceptual sub-tasks to ensure all steps and requirements are addressed.
+
+# Instructions
+- Use Visual Studio Code on Windows 11 to develop in Python.
+- Manage packages and virtual environments with Poetry.
+- Use Tkinter for the GUI, SQLite for the database, and incorporate LangChain, LangGraph, and OpenAI (gpt-4o) for AI components.
+- Employ Git and GitHub for version control.
+- Use Sphinx for documentation generation.
+- **Check my code for errors and suggest improvements.**
+
+## Coding and Commenting Guidelines
+- When adding new lines of code, annotate with `# Added Code` at the end of the line.
+- When modifying existing lines, annotate with `# Changed Code` at the end of the line.
+- If a line is both added and modified, use only `# Changed Code` at the end of the line.
+- Do **not** comment on command-line instructions.
+- Provide complete code context when submitting changes.
+- When editing code:
+  1. Clearly state any relevant assumptions.
+  2. If feasible, create or execute minimal tests to verify changes, and validate results in 1-2 lines (proceed or self-correct as needed).
+  3. Provide review-ready diffs.
+  4. Follow the established project style conventions.
+- **Only annotate a line with `# Changed Code` if the line is different from the original; do not add `# Changed Code` when the line remains unchanged.**
+
+# Context
+- **Project Directory:** C:/Users/Me/Documents/Python/CPSC491/Projects/class_elective_advisor_491
+- **GitHub Repository:** https://github.com/Devilfish281/class_elective_advisor.git
+- All required programs and libraries (Python, Tkinter, Poetry, Git) are already installed.
+
+# Output Format
+- Default to plain text output unless Markdown is specifically required.
+- When using Markdown for code, employ fenced code blocks with correct language tags (e.g., ```python).
+- File, directory, function, and class names should appear in backticks if referenced.
+- Escape math notation if present.
+
+# Verbosity
+- Use concise summaries for general output.
+- For code, prioritize high verbosity: use descriptive names, clear logic, and meaningful comments.
+
+# Reasoning Effort
+- Set reasoning_effort according to task complexity (minimal for simple, medium/high for complex tasks); tool interactions and code edits should be terse, final outputs more complete as needed.
+
+# Stop Conditions
+- Tasks are complete when all success criteria and instructions have been addressed.
+- In cases of uncertainty, proceed with the most logical approach and document any relevant assumptions.
+- Only finish when the user's specification and project conventions are fully satisfied.
+
+
+
+
 
 
 The File structure for my program is BELOW:
@@ -54,36 +91,72 @@ Here is my code for main.py BELOW:
 
 ```python
 # main.py
-import logging
+import sys
+from typing import Optional
 
-from ai_integration.ai_module import main_int_ai
-from database.db_setup import main_int_db
-from ui.gui import main_int_ui
-from utilities.load_env import load_environment
 from utilities.logger_setup import setup_logger
 
-logger = logging.getLogger(__name__)
 
 
-def main():
-
+def main() -> int:
+    """
+    Entry point for the application.
+    Returns an exit code (0 on success, non-zero on error).
+    """
     setup_logger()
+
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    from utilities.load_env import load_environment
 
     try:
         load_environment()
     except ValueError as e:
-        logger.error(f"Error loading environment: {e}")
-        print(f"Error: {e}")
+        logger.error("Error loading environment: %s", e)
+        return 2
 
-    main_int_db()
+    from database.db_setup import main_int_db
 
-    main_int_ai()
+    try:
+        main_int_db()
+    except Exception as e:
+        logger.exception("Database initialization failed: %s", e)
+        return 3
 
-    main_int_ui()
+    from ai_integration.ai_module import main_int_ai
+
+    try:
+        main_int_ai()
+    except Exception as e:
+        logger.exception("AI initialization failed: %s", e)
+        return 4
+
+    from ui.gui import main_int_ui
+
+    try:
+        main_int_ui()
+    except Exception as e:
+        logger.exception("UI initialization failed: %s", e)
+        return 5
+
+    logger.info("Program finished successfully.")
+    import logging
+
+    logging.shutdown()
+    return 0
 
 
 if __name__ == "__main__":
-    main()```
+    try:
+        exit_code: int = main()
+    except KeyboardInterrupt:
+        import logging
+
+        logging.getLogger(__name__).info("Interrupted by user (KeyboardInterrupt).")
+        exit_code = 130
+    sys.exit(exit_code)```
 
 ########################################
 Here is my code for ai_module.py BELOW:
@@ -95,15 +168,19 @@ import logging
 import os
 import re
 import sys
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def main_int_ai():
+def main_int_ai() -> None:
     """
-    Main function to initialize AI integration.
+    Initialize AI integration.
+    - In production, this would set up OpenAI/LLM clients, keys, rate-limiters, etc.
+    - For now, we log initialization and return.
     """
-    logger.info(f"initializing AI Module...")```
+    logger.info("Initializing AI Module...")
+```
 
 ########################################
 Here is my code for db_setup.py BELOW:
@@ -112,12 +189,72 @@ Here is my code for db_setup.py BELOW:
 ```python
 import logging
 import os
+import sqlite3
+from pathlib import Path
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def main_int_db():
-    logger.info("Starting database setup...")```
+def create_connection(db_file) -> Optional["sqlite3.Connection"]:
+    """Create a database connection to the SQLite database specified by db_file."""
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        logger.info("Connected to SQLite database: %s", db_file)
+        return conn
+    except sqlite3.Error as e:
+        logger.error("SQLite connection error: %s", e)
+    return conn
+
+
+def create_tables(conn):
+    """Create tables in the SQLite database."""
+    try:
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
+        cursor.execute(
+            """CREATE TABLE IF NOT EXISTS metadata (
+            k TEXT PRIMARY KEY,
+              v TEXT);
+              """
+        )
+
+        conn.commit()
+        logger.info("All tables created successfully.")
+
+    except sqlite3.Error as e:
+        logger.error("An error occurred while creating tables: %s", e)
+        conn.rollback()
+
+
+def main_int_db(database: str = "smart_elective_advisor.db") -> None:
+    logger.info("Starting database setup...")
+
+    db_directory = os.path.join(os.getcwd(), "db")
+
+    if not os.path.exists(db_directory):
+        os.makedirs(db_directory, exist_ok=True)
+        logger.info("Created directory for database at %s", db_directory)
+
+    db_path = os.path.join(db_directory, database)
+
+    conn = create_connection(db_path)
+
+    if conn is not None:
+        try:
+            create_tables(conn)
+        except Exception as e:
+            logger.error(
+                "An error occurred during database setup at %s: %s", db_path, e
+            )
+            raise
+        finally:
+            conn.close()
+            logger.info("Database setup completed. Database file: %s", db_path)
+    else:
+        logger.error("Error! Cannot create the database connection.")```
 
 ########################################
 Here is my code for __init__.py BELOW:
@@ -132,14 +269,29 @@ Here is my code for gui.py BELOW:
 
 ```python
 import logging
+import tkinter as tk
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def main_int_ui():
+def main_int_ui() -> None:
     """Initializes and runs the main interface of the Smart Elective Advisor."""
 
-    logger.info("Initializing the Smart Elective Advisor GUI.")```
+    logger.info("Initializing the Smart Elective Advisor GUI.")
+
+    root = tk.Tk()
+    root.title("Smart Elective Advisor")
+    root.geometry("800x600")
+
+    label = tk.Label(root, text="Welcome to Smart Elective Advisor")
+    label.pack(padx=20, pady=20)
+
+    try:
+        root.mainloop()
+    except Exception as e:
+        logger.exception("Error in GUI mainloop: %s", e)
+        raise```
 
 ########################################
 Here is my code for __init__.py BELOW:
@@ -155,32 +307,54 @@ Here is my code for load_env.py BELOW:
 ```python
 # utilities/load_env.py
 
-
 import logging
 import os
 import re
+from pathlib import Path
+from typing import Optional
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 logger = logging.getLogger(__name__)
 
 
-def load_environment():
-    print("Loading Environment variables.")
+def _validate_api_key(key: str) -> bool:
+    """
+    Conservative validation for the OpenAI API key:
+    - must be at least 20 characters (adjust to your provider's expected length)
+    - contains at least one alphanumeric character
+    """
+    if not key:
+        return False
+    if len(key) < 20:
+        return False
+    if not re.search(r"[A-Za-z0-9]", key):
+        return False
+    return True
 
-    load_dotenv()
+
+def load_environment() -> None:
+    """
+    Load environment variables from .env (if present) and validate required vars.
+    Raises ValueError on missing/invalid critical variables.
+    """
+    logger.info("Loading environment variables.")
+
+    env_path = find_dotenv()
+    if env_path:
+        load_dotenv(env_path, override=False)
+        logger.debug("Loaded .env from %s", env_path)
+    else:
+        logger.debug(
+            ".env file not found; continuing with existing environment variables"
+        )
 
     apikey = os.getenv("OPENAI_API_KEY")
-    if not apikey:
-        logger.error("OPENAI_API_KEY environment variable not set")
-        raise ValueError("OPENAI_API_KEY environment variable not set")
+    if not _validate_api_key(apikey or ""):
+        logger.error("OPENAI_API_KEY is missing or invalid")
+        raise ValueError("OPENAI_API_KEY environment variable missing or invalid")
 
-    if not re.search(r"\d", apikey):
-        logger.error("OPENAI_API_KEY must contain at least one numeric character")
-        raise ValueError("OPENAI_API_KEY must contain at least one numeric character")
-
-    logger.info("API Key loaded successfully.")
-    print("API Key loaded successfully.")```
+    logger.info("API Key loaded successfully.")```
 
 ########################################
 Here is my code for logger_setup.py BELOW:

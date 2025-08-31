@@ -12,9 +12,14 @@ def main_int_ai() -> None:
     """
     Initialize AI integration.
     - In production, this would set up OpenAI/LLM clients, keys, rate-limiters, etc.
-    - For now, we log initialization and return.
+    - For now, we log initialization and verify OPENAI_API_KEY presence.
     """
     logger.info("Initializing AI Module...")
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        logger.warning("OPENAI_API_KEY not set; AI features disabled.")
+        return
+    logger.info("AI configuration found (client initialization placeholder).")
 
     # TODO: Initialize OpenAI/LangChain client here, e.g.:
     # from openai import OpenAI

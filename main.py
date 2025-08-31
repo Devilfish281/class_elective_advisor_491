@@ -7,13 +7,13 @@ from utilities.logger_setup import setup_logger
 # logger = logging.getLogger(__name__)  # Reuse the global logger
 
 
-def main() -> int:  # Changed Code
+def main() -> int:
     """
     Entry point for the application.
     Returns an exit code (0 on success, non-zero on error).
     """
     # Configure logging first so loggers created below inherit handlers/formatters.
-    setup_logger()  # Changed Code
+    setup_logger()
 
     # Create module logger after logging is configured.
     import logging
@@ -58,10 +58,20 @@ def main() -> int:  # Changed Code
         return 5
 
     logger.info("Program finished successfully.")
+    # ensure all logging handlers flush to file before exit
+    import logging
+
+    logging.shutdown()
     return 0
 
 
 if __name__ == "__main__":
-    exit_code: int = main()
-    # Use sys.exit to surface exit code to the shell.
+    try:
+        exit_code: int = main()
+    except KeyboardInterrupt:
+        # Graceful exit on Ctrl+C
+        import logging
+
+        logging.getLogger(__name__).info("Interrupted by user (KeyboardInterrupt).")
+        exit_code = 130  # (130 is common for SIGINT)
     sys.exit(exit_code)
