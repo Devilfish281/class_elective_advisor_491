@@ -1,0 +1,98 @@
+0.47s - pydevd: Use libraries filter: False
+
+0.00s - IDE_PROJECT_ROOTS []
+
+0.00s - Collecting default library roots.
+0.00s - LIBRARY_ROOTS ['C:\\Users\\Me\\AppData\\Local\\Programs\\Python\\Python312\\Lib', 'C:\\Users\\Me\\AppData\\Roaming\\Python\\Python312\\site-packages', 'C:\\Users\\Me\\Documents\\Python\\CPSC491\\Projects\\class_elective_advisor_491\\.venv', 'C:\\Users\\Me\\Documents\\Python\\CPSC491\\Projects\\class_elective_advisor_491\\.venv\\Lib', 'C:\\Users\\Me\\Documents\\Python\\CPSC491\\Projects\\class_elective_advisor_491\\.venv\\Lib\\site-packages']
+
+0.00s - Apply debug mode: debugpy-dap
+0.00s - Preimport: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages;debugpy._vendored.force_pydevd
+0.00s - Connecting to 127.0.0.1:61669
+0.00s - Connected to: <socket.socket fd=868, family=2, type=1, proto=0, laddr=('127.0.0.1', 61671), raddr=('127.0.0.1', 61669)>.
+0.00s - Applying patching to hide pydevd threads (Py3 version).
+0.00s - Process PydevdAuthorizeRequest: {
+    "arguments": {
+        "debugServerAccessToken": "21b14d51d1bf5ff284a5882f69f68e1ab557e852085cae5f1fd8d3d3deb293ff"
+    },
+    "command": "pydevdAuthorize",
+    "seq": 1,
+    "type": "request"
+}
+
+0.00s - sending cmd (http_json) -->           CMD_RETURN {"type": "response", "request_seq": 1, "success": true, "command": "pydevdAuthorize", "body": {"clientAccessToken": null}, "seq": 2, "pydevd_cmd_id": 502}
+
+0.00s - Process PydevdSystemInfoRequest: {
+    "arguments": {},
+    "command": "pydevdSystemInfo",
+    "seq": 2,
+    "type": "request"
+}
+
+0.00s - sending cmd (http_json) -->           CMD_RETURN {"type": "response", "request_seq": 2, "success": true, "command": "pydevdSystemInfo", "body": {"python": {"version": "3.12.4final0", "implementation": {"name": "cpython", "version": "3.12.4final0", "description": "CPython"}}, "platform": {"name": "win32"}, "process": {"pid": 37552, "ppid": 28628, "executable": "C:\\Users\\Me\\Documents\\Python\\CPSC491\\Projects\\class_elective_advisor_491\\.venv\\Scripts\\python.exe", "bitness": 64}, "pydevd": {"usingCython": true, "usingFrameEval": false}}, "seq": 4, "pydevd_cmd_id": 502}
+
+0.10s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - wait
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - wait
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py - _on_run
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_daemon_thread.py - run
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - _bootstrap_inner
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - _bootstrap
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - wait
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - wait
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py - _on_run
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_daemon_thread.py - run
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - _bootstrap_inner
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - _bootstrap
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_comm.py - _read_line
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_comm.py - _on_run
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_daemon_thread.py - run
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - _bootstrap_inner
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - _bootstrap
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - wait
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\queue.py - get
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_comm.py - _on_run
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_daemon_thread.py - run
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - _bootstrap_inner
+0.00s - SKIP set tracing of frame: C:\Users\Me\AppData\Local\Programs\Python\Python312\Lib\threading.py - _bootstrap
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py - set_tracing_for_untraced_contexts
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py - _locked_settrace
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py - settrace
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\server\api.py - _settrace
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\server\api.py - listen
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\server\api.py - debug
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\public_api.py - wrapper
+0.00s - Set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\run_debug.py - <module>
+0.00s - File traced: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\run_debug.py (force_check_project_scope)
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py - settrace
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\server\api.py - _settrace
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\server\api.py - listen
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\server\api.py - debug
+0.00s - SKIP set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\public_api.py - wrapper
+0.00s - Set tracing of frame: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\run_debug.py - <module>
+19.23s - No threads alive, finishing debug session
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads (called from: File "C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py", line 1859, in process_internal_commands)
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads (called from: File "C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py", line 333, in _on_run)
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads (first call)
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads (already disposed - wait)
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads no commands being processed.
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads waiting for pydb daemon threads to finish
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads killing thread: <WriterThread(pydevd.Writer, started daemon 4808)>
+0.00s - sending cmd (http_json) -->             CMD_EXIT {"type": "event", "event": "terminated", "seq": 6, "body": {}, "pydevd_cmd_id": 129}
+
+0.00s - pydevd.Writer received kill signal
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads killing thread: <PyDBCommandThread(pydevd.CommandThread, started daemon 28736)>
+0.00s - pydevd.CommandThread received kill signal
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads killing thread: <ReaderThread(pydevd.Reader, started daemon 38264)>
+0.00s - pydevd.Reader received kill signal
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads killing thread: <CheckAliveThread(pydevd.CheckAliveThread, started 36532)>
+0.00s - pydevd.CheckAliveThread received kill signal
+0.00s - WriterThread: CMD_EXIT received
+0.00s - WriterThread: exit
+0.00s - ReaderThread: empty contents received (len(line) == 0).
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads (called from: File "C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_comm.py", line 324, in _terminate_on_socket_close)
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads (already disposed - wait)
+0.50s - The following pydb threads may not have finished correctly: pydevd.CommandThread, pydevd.Reader
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads: finished
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads: finished
+0.00s - ReaderThread: exit
+0.00s - PyDB.dispose_and_kill_all_pydevd_threads: finished
+0.00s - pydevd.stoptrace()

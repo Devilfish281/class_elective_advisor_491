@@ -63,8 +63,7 @@ Developer: Developer: # Project Title
 
 ## Coding and Commenting Guidelines
 - When adding new lines of code, annotate with `# Added Code` at the end of the line.
-- When modifying existing lines, annotate with `# Changed Code` at the end of the line.
-- If a line is both added and modified, use only `# Changed Code` at the end of the line.
+- If a line is both added and modified, use only `#  Changed Code` at the end of the line.
 - Do **not** comment on command-line instructions.
 - Provide complete code context when submitting changes.
 - When editing code:
@@ -72,7 +71,7 @@ Developer: Developer: # Project Title
   2. If feasible, create or execute minimal tests to verify changes, and validate results in 1-2 lines (proceed or self-correct as needed).
   3. Provide review-ready diffs.
   4. Follow the established project style conventions.
-- **Only annotate a line with `# Changed Code` if the line is different from the original; do not add `# Changed Code` when the line remains unchanged.**
+- **Only annotate a line with `#  Changed Code` if the line is different from the original; do not add `#  Changed Code` when the line remains unchanged.**
 
 # Context
 - **Project Directory:** C:/Users/Me/Documents/Python/CPSC491/Projects/class_elective_advisor_491
@@ -505,15 +504,18 @@ def rag_text():
         )
 
     try:
-        loader = TextLoader(file_path, encoding="utf-8")
+        loader = TextLoader(file_path, encoding="utf-8", autodetect_encoding=True)
         documents = loader.load()
     except UnicodeDecodeError as e:
-        print(f"Unicode decoding failed: {e}")
-        # Handle the error or exit
-        exit(1)
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        exit(1)
+        # If autdetect failed, try again with latin-1 then raise
+        try:
+            loader = TextLoader(
+                file_path, encoding="latin-1", autodetect_encoding=False
+            )  # Added Code
+            documents = loader.load()
+        except Exception as e2:
+            print(f"Unicode decoding failed: {e} and fallback failed: {e2}")
+            sys.exit(1)
 
     # Remove or replace any model special-token markers (like "<|endoftext|>") from text.
     SPECIAL_TOKENS_TO_STRIP = [
