@@ -15,7 +15,7 @@ Usage examples (from project root):
 Notes:
 - For Sphinx, enable `sphinx.ext.autodoc` and optionally `sphinx.ext.napoleon` to
   accept Google / NumPy-style docstrings. The docstrings here use classic reST
-  field lists so they work with autodoc out of the box.  # Added Code
+  field lists so they work with autodoc out of the box.
 """
 import argparse
 import logging
@@ -29,54 +29,50 @@ from utilities.logger_setup import setup_logger
 # --------------------------
 # Exit-code descriptions
 # --------------------------
-_EXIT_DESCRIPTIONS = {  # Added Code
-    "setup": {  # Added Code
-        0: "Environment loaded: OK.",  # Added Code
-        2: "Environment load failed (e.g., OPENAI_API_KEY missing/invalid).",  # Added Code
-    },  # Added Code
-    "ai_test": {  # Added Code
-        0: "AI test passed.",  # Added Code
-        1: "AI test failed.",  # Added Code
-        2: "AI test raised an exception.",  # Added Code
-    },  # Added Code
-    "db_test": {  # Added Code
-        0: "DB test passed.",  # Added Code
-        1: "DB test failed.",  # Added Code
-        2: "DB test raised an exception.",  # Added Code
-    },  # Added Code
-    "ui_test": {  # Added Code
-        0: "UI test passed.",  # Added Code
-        1: "UI test failed or raised an exception.",  # Added Code
-    },  # Added Code
-    "main": {  # Added Code
-        0: "Program finished successfully.",  # Added Code
-        3: "Database initialization failed.",  # Added Code
-        4: "AI initialization failed.",  # Added Code
-        5: "UI initialization failed.",  # Added Code
-        130: "Interrupted by user (KeyboardInterrupt/SIGINT).",  # Added Code
-    },  # Added Code
-    "tests": {  # Added Code
-        0: "All requested tests passed.",  # Added Code
-        1: "At least one test failed.",  # Added Code
-        2: "At least one test raised an exception.",  # Added Code
-    },  # Added Code
-}  # Added Code
+_EXIT_DESCRIPTIONS = {
+    "setup": {
+        0: "Environment loaded: OK.",
+        2: "Environment load failed (e.g., OPENAI_API_KEY missing/invalid).",
+    },
+    "ai_test": {
+        0: "AI test passed.",
+        1: "AI test failed.",
+        2: "AI test raised an exception.",
+    },
+    "db_test": {
+        0: "DB test passed.",
+        1: "DB test failed.",
+        2: "DB test raised an exception.",
+    },
+    "ui_test": {
+        0: "UI test passed.",
+        1: "UI test failed or raised an exception.",
+    },
+    "main": {
+        0: "Program finished successfully.",
+        3: "Database initialization failed.",
+        4: "AI initialization failed.",
+        5: "UI initialization failed.",
+        130: "Interrupted by user (KeyboardInterrupt/SIGINT).",
+    },
+    "tests": {
+        0: "All requested tests passed.",
+        1: "At least one test failed.",
+        2: "At least one test raised an exception.",
+    },
+}
 
 
-def describe_exit_code(context: str, code: int) -> str:  # Added Code
-    """Return a human-readable description for a given exit code in a context."""  # Added Code
-    return _EXIT_DESCRIPTIONS.get(context, {}).get(
-        code, f"Unknown exit code {code}."
-    )  # Added Code
+def describe_exit_code(context: str, code: int) -> str:
+    """Return a human-readable description for a given exit code in a context."""
+    return _EXIT_DESCRIPTIONS.get(context, {}).get(code, f"Unknown exit code {code}.")
 
 
-def report_exit_code(context: str, code: int) -> None:  # Added Code
-    """Log and print a description of the exit code for the given context."""  # Added Code
-    msg = describe_exit_code(context, code)  # Added Code
-    logging.getLogger(__name__).info(
-        "[%s] %s (code=%s)", context, msg, code
-    )  # Added Code
-    print(f"[{context}] {msg} (code={code})")  # Added Code
+def report_exit_code(context: str, code: int) -> None:
+    """Log and print a description of the exit code for the given context."""
+    msg = describe_exit_code(context, code)
+    logging.getLogger(__name__).info("[%s] %s (code=%s)", context, msg, code)
+    print(f"[{context}] {msg} (code={code})")
 
 
 def _run_ai_test(option: int) -> int:
@@ -276,26 +272,24 @@ if __name__ == "__main__":
     """
 
     # Parse CLI flags to allow running section tests independently and then exit.
-    parser = argparse.ArgumentParser(
-        description="Smart Elective Advisor CLI"
-    )  # Added Code
+    parser = argparse.ArgumentParser(description="Smart Elective Advisor CLI")
     parser.add_argument(
         "-db",
         type=int,
         choices=[1, 2, 3],
-        help="Run DB test variant (1..3) and pass the number to _run_db_test()",  # Added Code
+        help="Run DB test variant (1..3) and pass the number to _run_db_test()",
     )
     parser.add_argument(
         "-ai",
         type=int,
         choices=[1, 2, 3],
-        help="Run AI test variant (1..3) and pass the number to _run_ai_test()",  # Added Code
+        help="Run AI test variant (1..3) and pass the number to _run_ai_test()",
     )
     parser.add_argument(
         "-ui",
         type=int,
         choices=[1, 2, 3],
-        help="Run UI test variant (1..3) and pass the number to _run_ui_test()",  # Added Code
+        help="Run UI test variant (1..3) and pass the number to _run_ui_test()",
     )
     args = parser.parse_args()
 
