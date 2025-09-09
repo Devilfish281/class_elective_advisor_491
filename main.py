@@ -26,6 +26,58 @@ from utilities.logger_setup import setup_logger
 
 # logger = logging.getLogger(__name__)  # Reuse the global logger
 
+# --------------------------
+# Exit-code descriptions
+# --------------------------
+_EXIT_DESCRIPTIONS = {  # Added Code
+    "setup": {  # Added Code
+        0: "Environment loaded: OK.",  # Added Code
+        2: "Environment load failed (e.g., OPENAI_API_KEY missing/invalid).",  # Added Code
+    },  # Added Code
+    "ai_test": {  # Added Code
+        0: "AI test passed.",  # Added Code
+        1: "AI test failed.",  # Added Code
+        2: "AI test raised an exception.",  # Added Code
+    },  # Added Code
+    "db_test": {  # Added Code
+        0: "DB test passed.",  # Added Code
+        1: "DB test failed.",  # Added Code
+        2: "DB test raised an exception.",  # Added Code
+    },  # Added Code
+    "ui_test": {  # Added Code
+        0: "UI test passed.",  # Added Code
+        1: "UI test failed or raised an exception.",  # Added Code
+    },  # Added Code
+    "main": {  # Added Code
+        0: "Program finished successfully.",  # Added Code
+        3: "Database initialization failed.",  # Added Code
+        4: "AI initialization failed.",  # Added Code
+        5: "UI initialization failed.",  # Added Code
+        130: "Interrupted by user (KeyboardInterrupt/SIGINT).",  # Added Code
+    },  # Added Code
+    "tests": {  # Added Code
+        0: "All requested tests passed.",  # Added Code
+        1: "At least one test failed.",  # Added Code
+        2: "At least one test raised an exception.",  # Added Code
+    },  # Added Code
+}  # Added Code
+
+
+def describe_exit_code(context: str, code: int) -> str:  # Added Code
+    """Return a human-readable description for a given exit code in a context."""  # Added Code
+    return _EXIT_DESCRIPTIONS.get(context, {}).get(
+        code, f"Unknown exit code {code}."
+    )  # Added Code
+
+
+def report_exit_code(context: str, code: int) -> None:  # Added Code
+    """Log and print a description of the exit code for the given context."""  # Added Code
+    msg = describe_exit_code(context, code)  # Added Code
+    logging.getLogger(__name__).info(
+        "[%s] %s (code=%s)", context, msg, code
+    )  # Added Code
+    print(f"[{context}] {msg} (code={code})")  # Added Code
+
 
 def _run_ai_test(option: int) -> int:
     """Run an AI subsystem test and return a process-style exit code.
@@ -207,6 +259,7 @@ if __name__ == "__main__":
 
     # Run setup of environment and logging first so tests produce logs
     exit_code: int = main_setup()
+    report_exit_code("setup", exit_code)
     if exit_code != 0:
         sys.exit(exit_code)
 
@@ -251,13 +304,20 @@ if __name__ == "__main__":
         exit_code = 0
         if args.ai:
             rc = _run_ai_test(args.ai)
+            report_exit_code("ai_test", rc)
             exit_code = exit_code or rc
         if args.db:
             rc = _run_db_test(args.db)
+            report_exit_code("db_test", rc)
             exit_code = exit_code or rc
         if args.ui:
             rc = _run_ui_test(args.ui)
+            report_exit_code("ui_test", rc)
             exit_code = exit_code or rc
+
+        # Summarize the overall tests outcome using the final exit_code
+        summary_ctx = "tests"
+        report_exit_code(summary_ctx, 0 if exit_code == 0 else exit_code)
         sys.exit(exit_code)
 
     try:
@@ -265,4 +325,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logging.getLogger(__name__).info("Interrupted by user (KeyboardInterrupt).")
         exit_code = 130
+
+    report_exit_code("main", exit_code)
     sys.exit(exit_code)

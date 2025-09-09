@@ -72,9 +72,12 @@ The File structure for my program is BELOW:
 │   ├── poetry.lock
 │   ├── pyproject.toml
 │   └── run_debug.py
+    ├── .github/
+    │   └── pull_request_template.md
     ├── .vscode/
     │   └── launch.json.bak
     ├── ai_integration/
+    │   ├── ai_dev_notes.md
     │   └── ai_module.py
     ├── database/
     │   └── db_setup.py

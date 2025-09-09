@@ -9,7 +9,7 @@ from typing import Optional
 logger = logging.getLogger(__name__)  # Reuse the global logger
 
 
-def main_int_ai() -> None:
+def main_int_ai() -> bool:
     """
     Initialize AI integration.
     - In production, this would set up OpenAI/LLM clients, keys, rate-limiters, etc.
