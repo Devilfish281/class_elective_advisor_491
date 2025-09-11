@@ -6,6 +6,8 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)  # Reuse the global logger
 
+# Dictionary to store navigation buttons
+nav_buttons = {}
 
 def main_int_ui() -> None:
     """Initializes and runs the main interface of the Smart Elective Advisor."""
@@ -17,9 +19,12 @@ def main_int_ui() -> None:
     root.title("Smart Elective Advisor")
     root.geometry("800x600")
 
-    # Example label
-    label = tk.Label(root, text="Welcome to Smart Elective Advisor")
-    label.pack(padx=20, pady=20)
+    # Content Area
+    content_frame = tk.Frame(root, bg = "white")
+    content_frame.pack(side="right", fill = "both", expand = True)
+
+    # Show home screen first
+    show_home(content_frame)
 
     def _on_close():
         logger.info("GUI received close request; shutting down.")
@@ -33,6 +38,73 @@ def main_int_ui() -> None:
     except Exception:
         logger.exception("Error in GUI mainloop")
         raise
+
+
+def clear_content(frame):
+    """Remove all widgets from the content area."""
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+def show_home(frame):
+    """Displays the Home Dashboard"""
+    clear_content(frame)
+    label = tk.Label(frame, text="Welcome to Smart Elective Advisor", font = ("Helvetica", 16))
+    label.pack(padx=20, pady=20)
+    info_text = (
+        "The Smart Elective Advisor helps CS students select the best elective courses based on their "
+        "interests, career aspirations, and academic performance. Navigate through the menu to get started."
+    )
+    info = tk.Label(frame, text = info_text, wraplength=500, justify="center")
+    info.pack(pady=10) 
+
+# Placeholder for Login Page
+def show_login(frame):
+    """Displays the Login Page."""
+    clear_content(frame)
+    tk.Label(frame, text = "Login Page", font = ("Helvetica", 14)).pack(pady=20)
+
+#Placeholder for Logout
+def show_logout(frame):
+    """Handles user logging out."""
+    clear_content(frame)
+    tk.Label(frame, text = "Login Page", font = ("Helvetica", 14)).pack(pady=20)
+
+# Placeholder for registration page
+def show_registration(frame):
+    """Display for Registration Page"""
+    clear_content(frame)
+    tk.Label(frame, text = "Login Page", font = ("Helvetica", 14)).pack(pady=20)
+
+# Placeholder for preferences
+def show_preferences(frame):
+    """Display for Preferences"""
+    clear_content(frame)
+    tk.Label(frame, text = "Login Page", font = ("Helvetica", 14)).pack(pady=20)
+
+# Placeholder for recommendations page
+def show_recommednations(frame):
+    """Display for Recommendations Page"""
+    clear_content(frame)
+    tk.Label(frame, text = "Login Page", font = ("Helvetica", 14)).pack(pady=20)
+
+# Placeholder for course details page
+def show_course_details(frame):
+    """Display for course details"""
+    clear_content(frame)
+    tk.Label(frame, text = "Login Page", font = ("Helvetica", 14)).pack(pady=20)
+
+# Placeholder for profile page
+def show_profile(frame):
+    """Display for Profile Page"""
+    clear_content(frame)
+    tk.Label(frame, text = "Login Page", font = ("Helvetica", 14)).pack(pady=20)
+
+# Placeholder for Help Page
+def show_help(frame):
+    """Display the Help Page"""
+    clear_content(frame)
+    tk.Label(frame, text = "Login Page", font = ("Helvetica", 14)).pack(pady=20)
+
 
 
 def main_test_ui(option: int) -> bool:
