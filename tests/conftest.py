@@ -1,5 +1,6 @@
 # tests/conftest.py
 """
+tests/conftest.py
 Project-wide pytest fixtures for the test suite.
 
 This file is automatically discovered by pytest; fixtures defined here are available
@@ -55,14 +56,14 @@ def valid_api_key(monkeypatch):
     return key
 
 
-@pytest.fixture
-def temp_db_path(tmp_path):
-    """
-    Return a temporary sqlite database path (string) for use in tests.
+# @pytest.fixture
+# def temp_db_path(tmp_path):
+#     """
+#     Return a temporary sqlite database path (string) for use in tests.
 
-    tmp_path is a pytest built-in fixture that provides a pathlib.Path to a fresh
-    temporary directory unique to the test invocation; using it avoids polluting
-    the repo and ensures isolation between tests.
-    """
-    p = tmp_path / "test_db.sqlite"
-    return str(p)
+#     tmp_path is a pytest built-in fixture that provides a pathlib.Path to a fresh
+#     temporary directory unique to the test invocation; using it avoids polluting
+#     the repo and ensures isolation between tests.
+#     """
+#     p = tmp_path / "test_db.sqlite"
+#     return str(p)
