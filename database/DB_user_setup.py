@@ -31,9 +31,23 @@ try:
         prerequisites TEXT
     )
     """)
-
+    #feedback table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS feedback (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        elective_id INTEGER NOT NULL,
+        elective_title TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
+        comment TEXT NOT NULL,
+        rating REAL CHECK(rating >= 0.0 AND rating <= 5.0),
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (elective_id) REFERENCES electives(id),
+        FOREIGN KEY (elective_title) REFERENCES electives(title),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+    """)
     conn.commit()
-    print("Users table created successfully.")
+    print("Tables created successfully.")
 
 except sqlite3.Error as e:
     print(f"SQLite error: {e}")
