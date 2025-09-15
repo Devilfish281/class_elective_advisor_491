@@ -129,7 +129,7 @@ def main_setup() -> int:
     setup_logger()
 
     # Create module logger after logging is configured.
-    import logging
+    # import logging
 
     logger = logging.getLogger(__name__)
 
@@ -196,7 +196,7 @@ def main() -> int:
 
     logger.info("Program finished successfully.")
     # ensure all logging handlers flush to file before exit
-    import logging
+    # import logging
 
     logging.shutdown()
     return 0
