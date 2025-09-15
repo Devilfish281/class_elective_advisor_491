@@ -105,6 +105,13 @@ The File structure for my program is BELOW:
     ├── src/
         └── class_elective_advisor_491/
             └── __init__.py
+    ├── tests/
+    │   ├── __init__.py
+    │   ├── conftest.py
+    │   ├── test_ai_module.py
+    │   └── test_load_env.py
+        └── logs/
+            └── test_ai.md
     ├── ui/
     │   └── gui.py
     └── utilities/
@@ -695,6 +702,189 @@ Here is my code for __init__.py BELOW:
 ```
 
 ########################################
+Here is my code for __init__.py BELOW:
+########################################
+
+```python
+```
+
+########################################
+Here is my code for conftest.py BELOW:
+########################################
+
+```python
+# tests/conftest.py
+"""
+tests/conftest.py
+Project-wide pytest fixtures for the test suite.
+
+This file is automatically discovered by pytest; fixtures defined here are available
+to any test in the same directory tree without explicit imports. Use this file for
+shared test setup/teardown utilities (env isolation, temporary paths, reusable
+test data, etc.). See pytest docs for `conftest.py` and fixtures.
+"""
+
+import os
+import tempfile
+
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def isolate_env(monkeypatch):
+    """
+    Automatically run for every test to provide environment isolation.
+
+    Purpose:
+      - Remove or normalize environment variables (for example OPENAI_API_KEY)
+        so tests are deterministic and don't pick up values from the developer
+        machine or CI runner.
+
+    Behavior:
+      - Runs before each test (function-scope by default).
+      - Uses pytest's `monkeypatch` fixture to delete/set env vars; monkeypatch
+        automatically restores changes after the test ends.
+      - `raising=False` means deletion is silent if the var is already absent.
+    """
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    yield
+
+
+@pytest.fixture
+def valid_api_key(monkeypatch):
+    """
+    Provide a safe, valid-looking OPENAI_API_KEY for tests that require a key.
+
+    Usage:
+        def test_something(valid_api_key):
+            assert os.getenv("OPENAI_API_KEY") == valid_api_key
+
+    This uses monkeypatch.setenv so the environment is restored after the test.
+    """
+    key = "sk_test_" + "A" * 40
+    monkeypatch.setenv("OPENAI_API_KEY", key)
+    return key
+
+
+```
+
+########################################
+Here is my code for test_ai_module.py BELOW:
+########################################
+
+```python
+# tests/test_ai_module.py  # Added Code
+"""Unit tests for ai_integration.ai_module."""
+
+import inspect
+import os
+from importlib import util as importlib_util
+
+import pytest
+
+import ai_integration.ai_module as ai
+
+
+def test_main_int_ai_returns_false_without_key():
+    """isolate_env (autouse) removes OPENAI_API_KEY, so init should be False."""
+    assert ai.main_int_ai() is False
+
+
+def test_main_int_ai_returns_true_with_key(valid_api_key):
+    """With a valid key set by the fixture, init should be True."""
+    assert ai.main_int_ai() is True
+
+
+def test_main_test_ai_option1_tracks_main_int_ai_without_key():
+    """Option 1 proxies to main_int_ai; without key it should be False."""
+    assert ai.main_test_ai(1) is False
+
+
+def test_main_test_ai_option1_tracks_main_int_ai_with_key(valid_api_key):
+    """Option 1 proxies to main_int_ai; with key it should be True."""
+    assert ai.main_test_ai(1) is True
+
+
+def test_main_test_ai_option2_returns_false_without_key():
+    """Option 2: should warn/False when key is absent."""
+    assert ai.main_test_ai(2) is False
+
+
+def test_main_test_ai_option2_returns_true_with_key(valid_api_key):
+    """Option 2: should True when key present (and log masked prefix)."""
+    assert ai.main_test_ai(2) is True
+
+
+def test_main_test_ai_option3_returns_false_when_openai_missing(
+    monkeypatch,
+):
+    """Force find_spec('openai') -> None so option 3 returns False."""
+    monkeypatch.setattr(
+        ai.importlib.util, "find_spec", lambda name: None, raising=True
+    )
+    assert ai.main_test_ai(3) is False
+
+
+def test_main_test_ai_option3_returns_true_when_openai_present(
+    monkeypatch,
+):
+    """Force find_spec('openai') -> a dummy spec-like object so option 3 returns True."""
+    monkeypatch.setattr(
+        ai.importlib.util, "find_spec", lambda name: object(), raising=True
+    )
+    assert ai.main_test_ai(3) is True
+
+
+def test_main_test_ai_unknown_option_returns_false():
+    """Unknown option path should return False."""
+    assert ai.main_test_ai(999) is False```
+
+########################################
+Here is my code for test_load_env.py BELOW:
+########################################
+
+```python
+# tests/test_load_env.py
+"""
+Tests for utilities.load_env.load_environment().
+
+Two behaviors are tested:
+  1) When no API key is present (and no .env is found), load_environment() should raise ValueError.
+  2) When a valid-looking API key is present, load_environment() should succeed (not raise).
+"""
+
+import pytest
+
+from utilities import load_env
+
+
+def test_load_environment_missing(monkeypatch):
+    """
+    Simulate "no .env file found" and "no OPENAI_API_KEY in environment".
+    We patch load_env.find_dotenv to return an empty string so that the module's
+    load_dotenv() call will not load any file, and delete OPENAI_API_KEY from env.
+    """
+    monkeypatch.setattr(load_env, "find_dotenv", lambda: "")
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    with pytest.raises(ValueError):
+        load_env.load_environment()
+
+
+def test_load_environment_valid(tmp_path, monkeypatch):
+    """
+    Verify load_environment() succeeds when a valid-looking API key is available.
+    Two options shown below — this test uses a direct environment set (fast).
+    If you want to test file-based loading specifically, patch find_dotenv to return
+    the path of the temp .env file instead of setting the env var directly.
+    """
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk_test_" + "A" * 40)
+
+    load_env.load_environment()```
+
+########################################
 Here is my code for gui.py BELOW:
 ########################################
 
@@ -872,3 +1062,44 @@ def setup_logger():
         ],
     )
     return logging.getLogger(__name__)```
+
+########################################
+Here is my pytest.ini BELOW:
+########################################
+
+```ini
+#pytest.ini
+[pytest]
+# Minimum pytest version required for this repo — prevents running with older incompatible pytest.
+# ensure pytest >= 7.0 is used (helps avoid subtle incompatibilities). 
+minversion = 7.0  
+
+# Default CLI options applied to every pytest invocation from this repo.
+# - --strict-markers: fail on unknown/typoed @pytest.mark.X decorators (helps catch mis-typed markers).
+#   If you enable strict markers, also declare your custom markers below via the `markers` option.
+# - -q: quiet mode (limited console output); remove or use -v for verbose output in local debugging.
+# - --cov=src: measure coverage for the `src` package (adjust path to your package directory if different).
+# - --cov-report=term-missing: show coverage summary in terminal and list missing lines per file.
+ # default flags for all runs. 
+addopts = --strict-markers -q --cov=src --cov-report=term-missing 
+
+# By default pytest will look here for tests when run from project root.
+# keep tests in `tests/` directory to match this setting. 
+testpaths = tests  
+
+# Pattern used to detect test files. Ex: test_example.py, test_foo.py
+# explicit discovery pattern; change if your test filenames differ.
+python_files = test_*.py   
+
+
+
+# Optional: explicitly declare any custom markers used in your suite to make marker usage discoverable
+# (useful combined with --strict-markers so typos error out rather than silently being ignored).
+# Example:
+# markers =
+#     slow: marks tests as slow (deselect with '-m "not slow"')
+#     gui: marks tests that touch GUI code and may require headless setup
+#
+# If you use many custom markers, uncomment and list them here. 
+
+```

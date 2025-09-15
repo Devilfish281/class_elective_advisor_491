@@ -86,3 +86,25 @@
 2025-09-09 08:19:08,546 INFO __main__:101 AI test passed.
 2025-09-09 08:19:08,546 INFO __main__:76 [ai_test] AI test passed. (code=0)
 2025-09-09 08:19:08,547 INFO __main__:76 [tests] All requested tests passed. (code=0)
+2025-09-14 23:20:55,286 INFO utilities.load_env:34 Loading environment variables.
+2025-09-14 23:20:55,287 INFO utilities.load_env:52 API Key loaded successfully.
+2025-09-14 23:20:55,287 INFO __main__:74 [setup] Environment loaded: OK. (code=0)
+2025-09-14 23:23:44,384 INFO utilities.load_env:34 Loading environment variables.
+2025-09-14 23:23:44,386 INFO utilities.load_env:52 API Key loaded successfully.
+2025-09-14 23:23:44,386 INFO __main__:74 [setup] Environment loaded: OK. (code=0)
+2025-09-14 23:25:43,214 INFO utilities.load_env:34 Loading environment variables.
+2025-09-14 23:25:43,214 INFO utilities.load_env:52 API Key loaded successfully.
+2025-09-14 23:25:43,215 INFO __main__:74 [setup] Environment loaded: OK. (code=0)
+2025-09-14 23:29:28,250 INFO utilities.load_env:34 Loading environment variables.
+2025-09-14 23:29:28,251 INFO utilities.load_env:52 API Key loaded successfully.
+2025-09-14 23:29:28,251 INFO __main__:74 [setup] Environment loaded: OK. (code=0)
+2025-09-14 23:29:28,257 INFO database.db_setup:47 Starting database setup...
+2025-09-14 23:29:28,258 INFO database.db_setup:16 Connected to SQLite database: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\db\smart_elective_advisor.db
+2025-09-14 23:29:28,258 INFO database.db_setup:39 All tables created successfully.
+2025-09-14 23:29:28,259 INFO database.db_setup:75 Database setup completed. Database file: C:\Users\Me\Documents\Python\CPSC491\Projects\class_elective_advisor_491\db\smart_elective_advisor.db
+2025-09-14 23:29:28,260 INFO ai_integration.ai_module:18 Initializing AI Module...
+2025-09-14 23:29:28,260 INFO ai_integration.ai_module:23 AI configuration found (client initialization placeholder).
+2025-09-14 23:29:28,273 INFO ui.gui:13 Initializing the Smart Elective Advisor GUI.
+2025-09-14 23:29:55,306 INFO ui.gui:25 GUI received close request; shutting down.
+2025-09-14 23:29:55,316 INFO __main__:245 Program finished successfully.
+2025-09-14 23:29:55,316 INFO __main__:74 [main] Program finished successfully. (code=0)
