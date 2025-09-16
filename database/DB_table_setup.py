@@ -1,7 +1,7 @@
 import sqlite3
 
 
-#thisline of code create a connection in sqlite3
+#this line of code create a connection in sqlite3
 #ai_advice.db
 try:
     conn = sqlite3.connect("ai_advice.db")
