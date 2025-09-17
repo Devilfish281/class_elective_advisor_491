@@ -1,0 +1,82 @@
+[
+    {
+        "Number": 1,
+        "Course Code": "CPSC 483",
+        "Course Name": "Introduction to Machine Learning",
+        "Rating": 100,
+        "Prerequisites": "CPSC 335, MATH 338",
+        "Explanation": "Machine Learning is a cornerstone of AI development and is highly relevant to IT consulting, especially as businesses increasingly rely on data-driven decisions. This course provides a comprehensive introduction to designing, implementing, and analyzing machine learning algorithms, covering both supervised and unsupervised learning techniques. Understanding these algorithms is crucial for IT consultants who must recommend solutions that optimize business processes through automation and data insights. Furthermore, the course's focus on real-world data projects equips students with practical skills necessary for handling complex data scenarios faced by consultants. With the rise of big data, having expertise in machine learning positions IT consultants to lead in industries where predictive analytics and intelligent systems are becoming integral."
+    },
+    {
+        "Number": 2,
+        "Course Code": "CPSC 431",
+        "Course Name": "Database and Applications",
+        "Rating": 95,
+        "Prerequisites": "CPSC 332",
+        "Explanation": "Databases are the backbone of any IT infrastructure, and proficiency in database management is vital for IT consultants tasked with optimizing client data systems. This course delves into database design and application development, focusing on real-world system analysis and development. Students learn essential skills like system analysis, requirement specifications, and conceptual modeling, which are pivotal when advising businesses on database solutions. Additionally, the course includes hands-on projects using contemporary database management systems, providing practical experience that is critical in IT consulting. With data being a central asset for businesses, the ability to design and manage robust databases ensures consultants can offer valuable insights and solutions to enhance operational efficiency."
+    },
+    {
+        "Number": 3,
+        "Course Code": "CPSC 454",
+        "Course Name": "Cloud Computing and Security",
+        "Rating": 93,
+        "Prerequisites": "CPSC 351, CPSC 253",
+        "Explanation": "As businesses migrate to cloud environments, IT consultants must be adept in cloud computing and security to guide clients in this transition. This course covers comprehensive topics such as distributed computing, cloud platforms, and virtualization, alongside critical security concerns like vulnerabilities and data protection. Understanding these areas is crucial for consultants who need to design secure, efficient, and scalable cloud solutions tailored to client needs. Moreover, the course addresses cloud infrastructure protection and data privacy\u2014key considerations for IT consultants ensuring the safety and compliance of client data. Mastery of cloud computing positions IT consultants to lead organizations in adopting innovative, cost-effective cloud strategies that drive digital transformation."
+    },
+    {
+        "Number": 4,
+        "Course Code": "CPSC 456",
+        "Course Name": "Network Security Fundamentals",
+        "Rating": 90,
+        "Prerequisites": "CPSC 351",
+        "Explanation": "Network security is a paramount concern for businesses, and IT consultants play a crucial role in safeguarding data integrity and confidentiality. This course provides foundational knowledge of network protocol vulnerabilities and techniques to mitigate security risks. Through hands-on exercises, students learn to diagnose and close security gaps, a vital skill set for consultants tasked with protecting client networks from cyber threats. As businesses continue to face sophisticated attacks, expertise in network security ensures consultants can develop robust security frameworks and response strategies. This course equips students with the requisite skills to advise clients on best practices, fortifying network defenses, and ensuring compliance with security standards."
+    },
+    {
+        "Number": 5,
+        "Course Code": "CPSC 375",
+        "Course Name": "Introduction to Data Science and Big Data",
+        "Rating": 88,
+        "Prerequisites": "CPSC 131, MATH 338",
+        "Explanation": "In the era of big data, IT consultants must be proficient in data science techniques to help businesses harness the power of data. This course introduces students to data preparation, statistical modeling, and machine learning\u2014core components of data science that are invaluable in IT consulting. By working with real-world data, students gain practical experience in analyzing various data types, including natural language and time-series data. Such skills are essential for consultants who provide data-driven insights and strategies to optimize business outcomes. Additionally, the course covers big data platforms, preparing students to manage and analyze large data sets efficiently, a critical capability in today's data-centric business environments."
+    },
+    {
+        "Number": 6,
+        "Course Code": "CPSC 449",
+        "Course Name": "Web Back-End Engineering",
+        "Rating": 85,
+        "Prerequisites": "CPSC 332",
+        "Explanation": "Web applications are integral to modern business operations, and IT consultants must understand back-end engineering to optimize these systems. This course covers essential aspects of web application design and architecture, focusing on scalability, session management, and load balancing\u2014key factors in ensuring robust and responsive web services. Students learn about contemporary web technologies like REST architecture, caching, and data models, enabling them to design efficient, large-scale applications. For IT consultants, proficiency in back-end engineering translates to the ability to advise clients on developing and maintaining scalable, secure, and high-performance web applications that meet business needs and user expectations."
+    },
+    {
+        "Number": 7,
+        "Course Code": "CPSC 474",
+        "Course Name": "Parallel and Distributed Computing",
+        "Rating": 83,
+        "Prerequisites": "CPSC 351",
+        "Explanation": "The ability to design and implement parallel and distributed systems is increasingly important in IT consulting as businesses seek to improve computational efficiency and scalability. This course introduces students to distributed computing concepts, including memory architectures, parallel programming techniques, and inter-process communication. Understanding these concepts is crucial for IT consultants who need to develop solutions that leverage multi-core and GPU platforms, optimizing performance in data-intensive applications. By engaging in projects involving distributed application development, students gain practical experience that is directly applicable to consulting roles where designing efficient computing systems is key to driving business innovation and competitiveness."
+    },
+    {
+        "Number": 8,
+        "Course Code": "CPSC 479",
+        "Course Name": "Introduction to High Performance Computing",
+        "Rating": 80,
+        "Prerequisites": "CPSC 351",
+        "Explanation": "High-performance computing (HPC) is essential for businesses dealing with large-scale computations and data processing. This course introduces students to the paradigms of parallel programming and the design of parallel algorithms, crucial for IT consultants tasked with optimizing computational processes. By learning about distributed memory systems and machine learning techniques on large data sets, students are equipped to recommend and implement advanced computing solutions that enhance business capabilities. As the demand for efficient data processing grows, expertise in HPC allows consultants to guide clients in leveraging computational resources effectively, ensuring competitive advantage through improved data analysis and decision-making processes."
+    },
+    {
+        "Number": 9,
+        "Course Code": "CPSC 411",
+        "Course Name": "Mobile Device Application Programming",
+        "Rating": 78,
+        "Prerequisites": "CPSC 131",
+        "Explanation": "With the proliferation of mobile devices, businesses increasingly require mobile applications to engage customers and streamline operations. This course provides an introduction to developing applications for mobile devices, covering runtime environments, development tools, and debugging tools. Knowledge in mobile application development is crucial for IT consultants advising clients on mobile strategy, as it enables them to design and implement applications that enhance user experience and meet business goals. By using emulators and developing applications, students gain practical skills necessary for creating innovative mobile solutions, positioning them to guide clients through the complexities of mobile application development and deployment."
+    },
+    {
+        "Number": 10,
+        "Course Code": "CPSC 458",
+        "Course Name": "Malware Analysis",
+        "Rating": 75,
+        "Prerequisites": "CPSC 351",
+        "Explanation": "Understanding malware and how to combat it is vital for IT consultants tasked with ensuring the security of client systems. This course introduces students to the principles and practices of malware analysis, covering topics such as static and dynamic code analysis, reverse engineering, and stealthy malware detection. By learning these techniques, students can identify and mitigate security threats, providing valuable expertise to clients concerned with protecting their digital assets. As cyber threats become more sophisticated, IT consultants with skills in malware analysis are better positioned to offer comprehensive security solutions and strategies, ensuring client systems remain secure and resilient against malicious attacks."
+    }
+]
