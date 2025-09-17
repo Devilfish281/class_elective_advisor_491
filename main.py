@@ -20,8 +20,12 @@ Notes:
 import argparse
 import logging
 import sys
+import traceback
 from typing import Optional
 
+from ai_integration.ai_module import (
+    parse_bool_env,
+)  # Reuse the function from ai_module.py
 from utilities.logger_setup import setup_logger
 
 # logger = logging.getLogger(__name__)  # Reuse the global logger
@@ -98,8 +102,11 @@ def _run_ai_test(option: int) -> int:
             return 0
         logger.error("AI test failed.")
         return 1
-    except Exception:
-        logger.exception("Exception while running AI test")
+    except Exception as e:
+        # Log full exception with traceback AND print a concise summary for the console
+        logger.exception("Exception while running AI test")  # (includes traceback)
+        tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+        print(f"[ai_test] {type(e).__name__}: {e}\n{tb}", file=sys.stderr)
         return 2
 
 
@@ -126,8 +133,11 @@ def _run_db_test(option: int) -> int:
             return 0
         logger.error("DB test failed.")
         return 1
-    except Exception:
-        logger.exception("Exception while running DB test")
+    except Exception as e:
+        # Log full exception with traceback AND print a concise summary for the console
+        logger.exception("Exception while running DB test")  # (includes traceback)
+        tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+        print(f"[db_test] {type(e).__name__}: {e}\n{tb}", file=sys.stderr)
         return 2
 
 
@@ -146,19 +156,21 @@ def _run_ui_test(option: int) -> int:
     """
     logger = logging.getLogger(__name__)
     try:
-        from ui.gui import main_int_ui
+        from ui.gui import main_test_ui
 
         logger.info("Launching UI (test mode)...")
-        ok = main_int_ui(option)
+        ok = main_test_ui(option)
         if ok:
             logger.info("UI test passed.")
             return 0
         logger.error("UI test failed.")
         return 1
-
-    except Exception:
-        logger.exception("Exception while running UI")
-        return 1
+    except Exception as e:
+        # Log full exception with traceback AND print a concise summary for the console
+        logger.exception("Exception while running UI test")  # (includes traceback)
+        tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+        print(f"[ui_test] {type(e).__name__}: {e}\n{tb}", file=sys.stderr)
+        return 2
 
 
 def main_setup() -> int:
@@ -271,6 +283,16 @@ if __name__ == "__main__":
 
     """
 
+    test_run = parse_bool_env("TEST_RUN", default=False)
+    if test_run:
+        exit_code = 0
+        rc = _run_ai_test(4)
+        report_exit_code("ai_test", rc)
+        exit_code = exit_code or rc
+        summary_ctx = "tests"
+        report_exit_code(summary_ctx, 0 if exit_code == 0 else exit_code)
+        sys.exit(exit_code)
+
     # Parse CLI flags to allow running section tests independently and then exit.
     parser = argparse.ArgumentParser(description="Smart Elective Advisor CLI")
     parser.add_argument(
@@ -282,8 +304,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-ai",
         type=int,
-        choices=[1, 2, 3],
-        help="Run AI test variant (1..3) and pass the number to _run_ai_test()",
+        choices=[1, 2, 3, 4],
+        help="Run AI test variant (1..4) and pass the number to _run_ai_test()",
     )
     parser.add_argument(
         "-ui",

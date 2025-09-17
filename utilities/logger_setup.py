@@ -15,7 +15,9 @@ def setup_logger():
         format="%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
         handlers=[
             logging.StreamHandler(),  # Console output
-            logging.FileHandler("app.log", mode="a"),  # Log file (append mode)
+            logging.FileHandler(
+                "app.log", mode="a", encoding="utf-8"
+            ),  # Log file (append mode)
         ],
     )
     return logging.getLogger(__name__)  # Return the root logger for global usage
