@@ -63,8 +63,7 @@ Developer: Developer: # Project Title
 
 ## Coding and Commenting Guidelines
 - When adding new lines of code, annotate with `# Added Code` at the end of the line.
-- When modifying existing lines, annotate with `# Changed Code` at the end of the line.
-- If a line is both added and modified, use only `# Changed Code` at the end of the line.
+- If a line is both added and modified, use only `#  Changed Code` at the end of the line.
 - Do **not** comment on command-line instructions.
 - Provide complete code context when submitting changes.
 - When editing code:
@@ -72,7 +71,7 @@ Developer: Developer: # Project Title
   2. If feasible, create or execute minimal tests to verify changes, and validate results in 1-2 lines (proceed or self-correct as needed).
   3. Provide review-ready diffs.
   4. Follow the established project style conventions.
-- **Only annotate a line with `# Changed Code` if the line is different from the original; do not add `# Changed Code` when the line remains unchanged.**
+- **Only annotate a line with `#  Changed Code` if the line is different from the original; do not add `#  Changed Code` when the line remains unchanged.**
 
 # Context
 - **Project Directory:** C:/Users/Me/Documents/Python/CPSC491/Projects/class_elective_advisor_491
@@ -119,7 +118,9 @@ Check my code for errors and improvements.
         return default_header
 
 
-def generate_file_structure(root_dir, script_path, output_file):
+def generate_file_structure(
+    root_dir, script_path, output_file, include_tests: bool = False
+):  #  Changed Code
     """
     Generates the directory structure of the given root directory and collects .py files.
 
@@ -129,6 +130,8 @@ def generate_file_structure(root_dir, script_path, output_file):
     :type script_path: Path
     :param output_file: The path to the output file to exclude from the file structure.
     :type output_file: Path
+    :param include_tests: If True, the 'tests' directory will be included without prompting.  # Added Code
+    :type include_tests: bool  # Added Code
     :return: Tuple containing list of directory structure lines and list of .py file paths.
     :rtype: tuple[list[str], list[Path]]
     """
@@ -157,6 +160,8 @@ def generate_file_structure(root_dir, script_path, output_file):
         if not include_all:
             # Iterate over a copy of dirs to modify dirs in place  #Added Code
             for d in dirs[:]:
+                if d == "tests" and include_tests:  # Added Code
+                    continue  # skip per-dir prompt for tests when user opted in  # Added Code
                 while True:
                     response = (
                         input(f"Do you want to include the directory '{d}'? (y/n): ")
@@ -433,6 +438,24 @@ def main():
 
     args = parser.parse_args()
 
+    # === Ask whether to include tests directory (y/n) ===  # Added Code
+    include_tests = False  # Added Code
+    try:  # Added Code
+        while True:  # Added Code
+            resp = (
+                input("Do you want to include tests directory? (y/n): ").strip().lower()
+            )  # Added Code
+            if resp in {"y", "n"}:  # Added Code
+                include_tests = resp == "y"  # Added Code
+                break  # Added Code
+            else:  # Added Code
+                print("Invalid input. Please enter 'y' or 'n'.")  # Added Code
+    except EOFError:  # Added Code
+        include_tests = False  # Added Code
+
+    if include_tests and "tests" in EXCLUDED_DIRS:  # Added Code
+        EXCLUDED_DIRS.remove("tests")  # Added Code
+
     # Exclude the output directory by adding its name to EXCLUDED_DIRS
     EXCLUDED_DIRS.add(args.output.parent.name)
 
@@ -444,7 +467,10 @@ def main():
 
     # Generate the file structure and collect .py files
     structure_lines, py_files = generate_file_structure(
-        args.root, script_path, args.output
+        args.root,
+        script_path,
+        args.output,
+        include_tests=include_tests,  #  Changed Code
     )
 
     # Append the directory structure to the output file after the header
@@ -464,6 +490,27 @@ def main():
         append_file_contents(args.output, py_files)
     else:
         print("No Python files found to append.")
+
+    # If tests were requested, also include pytest.ini content in the output  # Added Code
+    if include_tests:  # Added Code
+        pytest_ini_path = args.root / "pytest.ini"  # Added Code
+        try:  # Added Code
+            if pytest_ini_path.exists():  # Added Code
+                with args.output.open("a", encoding="utf-8") as file:  # Added Code
+                    separator = "########################################"  # Added Code
+                    file.write(f"\n{separator}\n")  # Added Code
+                    file.write("Here is my pytest.ini BELOW:\n")  # Added Code
+                    file.write(f"{separator}\n\n")  # Added Code
+                    file.write("```ini\n")  # Added Code
+                    file.write(
+                        pytest_ini_path.read_text(encoding="utf-8")
+                    )  # Added Code
+                    file.write("\n```\n")  # Added Code
+                print(f"pytest.ini appended to '{args.output}'.")  # Added Code
+            else:  # Added Code
+                print("pytest.ini not found; skipping append.")  # Added Code
+        except Exception as e:  # Added Code
+            print(f"Failed to append pytest.ini: {e}", file=sys.stderr)  # Added Code
 
 
 def rag_text():
@@ -505,15 +552,18 @@ def rag_text():
         )
 
     try:
-        loader = TextLoader(file_path, encoding="utf-8")
+        loader = TextLoader(file_path, encoding="utf-8", autodetect_encoding=True)
         documents = loader.load()
     except UnicodeDecodeError as e:
-        print(f"Unicode decoding failed: {e}")
-        # Handle the error or exit
-        exit(1)
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        exit(1)
+        # If autdetect failed, try again with latin-1 then raise
+        try:
+            loader = TextLoader(
+                file_path, encoding="latin-1", autodetect_encoding=False
+            )  # Added Code
+            documents = loader.load()
+        except Exception as e2:
+            print(f"Unicode decoding failed: {e} and fallback failed: {e2}")
+            sys.exit(1)
 
     # Remove or replace any model special-token markers (like "<|endoftext|>") from text.
     SPECIAL_TOKENS_TO_STRIP = [

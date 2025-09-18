@@ -42,6 +42,10 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+file_structure/chat_gpt/chunks/chunk1.txt
+file_structure/chat_gpt/program_chat_gpt.txt
+app.log
+**/*.log
 
 # Sphinx build
 docs/_build/
