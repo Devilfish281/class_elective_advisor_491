@@ -2,10 +2,14 @@ import logging
 import threading
 import time
 import tkinter as tk
-from tkinter import ttk, PhotoImage
+from tkinter import ttk, PhotoImage, messagebox
 from typing import Optional
 
 logger = logging.getLogger(__name__)  # Reuse the global logger
+
+# Global variables for login status and current users
+login_status = False
+current_user = None
 
 # Dictionary to store navigation buttons
 nav_buttons = {}
@@ -40,7 +44,7 @@ def main_int_ui() -> None:
     # Styles for sidebar buttons 
     style = ttk.Style()
     style.theme_use("clam")
-    style.configure("TButton", padding=5, anchor='w', font=("Helvetica, 12"))
+    style.configure("TButton", padding=5, anchor='w', font=("Helvetica", 12))
     style.map(
         "TButton",
         background=[("pressed", "#d0e0ff"), ("active","#f0f0f0")]
@@ -85,8 +89,9 @@ def main_int_ui() -> None:
         
         btn.grid(row=i, column=0, padx=10, pady=5, sticky="ew")
         nav_buttons[label]=btn
-
-
+    
+    # Sets inital state of navigation buttons on login status
+    update_nav_buttons() 
     # Show home screen first
     show_home(content_frame)
 
@@ -108,6 +113,42 @@ def clear_content(frame):
     """Remove all widgets from the content area."""
     for widget in frame.winfo_children():
         widget.destroy()
+
+def update_nav_buttons():
+    """Updates the state of navigation buttons based on login status"""
+    global login_status, current_user
+    if login_status and current_user:
+        # Show logout button, hide login button
+        nav_buttons["Logout"].grid()
+        nav_buttons["Login"].grid_remove() # removes login button 
+        nav_buttons["Registration"].grid_remove() # removes registration button
+
+       # Enable other buttons
+        nav_buttons["Home"].config(state="normal")
+        nav_buttons["Preferences"].config(state="normal")
+        nav_buttons["Recommendations"].config(state="normal")
+        nav_buttons["Profile"].config(state="normal")
+        nav_buttons["Help"].config(state="normal")
+    else:
+        # Show Login button, hide Logout button
+        nav_buttons["Login"].grid()
+        nav_buttons["Logout"].grid_remove()
+
+        # Disable other buttons
+        nav_buttons["Home"].config(state="normal")
+        nav_buttons["Preferences"].config(state="disabled")
+        nav_buttons["Recommendations"].config(state="disabled")
+        nav_buttons["Profile"].config(state="disabled")
+        nav_buttons["Help"].config(state="normal")
+
+
+# Test user data
+users = {
+    "student@test.com": {   
+    "password": "password123",
+    "name": "Test Student"
+    }
+}
 
 def show_home(frame):
     """Displays the Home Dashboard"""
@@ -140,27 +181,121 @@ def show_login(frame):
     password_entry = tk.Entry(frame, width=30, show="*")
     password_entry.pack(pady=(0,10))
 
+    def handle_login():
+        """Handles login(need to connect to database)"""
+        global login_status, current_user
+        email = email_entry.get()
+        password = password_entry.get()
+        logger.debug(f"Attempting login with email: {email}")
+        # Check against test user data
+        if email in users and password == users[email]["password"]:
+            login_status = True
+            current_user = {"email": email, "name": users[email]["name"]}
+            messagebox.showinfo(
+                "Login Successful", f"Welcome back, {users[email]['name']}!"
+                )
+            
+            logger.info(f"User '{email}' logged in successfully.")
+            show_preferences(frame) # Redirect to preferences page after login
+            update_nav_buttons() # Refreshes button states
+        else:
+            messagebox.showerror("Login Failed", "Invalid email or password. Please try again.")
+            logger.warning(f"Login failed for email: {email}")
 
     # Login Button (Need to add function for logging in)
-    login_button = tk.Button(frame, text="Login", width=15)
+    login_button = tk.Button(frame, text="Login", width=15, command=handle_login)
     login_button.pack(pady=(20, 10))
 
-    # Forgot password and Register links
-    tk.Label(frame, text="Forgot password?", fg="blue", cursor="hand2").pack(pady=(5, 2))
-    tk.Label(frame, text="Don't have an account? Register", fg="blue", cursor="hand2").pack(pady=(2, 10))
-
+    # Forgot password link
+    forgot_password_label = tk.Label(frame, text="Forgot password?", fg="blue", cursor="hand2")
+    forgot_password_label.pack(pady=(5, 2))
+    
+    # Registration link 
+    reg_label = tk.Label(frame, text="Don't have an account? Register", fg="blue", cursor="hand2")
+    reg_label.pack(pady=(2,10))
+    reg_label.bind("<Button-1>", lambda e: show_registration(frame))
 
 #Placeholder for Logout
 def show_logout(frame):
     """Handles user logging out."""
+    global login_status, current_user
     clear_content(frame)
-    tk.Label(frame, text = "Logout Page", font = ("Helvetica", 14)).pack(pady=20)
+    logger.info("User initaited logout.")
 
-# Placeholder for registration page
+    login_status = False # reset login status
+    current_user = None # clear current user
+
+    messagebox.showinfo("Logout Successful", "You have been logged out.")
+    logger.info("User logged out successfully.")
+    show_home(frame) # Redirect to home page after logout
+    update_nav_buttons() # Refresh button states
+
+# Registration page
 def show_registration(frame):
     """Display for Registration Page"""
+    global login_status, current_user
+    logger.info("Displaying User Registration Form")
     clear_content(frame)
-    tk.Label(frame, text = "Registration Page", font = ("Helvetica", 14)).pack(pady=20)
+    header_label = tk.Label(frame, text = "User Registration", font = ("Helvetica", 14))
+    header_label.pack(pady=20)
+
+    # Registration Form Frame
+    reg_frame = ttk.Frame(frame)
+    reg_frame.pack(pady=10)
+
+    # Full name
+    name_label = ttk.Label(reg_frame, text="Full Name:")
+    name_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+    name_entry = ttk.Entry(reg_frame, width=30)
+    name_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    # Email
+    email_label = ttk.Label(reg_frame, text="Email:")
+    email_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    email_entry = ttk.Entry(reg_frame, width=30)
+    email_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    # Password
+    password_label = ttk.Label(reg_frame, text="Password:")
+    password_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+    password_entry = ttk.Entry(reg_frame, width=30, show="*")
+    password_entry.grid(row=2, column=1, padx=5, pady=5)
+
+    # Confirm Password
+    confirm_label = ttk.Label(reg_frame, text="Confirm Password:")
+    confirm_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+    confirm_entry = ttk.Entry(reg_frame, width=30, show="*")
+    confirm_entry.grid(row=3, column=1, padx=5, pady=5)
+
+    def handle_registration():
+        """Handles User Registration (need to add input validations, character length for password, special characters, and register new users in database)"""
+        name = name_entry.get().strip()
+        email = email_entry.get().strip()
+        password = password_entry.get().strip()
+        confirm_password = confirm_entry.get().strip()
+
+        if not name or not email or not password or not confirm_password:
+            messagebox.showerror("Error", "All fields are required.")
+            return
+        if password != confirm_password:
+            messagebox.showerror("Error", "Passwords do not match.")
+            return
+        if email in users:
+            messagebox.showerror("Error", "Email already registered. Please login.")
+            return
+        
+        # Save new user
+        users[email] = {"name": name, "password":password}
+        messagebox.showinfo("Success", "Registration successful! Please login.")
+        logger.info(f"New user registered: {email}")
+
+        # Redirect to login page
+        show_login(frame)
+
+     # Registration Button
+    reg_button = tk.Button(frame, text="Register", width=20, command=handle_registration)
+    reg_button.pack(pady=20)
+
 
 # Placeholder for preferences
 def show_preferences(frame):
