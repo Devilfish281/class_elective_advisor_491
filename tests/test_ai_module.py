@@ -2,6 +2,7 @@
 """Unit tests for ai_integration.ai_module."""  # Added Code
 
 import inspect  # Added Code
+import json
 import os  # Added Code
 from importlib import util as importlib_util  # Added Code
 
@@ -63,6 +64,22 @@ def test_main_test_ai_option3_returns_true_when_openai_present(
         ai.importlib.util, "find_spec", lambda name: object(), raising=True
     )  # Added Code
     assert ai.main_test_ai(3) is True  # Added Code
+
+
+# ----------------------------- main_test_ai (option 4) -----------------------------  # Added Code
+
+
+def test_ai_option4_smoke(monkeypatch, tmp_path):
+    # Ensure fake path (AI off) so option 4 uses CSV→JSON + courses.json loader path
+    monkeypatch.delenv("AI_ENABLED", raising=False)
+    # Provide a minimal courses.json so fake_chatgpt_response can load it
+    (tmp_path / "courses.json").write_text(
+        '[{"Number": 1}, {"Number": 2}, {"Number": 3}, {"Number": 4}, {"Number": 5}, {"Number": 6}, {"Number": 7}, {"Number": 8}, {"Number": 9}, {"Number": 10}]',
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    assert ai.main_test_ai(4) is True
 
 
 # ----------------------------- main_test_ai (unknown option) -----------------------------  # Added Code
