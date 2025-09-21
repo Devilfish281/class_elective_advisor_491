@@ -27,26 +27,27 @@ def main_int_ui() -> None:
     root.geometry("1200x800")
 
     # Grid Layout
-    root.columnconfigure(0, weight=1) # Navigation Menu
-    root.columnconfigure(1, weight=4) # Content Display
+    root.columnconfigure(0, weight=0) # Navigation Menu
+    root.columnconfigure(1, weight=1) # Content Display
     root.rowconfigure(0, weight=1)
     
     # Create Navigation Menu Frame
-    nav_frame = ttk.Frame(root, width=200, relief="raised")
+    nav_frame = tk.Frame(root, width=220, relief="raised", bg="#F7F7F7")
     nav_frame.grid(row=0, column=0, sticky="ns")
     nav_frame.grid_propagate(False)
     nav_frame.columnconfigure(0, weight=1)
 
     # Content Area
-    content_frame = tk.Frame(root, bg = "white")
-    content_frame.grid(row=0, column=1, sticky="nsew")
+    content_frame = tk.Frame(root, bg = "white", relief="groove", bd=2)
+    content_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+
     # Styles for sidebar buttons 
     style = ttk.Style()
     style.theme_use("clam")
-    style.configure("TButton", padding=5, anchor='w', font=("Helvetica", 12))
+    style.configure("TButton", padding=5, anchor='w', font=("Helvetica", 12), background="white")
     style.map(
         "TButton",
-        background=[("pressed", "#d0e0ff"), ("active","#f0f0f0")]
+        background=[("pressed", "#FF7900"), ("active","#FF7900")]
     )
     
     # Highlights active buttons
@@ -282,6 +283,24 @@ def show_registration(frame):
         if email in users:
             messagebox.showerror("Error", "Email already registered. Please login.")
             return
+        if not name:
+            messagebox.showerror("Input Error", "Please enter your full name.")
+            logger.warning("Registration failed: Full name not provided.")
+            return
+        if not email or "@" not in email:
+            messagebox.showerror("Input Error", "Please enter a valid email address.")
+            logger.warning("Registration failed: Invalid email format.")
+            return
+        
+        # Special characters
+        password_special_chars = r"!@#$%^&*()-_=+[{]}\|;:'\",<.>/?'~"
+        if (len(password) < 8 or not any(char.isdigit() for char in password)
+                or not any(char in password_special_chars for char in password)):
+            messagebox.showerror(
+                "Input Error", "Password must be at least 8 characters long and include numbers and special characters."
+            )
+            logger.warning("Registration failed: Weak Password.")
+            return
         
         # Save new user
         users[email] = {"name": name, "password":password}
@@ -298,9 +317,16 @@ def show_registration(frame):
 
 # Placeholder for preferences
 def show_preferences(frame):
-    """Display for Preferences"""
-    clear_content(frame)
-    tk.Label(frame, text = "Preferences Page", font = ("Helvetica", 14)).pack(pady=20)
+     """Display for Preferences"""
+     logger.info("Displaying the Preferences Form.")
+     clear_content(frame)
+     
+     header_label = tk.Label(frame, text="Preferences Page", font=("Helvetica", 14, "bold"))
+     header_label.pack(pady=20)
+
+     pref_frame = ttk.Frame(frame)
+     pref_frame.pack(pady=10)
+
 
 # Placeholder for recommendations page
 def show_recommendations(frame):
@@ -316,17 +342,101 @@ def show_course_details(frame):
 
 # Placeholder for profile page
 def show_profile(frame):
-    """Display for Profile Page"""
+    """Display for User Profile and Account Settings"""
+    logger.info("Displaying Profile Page")
     clear_content(frame)
-    tk.Label(frame, text = "Profile Page", font = ("Helvetica", 14)).pack(pady=20)
+    global current_user
+
+    profile_header = tk.Label(frame, text="User Profile", font=("Helvetica", 14))
+    profile_header.pack(pady=20)
+
+    profile_name_label = tk.Label(frame, text=f"Name: {current_user.get('name', 'N/A')}", font=("Helvetica", 12))
+    profile_name_label.pack(pady=5)
+
+    profile_email_label = tk.Label(frame, text=f"Email: {current_user.get('email', 'N/A')}", font=("Helvetica", 12))
+    profile_email_label.pack(pady=5)
+
+    settings_frame = ttk.LabelFrame(frame, text="Account Settings")
+    settings_frame.pack(pady=20, fill="x", padx=20)
+
+    def change_password():
+        """Changes Password"""
+        logger.info("User initiated password change.")
+        password_window = tk.Toplevel(frame)
+        password_window.title("Change Password")
+
+        current_password_label = ttk.Label(password_window, text="Current Password:")
+        current_password_label.pack(pady=10, padx=10, anchor="w")
+        current_password_entry = ttk.Entry(password_window, width=30, show="*")
+        current_password_entry.pack(pady=5, padx=10, anchor="w")
+
+        new_password_label = ttk.Label(password_window, text="New Password:")
+        new_password_label.pack(pady=10, padx=10, anchor="w")
+        new_password_entry = ttk.Entry(password_window, width=30, show="*")
+        new_password_entry.pack(pady=5, padx=10, anchor="w")
+
+        confirm_new_pw_label = ttk.Label(password_window, text="Confirm New Password:")
+        confirm_new_pw_label.pack(pady=10, padx=10, anchor="w")
+        confirm_new_pw_entry = ttk.Entry(password_window, width=30, show="*")
+        confirm_new_pw_entry.pack(pady=5, padx=10, anchor="w")
+
+        def perform_password_change():
+            current_password = current_password_entry.get().strip()
+            new_password = new_password_entry.get().strip()
+            confirm_password = confirm_new_pw_entry.get().strip()
+
+            if current_password != users[current_user["email"]]["password"]:
+                messagebox.showerror("Error", "Current password is incorrect.", parent=password_window)
+                return
+            if new_password != confirm_password:
+                messagebox.showerror("Error", "New passwords do not match.", parent=password_window)
+                return
+            if len(new_password) < 8:
+                messagebox.showerror("Error", "Password must be at least 8 characters long.", parent=password_window)
+                return
+
+            users[current_user["email"]]["password"] = new_password
+            messagebox.showinfo("Success", "Password changed successfully!", parent=password_window)
+            logger.info(f"User '{current_user['email']}' changed password.")
+            password_window.destroy()
+
+        save_password_button = ttk.Button(password_window, text="Save Password", command=perform_password_change)
+        save_password_button.pack(pady=20)
+
+    change_password_button = ttk.Button(settings_frame, text="Change Password", command=change_password)
+    change_password_button.pack(pady=10, padx=10, fill="x")
 
 # Placeholder for Help Page
 def show_help(frame):
-    """Display the Help Page"""
-    clear_content(frame)
-    tk.Label(frame, text = "Help Page", font = ("Helvetica", 14)).pack(pady=20)
+   """Display the Help Page""" 
+   clear_content(frame)
+   
+   header_label = ttk.Label(frame, text="Help & Support", font=("Helvetica", 20))
+   header_label.pack(pady=20)
 
+   help_frame = ttk.Frame(frame)
+   help_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
+   help_text = (
+        "Welcome to the Smart Elective Advisor Help Center!\n\n"
+        "If you need help navigating the application or have any questions, we've got you covered.\n\n"
+        "1. Use Guides: Detailed manuals to help you explore and make the most of the application's features\n\n"
+        "2. FAQs: Quick answers to the most common questions from other users.\n\n"
+        "3. Contact Support: Need personalized help? Reach out to our support team at support@university.edu\n\n"
+    )
+   help_label = ttk.Label(help_frame, text=help_text, font=("Helvetica", 14), wraplength=800, justify="left")
+   help_label.pack(pady=10)
+
+   search_label = ttk.Label(help_frame, text="Search Help Topics:", font=("Helvetica", 12))
+   search_label.pack(pady=5, anchor="w")
+   search_entry = ttk.Entry(help_frame, width=50)
+   search_entry.pack(pady=5, anchor="w")
+   def search_help():
+        query = search_entry.get()
+        messagebox.showinfo("Coming soon", "coming soon")
+    
+   search_button = ttk.Button(help_frame, text="Search", command=search_help)
+   search_button.pack(pady=5, anchor="w")
 
 def main_test_ui(option: int) -> bool:
     """
