@@ -40,7 +40,6 @@ def main_int_ui() -> None:
     # Content Area
     content_frame = tk.Frame(root, bg = "white")
     content_frame.grid(row=0, column=1, sticky="nsew")
-
     # Styles for sidebar buttons 
     style = ttk.Style()
     style.theme_use("clam")
