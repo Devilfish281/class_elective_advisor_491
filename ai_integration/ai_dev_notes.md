@@ -135,3 +135,5 @@ Practical tips
 - Add pydantic models for the recommendation schema to make type/shape explicit.
 - Expand Sphinx docs: module overview + function pages with autodoc and autosummary.
 - Integrate with the DB/UI layers: persist last recommendation run; display nicely in Tkinter; add a manual “refresh” button.
+
+# Generate recommendations based on job and degree information using a ChatOpenAI model.
