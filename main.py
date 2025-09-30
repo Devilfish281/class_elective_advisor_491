@@ -240,7 +240,10 @@ def main() -> int:
     from ai_integration.ai_module import main_int_ai
 
     try:
-        main_int_ai()
+        if not main_int_ai():
+            logger.error("AI initialization reported disabled or failed.")  # Added Code
+            return 4
+
     except Exception as e:
         logger.exception("AI initialization failed: %s", e)
         return 4
@@ -291,6 +294,9 @@ if __name__ == "__main__":
         exit_code = exit_code or rc
         summary_ctx = "tests"
         report_exit_code(summary_ctx, 0 if exit_code == 0 else exit_code)
+
+        # raises the built-in SystemExit exception; a non-zero code (like 1) means “failure.”
+        # Debuggers surface that as an exception even though it’s a normal program exit.
         sys.exit(exit_code)
 
     # Parse CLI flags to allow running section tests independently and then exit.
