@@ -5,16 +5,27 @@ import tkinter as tk
 from tkinter import ttk, PhotoImage, messagebox
 from typing import Optional
 
+
 logger = logging.getLogger(__name__)  # Reuse the global logger
 
 # Global variables for login status and current users
 login_status = False
 current_user = None
+status_var = None
 
 # Dictionary to store navigation buttons
 nav_buttons = {}
+
 # Dictionary to store loaded icons
 nav_icons = {}
+
+   # Highlights active buttons
+def set_active_button(label):
+    for name, btn in nav_buttons.items():
+        if name == label:
+            btn.config(style="Active.TButton")
+        else:
+            btn.config(style="TButton")
 
 def main_int_ui() -> None:
     """Initializes and runs the main interface of the Smart Elective Advisor."""
@@ -49,16 +60,16 @@ def main_int_ui() -> None:
         "TButton",
         background=[("pressed", "#FF7900"), ("active","#FF7900")]
     )
+    style.configure("Active.TButton", padding=5, anchor='w', font=("Helvetica", 12, "bold"), background="#FF7900", foreground="white")
     
-    # Highlights active buttons
-    def set_active_button(label):
-        for name, btn in nav_buttons.items():
-            if name == label:
-                btn.state(["pressed"])
-            else:
-                btn.state(["!pressed"])
+    # Status bar at the bottom
+    global status_var
+    status_var = tk.StringVar()
+    status_var.set("Not logged in")
 
-
+    status_bar = tk.Label(root, textvariable=status_var, bd=1, relief="sunken", anchor="w")
+    status_bar.grid(row=1, column=0, columnspan=2, sticky="ew")
+ 
     # Menu Items
     menu_items = [
         ("Home", "icons/home.png", show_home),
@@ -152,6 +163,7 @@ users = {
 
 def show_home(frame):
     """Displays the Home Dashboard"""
+    set_active_button("Home")
     clear_content(frame)
     label = tk.Label(frame, text="Welcome to Smart Elective Advisor", font = ("Helvetica", 16))
     label.pack(padx=20, pady=20)
@@ -165,6 +177,7 @@ def show_home(frame):
 # Login Page
 def show_login(frame):
     """Displays the Login Page."""
+    set_active_button("Login")
     clear_content(frame)
     header_label = tk.Label(frame, text = "Login Page", font = ("Helvetica", 14))
     header_label.pack(pady=20)
@@ -191,17 +204,17 @@ def show_login(frame):
         if email in users and password == users[email]["password"]:
             login_status = True
             current_user = {"email": email, "name": users[email]["name"]}
+            status_var.set(f"Logged in as: {users[email]['name']}")
             messagebox.showinfo(
                 "Login Successful", f"Welcome back, {users[email]['name']}!"
                 )
-            
             logger.info(f"User '{email}' logged in successfully.")
             show_preferences(frame) # Redirect to preferences page after login
             update_nav_buttons() # Refreshes button states
         else:
             messagebox.showerror("Login Failed", "Invalid email or password. Please try again.")
             logger.warning(f"Login failed for email: {email}")
-
+        
     # Login Button (Need to add function for logging in)
     login_button = tk.Button(frame, text="Login", width=15, command=handle_login)
     login_button.pack(pady=(20, 10))
@@ -218,6 +231,7 @@ def show_login(frame):
 #Placeholder for Logout
 def show_logout(frame):
     """Handles user logging out."""
+    set_active_button("Logout")
     global login_status, current_user
     clear_content(frame)
     logger.info("User initaited logout.")
@@ -233,6 +247,7 @@ def show_logout(frame):
 # Registration page
 def show_registration(frame):
     """Display for Registration Page"""
+    set_active_button("Registration")
     global login_status, current_user
     logger.info("Displaying User Registration Form")
     clear_content(frame)
@@ -318,21 +333,108 @@ def show_registration(frame):
 # Placeholder for preferences
 def show_preferences(frame):
      """Display for Preferences"""
+     # Guard to prevent unauthorized access
+     if not login_status:
+            messagebox.showwarning("Access Denied", "Please login to set preferences.")
+            logger.warning("Unauthorized access attempt to Preferences Form.")
+            return
+     set_active_button("Preferences")
      logger.info("Displaying the Preferences Form.")
      clear_content(frame)
      
+     # Header for preferences page
      header_label = tk.Label(frame, text="Preferences Page", font=("Helvetica", 14, "bold"))
      header_label.pack(pady=20)
 
+    # Preferences Form Frame
      pref_frame = ttk.Frame(frame)
      pref_frame.pack(pady=10)
+
+     # Exisiting Preferences (Placeholder will add functionality to fetch from database)
+     exisiting_prefs = ["AI", "Machine Learning", "Data Science"]
+
+     # College Selection (Placeholder will add functionality to fetch from database)
+     college_label = ttk.Label(pref_frame, text="College of:")
+     college_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+     college_var = tk.StringVar()
+     college_combo = ttk.Combobox(
+         pref_frame, textvariable=college_var, state="readonly", width=45
+     )
+     college_combo.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+
+     # Department Selection (Placeholder will add functionality to fetch from database)
+     department_label = ttk.Label(pref_frame, text="Department:")
+     department_label.grid(row=1, column=0, padx=5, pady=5, sticky="e")
+     department_var = tk.StringVar()
+     department_combo = ttk.Combobox(
+        pref_frame, textvariable=department_var, state="readonly", width=45
+     )
+     department_combo.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+
+     # Degree Level Selection
+     degree_level_label = ttk.Label(pref_frame, text="Degree Level:")
+     degree_level_label.grid(row=2, column=0, padx=5, pady=5, sticky="e")
+     degree_level_var = tk.StringVar()
+     degree_level_combo = ttk.Combobox(
+        pref_frame, textvariable=degree_level_var, state="readonly", width=45
+     )
+     degree_level_combo.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+
+     # Degree Selection
+     degree_label = ttk.Label(pref_frame, text="Degree:")
+     degree_label.grid(row=3, column=0, padx=5, pady=5, sticky="e")
+     degree_var = tk.StringVar()
+     degree_combo = ttk.Combobox(
+        pref_frame, textvariable=degree_var, state="readonly", width=45
+     )
+     degree_combo.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+
+     # Job Selection
+     job_label = ttk.Label(pref_frame, text="Preferred Job:")
+     job_label.grid(row=4, column=0, padx=5, pady=5, sticky="e")
+     job_var = tk.StringVar()
+     job_combo = ttk.Combobox(
+        pref_frame, textvariable=job_var, state="readonly", width=45
+     )
+     job_combo.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+
+     # Job Description
+     job_desc_label = ttk.Label(frame, text="Job Description:")
+     job_desc_label.pack(pady=(10, 0), anchor="w", padx=20)
+     job_desc_text = tk.Text(frame, height=5, wrap="word", state="disabled", width=100)
+     job_desc_text.pack(pady=5, padx=20, fill="x")
 
 
 # Placeholder for recommendations page
 def show_recommendations(frame):
     """Display for Recommendations Page"""
+    # Guard to prevent unauthorized access
+    if not login_status:
+        messagebox.showwarning("Access Denied", "Please login to view recommendations.")
+        logger.warning("Unauthorized access attempt to Recommendations Page.")
+        return
+    set_active_button("Recommendations")
+    logger.info("Displaying Recommendations Page")
     clear_content(frame)
-    tk.Label(frame, text = "Recommendations Page", font = ("Helvetica", 14)).pack(pady=20)
+    header_label = tk.Label(frame, text = "Course Recommendations", font = ("Helvetica", 14))
+    header_label.pack(pady=20)
+
+    # Generate Recommendations Button (need to add function to generate recommendations)
+    generate_button = tk.Button(frame, text="Generate Recommendations", width=25,
+                                command=lambda: generate_recommendations_ui(frame))
+    generate_button.pack(pady=10)
+    
+    # Recommendations Display Frame
+    rec_frame = ttk.Frame(frame)
+    rec_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+
+def generate_recommendations_ui(frame):
+    """Generates and displays course recommednations (Placeholder need to add functionality with AI and database)"""
+    logger.info("Generating course recommendations (placeholder)")
+    messagebox.showinfo("Coming Soon", "Course recommendation feature coming soon!")
+
+
 
 # Placeholder for course details page
 def show_course_details(frame):
@@ -344,6 +446,7 @@ def show_course_details(frame):
 def show_profile(frame):
     """Display for User Profile and Account Settings"""
     logger.info("Displaying Profile Page")
+    set_active_button("Profile")
     clear_content(frame)
     global current_user
 
@@ -409,7 +512,9 @@ def show_profile(frame):
 # Placeholder for Help Page
 def show_help(frame):
    """Display the Help Page""" 
+   logger.info("Displaying Help Page")
    clear_content(frame)
+   set_active_button("Help")
    
    header_label = ttk.Label(frame, text="Help & Support", font=("Helvetica", 20))
    header_label.pack(pady=20)
