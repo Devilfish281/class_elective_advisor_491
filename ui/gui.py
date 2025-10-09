@@ -1,9 +1,13 @@
 import logging
+import os
 import threading
 import time
 import tkinter as tk
+import bcrypt # For password hashing (if needed in future)
 from tkinter import ttk, PhotoImage, messagebox
 from typing import Optional
+import sqlite3
+from database import db_add # For future database interactions
 
 
 logger = logging.getLogger(__name__)  # Reuse the global logger
@@ -19,6 +23,15 @@ nav_buttons = {}
 # Dictionary to store loaded icons
 nav_icons = {}
 
+def get_db_connection():
+    """Returns a new database connection."""
+    try:
+        conn = sqlite3.connect("db/ai_advice.db")
+        return conn
+    except sqlite3.Error as e:
+        logger.error("Database connection error: %s", e)
+        return None
+    
    # Highlights active buttons
 def set_active_button(label):
     for name, btn in nav_buttons.items():
@@ -154,12 +167,15 @@ def update_nav_buttons():
 
 
 # Test user data
+"""
 users = {
     "student@test.com": {   
     "password": "password123",
-    "name": "Test Student"
+    "first_name": "Test",
+    "last_name": "Student"
     }
 }
+"""
 
 def show_home(frame):
     """Displays the Home Dashboard"""
@@ -191,22 +207,68 @@ def show_login(frame):
     # Password 
     password_label = tk.Label(frame, text="Password:")
     password_label.pack(pady=(10,5))
-    password_entry = tk.Entry(frame, width=30, show="*")
-    password_entry.pack(pady=(0,10))
+    # Frame to hold password entry and eye icon
+    pw_frame = ttk.Frame(frame)
+    pw_frame.pack(pady=(0,10))
 
+    password_entry = tk.Entry(pw_frame, width=30, show="*")
+    password_entry.grid(row=0, column=0)
+
+    # Eye icon to toggle password visibility
+    show_pw = False  # Track toggle state
+    def toggle_password():
+        """Toggle password visibility for both password fields."""
+        nonlocal show_pw
+        show_pw = not show_pw
+        if show_pw:
+            password_entry.config(show="")
+            eye_button.config(image=eye_icon)
+        else:
+            password_entry.config(show="*")
+            eye_button.config(image=eye_icon)
+
+    # Load small eye icons 
+    try:
+        eye_icon = tk.PhotoImage(file=os.path.join("icons", "eye_icon.png"))
+    except Exception as e:
+        logger.warning(f"Could not load eye icons: {e}")
+        eye_icon = None
+
+    eye_button = ttk.Button(pw_frame, image=eye_icon, width=5, command=toggle_password)
+    eye_button.image = eye_icon  # Keep a reference to prevent garbage collection
+    eye_button.grid(row=0, column=1, padx=5)
+    
+    
     def handle_login():
         """Handles login(need to connect to database)"""
         global login_status, current_user
         email = email_entry.get()
         password = password_entry.get()
         logger.debug(f"Attempting login with email: {email}")
-        # Check against test user data
-        if email in users and password == users[email]["password"]:
+       # user = users.get(email)
+        conn = get_db_connection()
+    # Check if connection was successful
+        if not conn:
+            messagebox.showerror("Database Error", "Could not connect to the database. Please try again later.")
+            logger.error("Login failed: Database connection error.")
+            return
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, first_name, last_name, password_hash FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and bcrypt.checkpw(password.encode("utf-8"), user[3].encode("utf-8")):
             login_status = True
-            current_user = {"email": email, "name": users[email]["name"]}
-            status_var.set(f"Logged in as: {users[email]['name']}")
+            current_user = {
+                "id": user[0],
+                "email": email,
+                "first_name": user[1],
+                "last_name": user[2]
+        }
+            display_name = f"{user[1]} {user[2]}"
+            status_var.set(f"Logged in as: {display_name}")
             messagebox.showinfo(
-                "Login Successful", f"Welcome back, {users[email]['name']}!"
+                "Login Successful", f"Welcome back, {display_name}!"
                 )
             logger.info(f"User '{email}' logged in successfully.")
             show_preferences(frame) # Redirect to preferences page after login
@@ -258,55 +320,106 @@ def show_registration(frame):
     reg_frame = ttk.Frame(frame)
     reg_frame.pack(pady=10)
 
-    # Full name
-    name_label = ttk.Label(reg_frame, text="Full Name:")
-    name_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-    name_entry = ttk.Entry(reg_frame, width=30)
-    name_entry.grid(row=0, column=1, padx=5, pady=5)
+    # First name
+    first_name_label = ttk.Label(reg_frame, text="First Name:")
+    first_name_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+    first_name_entry = ttk.Entry(reg_frame, width=30)
+    first_name_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    # Last name
+    last_name_label = ttk.Label(reg_frame, text="Last Name:")
+    last_name_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    last_name_entry = ttk.Entry(reg_frame, width=30)
+    last_name_entry.grid(row=1, column=1, padx=5, pady=5)
 
     # Email
     email_label = ttk.Label(reg_frame, text="Email:")
-    email_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    email_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
     email_entry = ttk.Entry(reg_frame, width=30)
-    email_entry.grid(row=1, column=1, padx=5, pady=5)
+    email_entry.grid(row=2, column=1, padx=5, pady=5)
 
     # Password
     password_label = ttk.Label(reg_frame, text="Password:")
-    password_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+    password_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
     password_entry = ttk.Entry(reg_frame, width=30, show="*")
-    password_entry.grid(row=2, column=1, padx=5, pady=5)
+    password_entry.grid(row=3, column=1, padx=5, pady=5)
 
     # Confirm Password
     confirm_label = ttk.Label(reg_frame, text="Confirm Password:")
-    confirm_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+    confirm_label.grid(row=4, column=0, padx=5, pady=5, sticky="w")
     confirm_entry = ttk.Entry(reg_frame, width=30, show="*")
-    confirm_entry.grid(row=3, column=1, padx=5, pady=5)
+    confirm_entry.grid(row=4, column=1, padx=5, pady=5)
 
+    # Eye icon to toggle password visibility
+    show_pw = False  # Track toggle state
+    def toggle_password():
+        """Toggle password visibility for both password fields."""
+        nonlocal show_pw
+        show_pw = not show_pw
+        if show_pw:
+            password_entry.config(show="")
+            confirm_entry.config(show="")
+            eye_button.config(image=eye_icon)
+        else:
+            password_entry.config(show="*")
+            confirm_entry.config(show="*")
+            eye_button.config(image=eye_icon)
+
+    # Load small eye icons 
+    try:
+        eye_icon = tk.PhotoImage(file=os.path.join("icons", "eye_icon.png"))
+    except Exception as e:
+        logger.warning(f"Could not load eye icons: {e}")
+        eye_icon = None
+
+    eye_button = ttk.Button(reg_frame, image=eye_icon, width=5, command=toggle_password)
+    eye_button.image = eye_icon  # Keep a reference to prevent garbage collection
+    eye_button.grid(row=3, column=2, padx=5)
+    
+    
     def handle_registration():
-        """Handles User Registration (need to add input validations, character length for password, special characters, and register new users in database)"""
-        name = name_entry.get().strip()
+        """Handles User Registration """
+        first_name = first_name_entry.get().strip()
+        last_name = last_name_entry.get().strip()
         email = email_entry.get().strip()
         password = password_entry.get().strip()
         confirm_password = confirm_entry.get().strip()
 
-        if not name or not email or not password or not confirm_password:
+        if not first_name or not last_name or not email or not password or not confirm_password:
             messagebox.showerror("Error", "All fields are required.")
             return
         if password != confirm_password:
             messagebox.showerror("Error", "Passwords do not match.")
+            password_entry.config(background="#ffcccc")
+            confirm_entry.config(background="#ffcccc")
             return
-        if email in users:
-            messagebox.showerror("Error", "Email already registered. Please login.")
-            return
-        if not name:
+        if not first_name:
             messagebox.showerror("Input Error", "Please enter your full name.")
             logger.warning("Registration failed: Full name not provided.")
+            first_name_entry.config(bg="#ffcccc")
+            return
+        if not last_name:
+            messagebox.showerror("Input Error", "Please enter your last name.")
+            logger.warning("Registration failed: Last name not provided.")
+            last_name_entry.config(bg="#ffcccc")
             return
         if not email or "@" not in email:
             messagebox.showerror("Input Error", "Please enter a valid email address.")
             logger.warning("Registration failed: Invalid email format.")
+            email_entry.config(bg="#ffcccc")
             return
         
+        # check if email already exists in DB
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+        existing_user = cursor.fetchone()
+        conn.close()
+
+        if existing_user:
+            messagebox.showerror("Error", "Email already registered. Please login.")
+            return
+    
         # Special characters
         password_special_chars = r"!@#$%^&*()-_=+[{]}\|;:'\",<.>/?'~"
         if (len(password) < 8 or not any(char.isdigit() for char in password)
@@ -317,14 +430,23 @@ def show_registration(frame):
             logger.warning("Registration failed: Weak Password.")
             return
         
-        # Save new user
-        users[email] = {"name": name, "password":password}
-        messagebox.showinfo("Success", "Registration successful! Please login.")
-        logger.info(f"New user registered: {email}")
+        # Hash the password before storing 
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-        # Redirect to login page
-        show_login(frame)
-
+        try:
+            user_id = db_add.add_user(first_name, last_name, email, None, None, password_hash)
+            logger.info(f"New user registered with ID: {email}")
+            messagebox.showinfo("Success", "Registration successful! Please login.")
+            logger.info(f"User '{email}' registered successfully.")
+            show_login(frame)
+        except sqlite3.IntegrityError:
+            messagebox.showerror("Error", "Email already registered. Please login.")
+            logger.warning(f"Registration failed: Email '{email}' already exists in database.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred during registration: {e}")
+            logger.error(f"Registration failed due to error: {e}")
+            return
+        
      # Registration Button
     reg_button = tk.Button(frame, text="Register", width=20, command=handle_registration)
     reg_button.pack(pady=20)
@@ -453,7 +575,8 @@ def show_profile(frame):
     profile_header = tk.Label(frame, text="User Profile", font=("Helvetica", 14))
     profile_header.pack(pady=20)
 
-    profile_name_label = tk.Label(frame, text=f"Name: {current_user.get('name', 'N/A')}", font=("Helvetica", 12))
+    full_name = f"{current_user.get('first_name', 'N/A')} {current_user.get('last_name', '')}".strip()
+    profile_name_label = tk.Label(frame, text=f"Name: {full_name}", font=("Helvetica", 12))
     profile_name_label.pack(pady=5)
 
     profile_email_label = tk.Label(frame, text=f"Email: {current_user.get('email', 'N/A')}", font=("Helvetica", 12))
@@ -488,17 +611,45 @@ def show_profile(frame):
             new_password = new_password_entry.get().strip()
             confirm_password = confirm_new_pw_entry.get().strip()
 
-            if current_password != users[current_user["email"]]["password"]:
-                messagebox.showerror("Error", "Current password is incorrect.", parent=password_window)
+            # open db connection
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+    # get stored hashed password from db
+            cursor.execute("SELECT password_hash FROM users WHERE email = ?", (current_user["email"],))
+            row = cursor.fetchone()
+
+            if not row:
+                messagebox.showerror("Error", "User record not found in database.", parent=password_window)
+                conn.close()
                 return
+
+            stored_hash = row[0]
+
+            # verify current password matches the stored hash
+            if not bcrypt.checkpw(current_password.encode("utf-8"), stored_hash.encode("utf-8")):
+                messagebox.showerror("Error", "Current password is incorrect.", parent=password_window)
+                conn.close()
+                return
+
+        # confirm new passwords match
             if new_password != confirm_password:
                 messagebox.showerror("Error", "New passwords do not match.", parent=password_window)
+                conn.close()
                 return
+
             if len(new_password) < 8:
                 messagebox.showerror("Error", "Password must be at least 8 characters long.", parent=password_window)
                 return
 
-            users[current_user["email"]]["password"] = new_password
+            # hash new password
+            new_hash = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    # update password in DB
+            cursor.execute("UPDATE users SET password_hash = ? WHERE email = ?", (new_hash, current_user["email"]))
+            conn.commit()
+            conn.close()
+
             messagebox.showinfo("Success", "Password changed successfully!", parent=password_window)
             logger.info(f"User '{current_user['email']}' changed password.")
             password_window.destroy()
@@ -536,6 +687,7 @@ def show_help(frame):
    search_label.pack(pady=5, anchor="w")
    search_entry = ttk.Entry(help_frame, width=50)
    search_entry.pack(pady=5, anchor="w")
+
    def search_help():
         query = search_entry.get()
         messagebox.showinfo("Coming soon", "coming soon")
