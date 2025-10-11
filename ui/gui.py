@@ -1,5 +1,8 @@
+#ui/gui.py
 import logging
 import os
+import csv
+import json
 import threading
 import time
 import tkinter as tk
@@ -7,7 +10,8 @@ import bcrypt # For password hashing (if needed in future)
 from tkinter import ttk, PhotoImage, messagebox
 from typing import Optional
 import sqlite3
-from database import db_add # For future database interactions
+from database import db_add # For database interactions
+from ai_integration.ai_module import get_recommendations_ai, _parse_degree_electives_csv # AI integration
 
 
 logger = logging.getLogger(__name__)  # Reuse the global logger
@@ -452,7 +456,7 @@ def show_registration(frame):
     reg_button.pack(pady=20)
 
 
-# Placeholder for preferences
+# Preferences Page (need to add functionality to load preferences from database)
 def show_preferences(frame):
      """Display for Preferences"""
      # Guard to prevent unauthorized access
@@ -460,6 +464,7 @@ def show_preferences(frame):
             messagebox.showwarning("Access Denied", "Please login to set preferences.")
             logger.warning("Unauthorized access attempt to Preferences Form.")
             return
+     
      set_active_button("Preferences")
      logger.info("Displaying the Preferences Form.")
      clear_content(frame)
@@ -523,9 +528,33 @@ def show_preferences(frame):
      # Job Description
      job_desc_label = ttk.Label(frame, text="Job Description:")
      job_desc_label.pack(pady=(10, 0), anchor="w", padx=20)
-     job_desc_text = tk.Text(frame, height=5, wrap="word", state="disabled", width=100)
+     job_desc_text = tk.Text(frame, height=5, wrap="word", width=100)
      job_desc_text.pack(pady=5, padx=20, fill="x")
 
+     # Dropdown data (Placeholder will add functionality to fetch from database)
+     college_combo['values'] = ["College of Engineering", "College of Arts and Sciences", "College of Business"]
+     degree_level_combo['values'] = ["Undergraduate", "Graduate"]
+     degree_combo['values'] = ["B.S. Computer Science", "M.S. Software Engineering"]
+     department_combo['values'] = ["Computer Science", "Information Technology", "Software Engineering"]
+     job_combo['values'] = ["Software Engineer", "Data Scientist", "AI Specialist", "Web Developer"]
+
+     def save_preferences():
+         """Saves user preferences (Placeholder will add functionality to save to database)"""
+         prefs = {
+                "college": college_var.get(),
+                "department": department_var.get(),
+                "degree_level": degree_level_var.get(),
+                "degree": degree_var.get(),
+                "job": job_var.get(),
+                "job_description": job_desc_text.get("1.0", "end").strip(),
+         }
+         current_user.update(prefs)  # Update current_user with preferences
+         logger.info(f"User preferences saved: {prefs}")
+         messagebox.showinfo("Preferences Saved", "Your preferences have been saved.")
+
+     # Save Preferences Button
+     save_button = tk.Button(frame, text="Save Preferences", width=20, command=save_preferences) 
+     save_button.pack(pady=20)
 
 # Placeholder for recommendations page
 def show_recommendations(frame):
@@ -550,13 +579,103 @@ def show_recommendations(frame):
     rec_frame = ttk.Frame(frame)
     rec_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
-
+# Function to generate and display recommendations (Need to add live AI functionality and database)
 def generate_recommendations_ui(frame):
     """Generates and displays course recommednations (Placeholder need to add functionality with AI and database)"""
-    logger.info("Generating course recommendations (placeholder)")
-    messagebox.showinfo("Coming Soon", "Course recommendation feature coming soon!")
+    global current_user
 
+    clear_content(frame)
+    set_active_button("Recommendations")
+    header_label = tk.Label(frame, text = "Course Recommendations", font = ("Helvetica", 14))
+    header_label.pack(pady=20)
 
+    # Loading label
+    loading_label = tk.Label(frame, text="Generating recommendations, please wait...", font=("Helvetica", 12))
+    loading_label.pack(pady=10)
+    frame.update()
+    
+    try:
+        required_fields = ["college", "department", "degree_level", "degree", "job"]
+        missing_fields = [field for field in required_fields if field not in current_user or not current_user[field]]
+        if missing_fields:
+            messagebox.showwarning(
+                "Incomplete Preferences",
+                f"Please complete your preferences before generating recommendations. Missing: {', '.join(missing_fields)}"
+            )
+            logger.warning(f"Cannot generate recommendations, missing preferences: {missing_fields}")
+            show_preferences(frame)
+            return
+        
+        # Parse electives from CSV
+        csv_path = os.path.join("database", "courses.csv")
+        if not os.path.exists(csv_path):
+            raise FileNotFoundError(f"Electives CSV file not found at {csv_path}")
+        
+        with open(csv_path, "r", encoding="utf-8") as f:
+            csv_text = f.read()
+        degree_electives = _parse_degree_electives_csv(csv_text)
+
+        # Get recommendations from AI module
+        job_name = current_user["job"]
+        degree_name = current_user["degree"]
+        job_id = 1 # Placeholder job ID
+
+        response = get_recommendations_ai(
+            job_id = job_id,
+            job_name = job_name,
+            degree_name = degree_name,
+            degree_electives= degree_electives,
+        )
+
+        # Parse JSON response
+        rec_data = json.loads(response)
+        loading_label.destroy()  # Remove loading label
+
+        # Display recommendations
+        results_frame = ttk.Frame(frame)
+        results_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+        canvas = tk.Canvas(results_frame)
+        scrollbar = ttk.Scrollbar(results_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            ))
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Show each recommended course
+        if isinstance(rec_data, list) and rec_data:
+            for course in rec_data:
+                title = course.get("Course Name", "N/A")
+                desc = course.get("Description", "No description available.")
+                units = course.get("Units", "N/A")
+                prereqs = ", ".join([course.get(f"Prereq{i}", "") for i in range(1, 4) if course.get(f"Prereq{i}")])
+                card = ttk.LabelFrame(scrollable_frame, text=title)
+                card.pack(fill="x", pady=5, padx=5)
+
+                info = f"Units: {units}\nPrerequisites: {prereqs}\n\n{desc}"
+                tk.Label(card, text=info, justify = "left", wraplength=800, font=("Helvetica", 10, "bold")).pack(anchor="w", padx=10, pady=5)
+
+        else:
+           tk.Label(scrollable_frame, text="No recommendations found.", font=("Helvetica", 12)).pack(pady=20)
+           logger.info("No recommendations returned from AI module.")
+
+        logger.info("Course recommendations generated and displayed successfully.")
+
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {e}")
+        logger.error(f"Error checking user preferences: {e}")
+        return
+
+def save_recommendations_to_db(recommendations):
+    """Saves Recommendations to the database (Placeholder function)"""
+    saved_count = 0
 
 # Placeholder for course details page
 def show_course_details(frame):
