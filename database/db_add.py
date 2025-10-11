@@ -4,7 +4,7 @@ import sqlite3
 
 #add user (Register)
 def add_user(first_name, last_name, email, phone, specialization, password_hash):
-    conn = sqlite3.connect("ai_advice.db")
+    conn = sqlite3.connect("db/ai_advice.db")
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO users (first_name, last_name, email, phone, specialization, password_hash)
@@ -41,7 +41,8 @@ def add_feedback(user_id, elective_id, elective_title, comment, rating):
 
 #Test usage
 if __name__ == "__main__":
-    #user_id = add_user("Luna", "Dev", "luna@example.com", "555-1234", "Cybersecurity", "hashed_pw_123")
-    #elective_id = add_elective("New elective", "Cybersecurity", 3, "Learn", "None")
-    #add_feedback(user_id, elective_id, "New elective", "Great intro course!", 4.5)
-    #print("User, elective, and feedback added successfully.")  
+    pass
+    # user_id = add_user("Luna", "Dev", "luna@example.com", "555-1234", "Cybersecurity", "hashed_pw_123")
+    # elective_id = add_elective("New elective", "Cybersecurity", 3, "Learn", "None")
+    # add_feedback(user_id, elective_id, "New elective", "Great intro course!", 4.5)
+    # print("User, elective, and feedback added successfully.")
