@@ -527,6 +527,38 @@ def format_elective_string(prerequisites, course_code, units, name, description)
     return f"{p1},{p2},{p3},{course_code},{units_text},{name},{description}"
 
 
+def extract_starred_lines(input_text):
+    """
+    Extracts lines that contain an asterisk (*) from the input text.
+    For lines starting with "**Prerequisites:**", removes all text between "**Prerequisites:**" and the first colon ":".
+
+    Args:
+        input_text (str): The multiline string to process.
+
+    Returns:
+        list: A list of lines containing at least one asterisk, with modified prerequisites lines.
+    """
+    # Split the input text into individual lines
+    lines = input_text.split("\n")
+
+    starred_lines = []
+    for line in lines:
+        stripped_line = line.strip()
+        if "*" in stripped_line:
+            # Check if the line starts with "**Prerequisites:**"
+            if stripped_line.startswith("**Prerequisites:**"):
+                # Use regex to remove text between "**Prerequisites:**" and the first colon ":"
+                # This will transform "**Prerequisites:** Need to take: CPSC 335, MATH 338" to "**Prerequisites:** CPSC 335, MATH 338"
+                modified_line = re.sub(
+                    r"(\*\*Prerequisites:\*\*)[^:]*:\s*", r"\1 ", stripped_line
+                )
+                starred_lines.append(modified_line)
+            else:
+                starred_lines.append(stripped_line)
+
+    return starred_lines
+
+
 def real_chatgpt_response(
     job_id: int,
     job_name: str,
@@ -626,6 +658,14 @@ def real_chatgpt_response(
         logger.debug("---Raw AI Response---")
         logger.debug(result.content)
         logger.debug("---End Raw AI Response---")
+
+        # Extract lines containing '*'
+        starred_lines = extract_starred_lines(result.content)
+
+        # Print the resulting array
+        logger.debug("---Lines containing '*': Extracted---")
+        for idx, line in enumerate(starred_lines, start=1):
+            logger.debug(line)
 
         # return an empty json array
         return json.dumps([])
