@@ -1,3 +1,5 @@
+
+#db_add.py
 #this file will contain way for the user and system to add infonmation or update the infomation
 
 import sqlite3
@@ -39,9 +41,3 @@ def add_feedback(user_id, elective_id, elective_title, comment, rating):
     conn.commit()
     conn.close()
 
-#Test usage
-if __name__ == "__main__":
-    #user_id = add_user("Luna", "Dev", "luna@example.com", "555-1234", "Cybersecurity", "hashed_pw_123")
-    #elective_id = add_elective("New elective", "Cybersecurity", 3, "Learn", "None")
-    #add_feedback(user_id, elective_id, "New elective", "Great intro course!", 4.5)
-    #print("User, elective, and feedback added successfully.")  
