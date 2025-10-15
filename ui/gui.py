@@ -60,7 +60,7 @@ def main_int_ui() -> None:
     root.rowconfigure(0, weight=1)
     
     # Create Navigation Menu Frame
-    nav_frame = tk.Frame(root, width=220, relief="raised", bg="#F7F7F7")
+    nav_frame = tk.Frame(root, width=250, relief="raised", bg="#F7F7F7")
     nav_frame.grid(row=0, column=0, sticky="ns")
     nav_frame.grid_propagate(False)
     nav_frame.columnconfigure(0, weight=1)
