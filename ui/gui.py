@@ -634,6 +634,139 @@ def show_recommendations(frame):
     rec_frame = ttk.Frame(frame)
     rec_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
+#  Parse recommednations function
+def parse_recommendations(raw_response):
+    """
+    Parses the raw AI response (JSON string) into a structured list of course recommendations.
+
+    :param raw_response: str, The raw JSON response from the AI model.
+    :return: list of dicts, Each dict contains course details.
+    """
+    recommendations = []
+    try:
+        # Parse the JSON string into a Python list
+        data = json.loads(raw_response)
+        logger.debug("Parsed JSON response successfully.")
+
+        if isinstance(data, list):
+            for course in data:
+                # Optional: Validate required keys
+                required_keys = [
+                    "Course Code",
+                    "Course Name",
+                    "Rating",
+                    "Prerequisites",
+                    "Explanation",
+                ]
+                if all(key in course for key in required_keys):
+                    recommendations.append(course)
+                else:
+                    logger.warning(f"Course data missing required keys: {course}")
+        else:
+            logger.error("AI response is not a list.")
+    except json.JSONDecodeError as jde:
+        logger.error(f"JSON decoding failed: {jde}")
+    except Exception as e:
+        logger.error(f"Error parsing AI recommendations: {e}")
+    return recommendations
+
+
+def display_recommendations_ui(rec_frame, recommendations):
+    """Displays the list of recommendations in the given frame with toggleable explanations."""
+    clear_content(rec_frame)
+
+    if not recommendations:
+        messagebox.showinfo("No Recommendations", "No recommendations available.")
+        return
+
+    # Create a Canvas widget inside rec_frame
+    canvas = tk.Canvas(rec_frame, borderwidth=0, background="#f0f0f0")
+    scrollbar = ttk.Scrollbar(rec_frame, orient="vertical", command=canvas.yview)
+    scrollable_frame = ttk.Frame(canvas, padding=(10, 10, 10, 10))
+
+    scrollable_frame.bind(
+        "<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    canvas.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+    scrollbar.pack(side="right", fill="y", pady=10)
+    rec_frame.pack(fill="both", expand=True)
+
+    for rec in recommendations:
+        rec_container = ttk.Frame(
+            scrollable_frame, relief="solid", borderwidth=1, padding=(10, 10)
+        )
+        rec_container.pack(padx=5, pady=5, fill="x", expand=True)
+
+        # Course Name and Code
+        course_label = ttk.Label(
+            rec_container,
+            text=f"{rec.get('Course Name', 'N/A')} ({rec.get('Course Code', 'N/A')})",
+            font=("Helvetica", 12, "bold"),
+            background="#ffffff",
+        )
+        course_label.pack(anchor="w", padx=5, pady=5)
+
+        # Units
+        units = rec.get("Units", "N/A")
+        units_label = ttk.Label(
+            rec_container, text=f"Units: {units}", background="#ffffff"
+        )
+        units_label.pack(anchor="w", padx=5)
+
+        # Rating
+        rating = rec.get("Rating", "N/A")
+        rating_label = ttk.Label(
+            rec_container, text=f"Rating: {rating}/100", background="#ffffff"
+        )
+        rating_label.pack(anchor="w", padx=5)
+
+        # Prerequisites
+        prereqs = rec.get("Prerequisites", "")
+        prereq_text = prereqs if prereqs else "None"
+        prereq_label = ttk.Label(
+            rec_container, text=f"Prerequisites: {prereq_text}", background="#ffffff"
+        )
+        prereq_label.pack(anchor="w", padx=5, pady=5)
+
+        # Toggle Button for Explanation
+        toggle_btn = ttk.Button(rec_container, text="Show Explanation")
+        toggle_btn.pack(anchor="w", padx=5, pady=5)
+
+        # Explanation Label (Initially Hidden)
+        explanation = rec.get("Explanation", "No explanation provided.")
+        explanation_label = ttk.Label(
+            rec_container,
+            text=explanation,
+            wraplength=800,
+            justify="left",
+            background="#e6e6e6",
+            padding=(5, 5),
+        )
+        # Do not pack the explanation_label yet (hidden by default)
+
+        def toggle_explanation(label=explanation_label, button=toggle_btn):
+            """Toggle the visibility of the explanation label."""
+            if label.winfo_ismapped():
+                label.pack_forget()
+                button.config(text="Show Explanation")
+            else:
+                label.pack(anchor="w", padx=5, pady=5)
+                button.config(text="Hide Explanation")
+
+        toggle_btn.config(command=toggle_explanation)
+
+        # Optional: Button to view more details
+        details_btn = ttk.Button(
+            rec_container,
+            text="View Details",
+            command=lambda c=rec: show_course_details(rec_container, c),
+        )
+        details_btn.pack(anchor="e", padx=5, pady=5)
+
 # Function to generate and display recommendations (Need to add live AI functionality and database)
 def generate_recommendations_ui(frame):
     """Generates and displays course recommednations (Placeholder need to add functionality with AI and database)"""
@@ -681,7 +814,19 @@ def generate_recommendations_ui(frame):
             degree_name = degree_name,
             degree_electives= degree_electives,
         )
+        recommendations = parse_recommendations(response)
+        if not recommendations:
+            messagebox.showerror(
+                "AI Error", "Failed to parse recommendations. Please try again."
+            )
+            logger.error("No recommednations parsed from AI response.")
+            return 
+        rec_frame = frame.winfo_children()[-1] # Get the last child, which is rec_frame
+        clear_content(rec_frame)
+        display_recommendations_ui(rec_frame, recommendations)
 
+        # Old Logic 
+        """
         # Parse JSON response
         rec_data = json.loads(response)
         loading_label.destroy()  # Remove loading label
@@ -720,9 +865,8 @@ def generate_recommendations_ui(frame):
         else:
            tk.Label(scrollable_frame, text="No recommendations found.", font=("Helvetica", 12)).pack(pady=20)
            logger.info("No recommendations returned from AI module.")
-
+ """
         logger.info("Course recommendations generated and displayed successfully.")
-
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {e}")
         logger.error(f"Error checking user preferences: {e}")
