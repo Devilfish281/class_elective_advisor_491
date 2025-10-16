@@ -246,7 +246,7 @@ def show_login(frame):
     def handle_login():
         """Handles login(need to connect to database)"""
         global login_status, current_user
-        email = email_entry.get()
+        email = email_entry.get().strip().lower()
         password = password_entry.get()
         logger.debug(f"Attempting login with email: {email}")
        # user = users.get(email)
@@ -354,6 +354,40 @@ def show_registration(frame):
     confirm_entry = ttk.Entry(reg_frame, width=30, show="*")
     confirm_entry.grid(row=4, column=1, padx=5, pady=5)
 
+    password_hint = tk.Label(
+        reg_frame, 
+        text = "Password must be at least 8 characters long and include numbers and special characters.",
+        font = ("Helvetica", 8), fg = "gray"
+    )
+    password_hint.grid(row=5, column=1, sticky="w", padx=5, pady=(0, 5))
+    
+    def check_password_strength(event=None):
+        """Checks password strength and provides visual feedback."""
+        password = password_entry.get()
+        special_chars = "!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?`~"
+
+        weak_color = "#ffcccc"   # Light red
+        strong_color = "#ccffcc" # Light green
+        neutral_color = "white"  # Default
+
+        # Empty field → neutral
+        if not password:
+            password_entry.config(background=neutral_color)
+            return
+
+        # Validate password strength
+        if (
+            len(password) < 8
+            or not any(char.isdigit() for char in password)
+            or not any(char in special_chars for char in password)
+        ):
+            password_entry.config(background=weak_color)
+        else:
+            password_entry.config(background=strong_color)
+
+    # Bind live feedback to typing
+    password_entry.bind("<KeyRelease>", check_password_strength)
+    
     # Eye icon to toggle password visibility
     show_pw = False  # Track toggle state
     def toggle_password():
@@ -385,7 +419,7 @@ def show_registration(frame):
         """Handles User Registration """
         first_name = first_name_entry.get().strip()
         last_name = last_name_entry.get().strip()
-        email = email_entry.get().strip()
+        email = email_entry.get().strip().lower()
         password = password_entry.get().strip()
         confirm_password = confirm_entry.get().strip()
 
@@ -458,6 +492,7 @@ def show_registration(frame):
 
 # Preferences Page (need to add functionality to load preferences from database)
 def show_preferences(frame):
+     global current_user
      """Display for Preferences"""
      # Guard to prevent unauthorized access
      if not login_status:
@@ -483,7 +518,7 @@ def show_preferences(frame):
      # College Selection (Placeholder will add functionality to fetch from database)
      college_label = ttk.Label(pref_frame, text="College of:")
      college_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
-     college_var = tk.StringVar()
+     college_var = tk.StringVar(value=current_user.get("college", ""))
      college_combo = ttk.Combobox(
          pref_frame, textvariable=college_var, state="readonly", width=45
      )
@@ -492,7 +527,7 @@ def show_preferences(frame):
      # Department Selection (Placeholder will add functionality to fetch from database)
      department_label = ttk.Label(pref_frame, text="Department:")
      department_label.grid(row=1, column=0, padx=5, pady=5, sticky="e")
-     department_var = tk.StringVar()
+     department_var = tk.StringVar(value=current_user.get("department", ""))
      department_combo = ttk.Combobox(
         pref_frame, textvariable=department_var, state="readonly", width=45
      )
@@ -501,7 +536,7 @@ def show_preferences(frame):
      # Degree Level Selection
      degree_level_label = ttk.Label(pref_frame, text="Degree Level:")
      degree_level_label.grid(row=2, column=0, padx=5, pady=5, sticky="e")
-     degree_level_var = tk.StringVar()
+     degree_level_var = tk.StringVar(value=current_user.get("degree_level", ""))
      degree_level_combo = ttk.Combobox(
         pref_frame, textvariable=degree_level_var, state="readonly", width=45
      )
@@ -510,7 +545,7 @@ def show_preferences(frame):
      # Degree Selection
      degree_label = ttk.Label(pref_frame, text="Degree:")
      degree_label.grid(row=3, column=0, padx=5, pady=5, sticky="e")
-     degree_var = tk.StringVar()
+     degree_var = tk.StringVar(value=current_user.get("degree", ""))
      degree_combo = ttk.Combobox(
         pref_frame, textvariable=degree_var, state="readonly", width=45
      )
@@ -519,7 +554,7 @@ def show_preferences(frame):
      # Job Selection
      job_label = ttk.Label(pref_frame, text="Preferred Job:")
      job_label.grid(row=4, column=0, padx=5, pady=5, sticky="e")
-     job_var = tk.StringVar()
+     job_var = tk.StringVar(value=current_user.get("job", ""))
      job_combo = ttk.Combobox(
         pref_frame, textvariable=job_var, state="readonly", width=45
      )
@@ -552,9 +587,29 @@ def show_preferences(frame):
          logger.info(f"User preferences saved: {prefs}")
          messagebox.showinfo("Preferences Saved", "Your preferences have been saved.")
 
+     def clear_preferences():
+            """Clears all preference fields"""
+            college_var.set("")
+            department_var.set("")
+            degree_level_var.set("")
+            degree_var.set("")
+            job_var.set("")
+            job_desc_text.delete("1.0", "end")
+            logger.info("User cleared all preferences fields.")
+
+            # Updates the in memory current_user preferences as well
+            for key in ["college", "department", "degree_level", "degree", "job", "job_description"]:
+                current_user[key] = ""
+            logger.info("Current user preferences reset in memory.")
+            messagebox.showinfo("Preferences Cleared", "All preference fields have been cleared.")
+    
      # Save Preferences Button
      save_button = tk.Button(frame, text="Save Preferences", width=20, command=save_preferences) 
      save_button.pack(pady=20)
+   
+    # Clear Preferences Button
+     clear_button = tk.Button(frame, text="Clear Preferences", width=20, bg = "#FF6666", command=clear_preferences)
+     clear_button.pack(pady=5)
 
 # Placeholder for recommendations page
 def show_recommendations(frame):
