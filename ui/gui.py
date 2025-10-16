@@ -1,9 +1,17 @@
+#ui/gui.py
 import logging
+import os
+import csv
+import json
 import threading
 import time
 import tkinter as tk
+import bcrypt # For password hashing (if needed in future)
 from tkinter import ttk, PhotoImage, messagebox
 from typing import Optional
+import sqlite3
+from database import db_add # For database interactions
+from ai_integration.ai_module import get_recommendations_ai, _parse_degree_electives_csv # AI integration
 
 
 logger = logging.getLogger(__name__)  # Reuse the global logger
@@ -19,6 +27,15 @@ nav_buttons = {}
 # Dictionary to store loaded icons
 nav_icons = {}
 
+def get_db_connection():
+    """Returns a new database connection."""
+    try:
+        conn = sqlite3.connect("db/ai_advice.db")
+        return conn
+    except sqlite3.Error as e:
+        logger.error("Database connection error: %s", e)
+        return None
+    
    # Highlights active buttons
 def set_active_button(label):
     for name, btn in nav_buttons.items():
@@ -43,7 +60,7 @@ def main_int_ui() -> None:
     root.rowconfigure(0, weight=1)
     
     # Create Navigation Menu Frame
-    nav_frame = tk.Frame(root, width=220, relief="raised", bg="#F7F7F7")
+    nav_frame = tk.Frame(root, width=250, relief="raised", bg="#F7F7F7")
     nav_frame.grid(row=0, column=0, sticky="ns")
     nav_frame.grid_propagate(False)
     nav_frame.columnconfigure(0, weight=1)
@@ -154,12 +171,15 @@ def update_nav_buttons():
 
 
 # Test user data
+"""
 users = {
     "student@test.com": {   
     "password": "password123",
-    "name": "Test Student"
+    "first_name": "Test",
+    "last_name": "Student"
     }
 }
+"""
 
 def show_home(frame):
     """Displays the Home Dashboard"""
@@ -191,22 +211,68 @@ def show_login(frame):
     # Password 
     password_label = tk.Label(frame, text="Password:")
     password_label.pack(pady=(10,5))
-    password_entry = tk.Entry(frame, width=30, show="*")
-    password_entry.pack(pady=(0,10))
+    # Frame to hold password entry and eye icon
+    pw_frame = ttk.Frame(frame)
+    pw_frame.pack(pady=(0,10))
 
+    password_entry = tk.Entry(pw_frame, width=30, show="*")
+    password_entry.grid(row=0, column=0)
+
+    # Eye icon to toggle password visibility
+    show_pw = False  # Track toggle state
+    def toggle_password():
+        """Toggle password visibility for both password fields."""
+        nonlocal show_pw
+        show_pw = not show_pw
+        if show_pw:
+            password_entry.config(show="")
+            eye_button.config(image=eye_icon)
+        else:
+            password_entry.config(show="*")
+            eye_button.config(image=eye_icon)
+
+    # Load small eye icons 
+    try:
+        eye_icon = tk.PhotoImage(file=os.path.join("icons", "eye_icon.png"))
+    except Exception as e:
+        logger.warning(f"Could not load eye icons: {e}")
+        eye_icon = None
+
+    eye_button = ttk.Button(pw_frame, image=eye_icon, width=5, command=toggle_password)
+    eye_button.image = eye_icon  # Keep a reference to prevent garbage collection
+    eye_button.grid(row=0, column=1, padx=5)
+    
+    
     def handle_login():
         """Handles login(need to connect to database)"""
         global login_status, current_user
-        email = email_entry.get()
+        email = email_entry.get().strip().lower()
         password = password_entry.get()
         logger.debug(f"Attempting login with email: {email}")
-        # Check against test user data
-        if email in users and password == users[email]["password"]:
+       # user = users.get(email)
+        conn = get_db_connection()
+    # Check if connection was successful
+        if not conn:
+            messagebox.showerror("Database Error", "Could not connect to the database. Please try again later.")
+            logger.error("Login failed: Database connection error.")
+            return
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, first_name, last_name, password_hash FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and bcrypt.checkpw(password.encode("utf-8"), user[3].encode("utf-8")):
             login_status = True
-            current_user = {"email": email, "name": users[email]["name"]}
-            status_var.set(f"Logged in as: {users[email]['name']}")
+            current_user = {
+                "id": user[0],
+                "email": email,
+                "first_name": user[1],
+                "last_name": user[2]
+        }
+            display_name = f"{user[1]} {user[2]}"
+            status_var.set(f"Logged in as: {display_name}")
             messagebox.showinfo(
-                "Login Successful", f"Welcome back, {users[email]['name']}!"
+                "Login Successful", f"Welcome back, {display_name}!"
                 )
             logger.info(f"User '{email}' logged in successfully.")
             show_preferences(frame) # Redirect to preferences page after login
@@ -258,55 +324,140 @@ def show_registration(frame):
     reg_frame = ttk.Frame(frame)
     reg_frame.pack(pady=10)
 
-    # Full name
-    name_label = ttk.Label(reg_frame, text="Full Name:")
-    name_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-    name_entry = ttk.Entry(reg_frame, width=30)
-    name_entry.grid(row=0, column=1, padx=5, pady=5)
+    # First name
+    first_name_label = ttk.Label(reg_frame, text="First Name:")
+    first_name_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+    first_name_entry = ttk.Entry(reg_frame, width=30)
+    first_name_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    # Last name
+    last_name_label = ttk.Label(reg_frame, text="Last Name:")
+    last_name_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    last_name_entry = ttk.Entry(reg_frame, width=30)
+    last_name_entry.grid(row=1, column=1, padx=5, pady=5)
 
     # Email
     email_label = ttk.Label(reg_frame, text="Email:")
-    email_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    email_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
     email_entry = ttk.Entry(reg_frame, width=30)
-    email_entry.grid(row=1, column=1, padx=5, pady=5)
+    email_entry.grid(row=2, column=1, padx=5, pady=5)
 
     # Password
     password_label = ttk.Label(reg_frame, text="Password:")
-    password_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+    password_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
     password_entry = ttk.Entry(reg_frame, width=30, show="*")
-    password_entry.grid(row=2, column=1, padx=5, pady=5)
+    password_entry.grid(row=3, column=1, padx=5, pady=5)
 
     # Confirm Password
     confirm_label = ttk.Label(reg_frame, text="Confirm Password:")
-    confirm_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+    confirm_label.grid(row=4, column=0, padx=5, pady=5, sticky="w")
     confirm_entry = ttk.Entry(reg_frame, width=30, show="*")
-    confirm_entry.grid(row=3, column=1, padx=5, pady=5)
+    confirm_entry.grid(row=4, column=1, padx=5, pady=5)
 
+    password_hint = tk.Label(
+        reg_frame, 
+        text = "Password must be at least 8 characters long and include numbers and special characters.",
+        font = ("Helvetica", 8), fg = "gray"
+    )
+    password_hint.grid(row=5, column=1, sticky="w", padx=5, pady=(0, 5))
+    
+    def check_password_strength(event=None):
+        """Checks password strength and provides visual feedback."""
+        password = password_entry.get()
+        special_chars = "!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?`~"
+
+        weak_color = "#ffcccc"   # Light red
+        strong_color = "#ccffcc" # Light green
+        neutral_color = "white"  # Default
+
+        # Empty field → neutral
+        if not password:
+            password_entry.config(background=neutral_color)
+            return
+
+        # Validate password strength
+        if (
+            len(password) < 8
+            or not any(char.isdigit() for char in password)
+            or not any(char in special_chars for char in password)
+        ):
+            password_entry.config(background=weak_color)
+        else:
+            password_entry.config(background=strong_color)
+
+    # Bind live feedback to typing
+    password_entry.bind("<KeyRelease>", check_password_strength)
+    
+    # Eye icon to toggle password visibility
+    show_pw = False  # Track toggle state
+    def toggle_password():
+        """Toggle password visibility for both password fields."""
+        nonlocal show_pw
+        show_pw = not show_pw
+        if show_pw:
+            password_entry.config(show="")
+            confirm_entry.config(show="")
+            eye_button.config(image=eye_icon)
+        else:
+            password_entry.config(show="*")
+            confirm_entry.config(show="*")
+            eye_button.config(image=eye_icon)
+
+    # Load small eye icons 
+    try:
+        eye_icon = tk.PhotoImage(file=os.path.join("icons", "eye_icon.png"))
+    except Exception as e:
+        logger.warning(f"Could not load eye icons: {e}")
+        eye_icon = None
+
+    eye_button = ttk.Button(reg_frame, image=eye_icon, width=5, command=toggle_password)
+    eye_button.image = eye_icon  # Keep a reference to prevent garbage collection
+    eye_button.grid(row=3, column=2, padx=5)
+    
+    
     def handle_registration():
-        """Handles User Registration (need to add input validations, character length for password, special characters, and register new users in database)"""
-        name = name_entry.get().strip()
-        email = email_entry.get().strip()
+        """Handles User Registration """
+        first_name = first_name_entry.get().strip()
+        last_name = last_name_entry.get().strip()
+        email = email_entry.get().strip().lower()
         password = password_entry.get().strip()
         confirm_password = confirm_entry.get().strip()
 
-        if not name or not email or not password or not confirm_password:
+        if not first_name or not last_name or not email or not password or not confirm_password:
             messagebox.showerror("Error", "All fields are required.")
             return
         if password != confirm_password:
             messagebox.showerror("Error", "Passwords do not match.")
+            password_entry.config(background="#ffcccc")
+            confirm_entry.config(background="#ffcccc")
             return
-        if email in users:
-            messagebox.showerror("Error", "Email already registered. Please login.")
-            return
-        if not name:
+        if not first_name:
             messagebox.showerror("Input Error", "Please enter your full name.")
             logger.warning("Registration failed: Full name not provided.")
+            first_name_entry.config(bg="#ffcccc")
+            return
+        if not last_name:
+            messagebox.showerror("Input Error", "Please enter your last name.")
+            logger.warning("Registration failed: Last name not provided.")
+            last_name_entry.config(bg="#ffcccc")
             return
         if not email or "@" not in email:
             messagebox.showerror("Input Error", "Please enter a valid email address.")
             logger.warning("Registration failed: Invalid email format.")
+            email_entry.config(bg="#ffcccc")
             return
         
+        # check if email already exists in DB
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+        existing_user = cursor.fetchone()
+        conn.close()
+
+        if existing_user:
+            messagebox.showerror("Error", "Email already registered. Please login.")
+            return
+    
         # Special characters
         password_special_chars = r"!@#$%^&*()-_=+[{]}\|;:'\",<.>/?'~"
         if (len(password) < 8 or not any(char.isdigit() for char in password)
@@ -317,27 +468,38 @@ def show_registration(frame):
             logger.warning("Registration failed: Weak Password.")
             return
         
-        # Save new user
-        users[email] = {"name": name, "password":password}
-        messagebox.showinfo("Success", "Registration successful! Please login.")
-        logger.info(f"New user registered: {email}")
+        # Hash the password before storing 
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-        # Redirect to login page
-        show_login(frame)
-
+        try:
+            user_id = db_add.add_user(first_name, last_name, email, None, None, password_hash)
+            logger.info(f"New user registered with ID: {email}")
+            messagebox.showinfo("Success", "Registration successful! Please login.")
+            logger.info(f"User '{email}' registered successfully.")
+            show_login(frame)
+        except sqlite3.IntegrityError:
+            messagebox.showerror("Error", "Email already registered. Please login.")
+            logger.warning(f"Registration failed: Email '{email}' already exists in database.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred during registration: {e}")
+            logger.error(f"Registration failed due to error: {e}")
+            return
+        
      # Registration Button
     reg_button = tk.Button(frame, text="Register", width=20, command=handle_registration)
     reg_button.pack(pady=20)
 
 
-# Placeholder for preferences
+# Preferences Page (need to add functionality to load preferences from database)
 def show_preferences(frame):
+     global current_user
      """Display for Preferences"""
      # Guard to prevent unauthorized access
      if not login_status:
             messagebox.showwarning("Access Denied", "Please login to set preferences.")
             logger.warning("Unauthorized access attempt to Preferences Form.")
             return
+     
      set_active_button("Preferences")
      logger.info("Displaying the Preferences Form.")
      clear_content(frame)
@@ -356,7 +518,7 @@ def show_preferences(frame):
      # College Selection (Placeholder will add functionality to fetch from database)
      college_label = ttk.Label(pref_frame, text="College of:")
      college_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
-     college_var = tk.StringVar()
+     college_var = tk.StringVar(value=current_user.get("college", ""))
      college_combo = ttk.Combobox(
          pref_frame, textvariable=college_var, state="readonly", width=45
      )
@@ -365,7 +527,7 @@ def show_preferences(frame):
      # Department Selection (Placeholder will add functionality to fetch from database)
      department_label = ttk.Label(pref_frame, text="Department:")
      department_label.grid(row=1, column=0, padx=5, pady=5, sticky="e")
-     department_var = tk.StringVar()
+     department_var = tk.StringVar(value=current_user.get("department", ""))
      department_combo = ttk.Combobox(
         pref_frame, textvariable=department_var, state="readonly", width=45
      )
@@ -374,7 +536,7 @@ def show_preferences(frame):
      # Degree Level Selection
      degree_level_label = ttk.Label(pref_frame, text="Degree Level:")
      degree_level_label.grid(row=2, column=0, padx=5, pady=5, sticky="e")
-     degree_level_var = tk.StringVar()
+     degree_level_var = tk.StringVar(value=current_user.get("degree_level", ""))
      degree_level_combo = ttk.Combobox(
         pref_frame, textvariable=degree_level_var, state="readonly", width=45
      )
@@ -383,7 +545,7 @@ def show_preferences(frame):
      # Degree Selection
      degree_label = ttk.Label(pref_frame, text="Degree:")
      degree_label.grid(row=3, column=0, padx=5, pady=5, sticky="e")
-     degree_var = tk.StringVar()
+     degree_var = tk.StringVar(value=current_user.get("degree", ""))
      degree_combo = ttk.Combobox(
         pref_frame, textvariable=degree_var, state="readonly", width=45
      )
@@ -392,7 +554,7 @@ def show_preferences(frame):
      # Job Selection
      job_label = ttk.Label(pref_frame, text="Preferred Job:")
      job_label.grid(row=4, column=0, padx=5, pady=5, sticky="e")
-     job_var = tk.StringVar()
+     job_var = tk.StringVar(value=current_user.get("job", ""))
      job_combo = ttk.Combobox(
         pref_frame, textvariable=job_var, state="readonly", width=45
      )
@@ -401,9 +563,53 @@ def show_preferences(frame):
      # Job Description
      job_desc_label = ttk.Label(frame, text="Job Description:")
      job_desc_label.pack(pady=(10, 0), anchor="w", padx=20)
-     job_desc_text = tk.Text(frame, height=5, wrap="word", state="disabled", width=100)
+     job_desc_text = tk.Text(frame, height=5, wrap="word", width=100)
      job_desc_text.pack(pady=5, padx=20, fill="x")
 
+     # Dropdown data (Placeholder will add functionality to fetch from database)
+     college_combo['values'] = ["College of Engineering", "College of Arts and Sciences", "College of Business"]
+     degree_level_combo['values'] = ["Undergraduate", "Graduate"]
+     degree_combo['values'] = ["B.S. Computer Science", "M.S. Software Engineering"]
+     department_combo['values'] = ["Computer Science", "Information Technology", "Software Engineering"]
+     job_combo['values'] = ["Software Engineer", "Data Scientist", "AI Specialist", "Web Developer"]
+
+     def save_preferences():
+         """Saves user preferences (Placeholder will add functionality to save to database)"""
+         prefs = {
+                "college": college_var.get(),
+                "department": department_var.get(),
+                "degree_level": degree_level_var.get(),
+                "degree": degree_var.get(),
+                "job": job_var.get(),
+                "job_description": job_desc_text.get("1.0", "end").strip(),
+         }
+         current_user.update(prefs)  # Update current_user with preferences
+         logger.info(f"User preferences saved: {prefs}")
+         messagebox.showinfo("Preferences Saved", "Your preferences have been saved.")
+
+     def clear_preferences():
+            """Clears all preference fields"""
+            college_var.set("")
+            department_var.set("")
+            degree_level_var.set("")
+            degree_var.set("")
+            job_var.set("")
+            job_desc_text.delete("1.0", "end")
+            logger.info("User cleared all preferences fields.")
+
+            # Updates the in memory current_user preferences as well
+            for key in ["college", "department", "degree_level", "degree", "job", "job_description"]:
+                current_user[key] = ""
+            logger.info("Current user preferences reset in memory.")
+            messagebox.showinfo("Preferences Cleared", "All preference fields have been cleared.")
+    
+     # Save Preferences Button
+     save_button = tk.Button(frame, text="Save Preferences", width=20, command=save_preferences) 
+     save_button.pack(pady=20)
+   
+    # Clear Preferences Button
+     clear_button = tk.Button(frame, text="Clear Preferences", width=20, bg = "#FF6666", command=clear_preferences)
+     clear_button.pack(pady=5)
 
 # Placeholder for recommendations page
 def show_recommendations(frame):
@@ -428,13 +634,103 @@ def show_recommendations(frame):
     rec_frame = ttk.Frame(frame)
     rec_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
-
+# Function to generate and display recommendations (Need to add live AI functionality and database)
 def generate_recommendations_ui(frame):
     """Generates and displays course recommednations (Placeholder need to add functionality with AI and database)"""
-    logger.info("Generating course recommendations (placeholder)")
-    messagebox.showinfo("Coming Soon", "Course recommendation feature coming soon!")
+    global current_user
 
+    clear_content(frame)
+    set_active_button("Recommendations")
+    header_label = tk.Label(frame, text = "Course Recommendations", font = ("Helvetica", 14))
+    header_label.pack(pady=20)
 
+    # Loading label
+    loading_label = tk.Label(frame, text="Generating recommendations, please wait...", font=("Helvetica", 12))
+    loading_label.pack(pady=10)
+    frame.update()
+    
+    try:
+        required_fields = ["college", "department", "degree_level", "degree", "job"]
+        missing_fields = [field for field in required_fields if field not in current_user or not current_user[field]]
+        if missing_fields:
+            messagebox.showwarning(
+                "Incomplete Preferences",
+                f"Please complete your preferences before generating recommendations. Missing: {', '.join(missing_fields)}"
+            )
+            logger.warning(f"Cannot generate recommendations, missing preferences: {missing_fields}")
+            show_preferences(frame)
+            return
+        
+        # Parse electives from CSV
+        csv_path = os.path.join("database", "courses.csv")
+        if not os.path.exists(csv_path):
+            raise FileNotFoundError(f"Electives CSV file not found at {csv_path}")
+        
+        with open(csv_path, "r", encoding="utf-8") as f:
+            csv_text = f.read()
+        degree_electives = _parse_degree_electives_csv(csv_text)
+
+        # Get recommendations from AI module
+        job_name = current_user["job"]
+        degree_name = current_user["degree"]
+        job_id = 1 # Placeholder job ID
+
+        response = get_recommendations_ai(
+            job_id = job_id,
+            job_name = job_name,
+            degree_name = degree_name,
+            degree_electives= degree_electives,
+        )
+
+        # Parse JSON response
+        rec_data = json.loads(response)
+        loading_label.destroy()  # Remove loading label
+
+        # Display recommendations
+        results_frame = ttk.Frame(frame)
+        results_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+        canvas = tk.Canvas(results_frame)
+        scrollbar = ttk.Scrollbar(results_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            ))
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Show each recommended course
+        if isinstance(rec_data, list) and rec_data:
+            for course in rec_data:
+                title = course.get("Course Name", "N/A")
+                desc = course.get("Description", "No description available.")
+                units = course.get("Units", "N/A")
+                prereqs = ", ".join([course.get(f"Prereq{i}", "") for i in range(1, 4) if course.get(f"Prereq{i}")])
+                card = ttk.LabelFrame(scrollable_frame, text=title)
+                card.pack(fill="x", pady=5, padx=5)
+
+                info = f"Units: {units}\nPrerequisites: {prereqs}\n\n{desc}"
+                tk.Label(card, text=info, justify = "left", wraplength=800, font=("Helvetica", 10, "bold")).pack(anchor="w", padx=10, pady=5)
+
+        else:
+           tk.Label(scrollable_frame, text="No recommendations found.", font=("Helvetica", 12)).pack(pady=20)
+           logger.info("No recommendations returned from AI module.")
+
+        logger.info("Course recommendations generated and displayed successfully.")
+
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {e}")
+        logger.error(f"Error checking user preferences: {e}")
+        return
+
+def save_recommendations_to_db(recommendations):
+    """Saves Recommendations to the database (Placeholder function)"""
+    saved_count = 0
 
 # Placeholder for course details page
 def show_course_details(frame):
@@ -453,7 +749,8 @@ def show_profile(frame):
     profile_header = tk.Label(frame, text="User Profile", font=("Helvetica", 14))
     profile_header.pack(pady=20)
 
-    profile_name_label = tk.Label(frame, text=f"Name: {current_user.get('name', 'N/A')}", font=("Helvetica", 12))
+    full_name = f"{current_user.get('first_name', 'N/A')} {current_user.get('last_name', '')}".strip()
+    profile_name_label = tk.Label(frame, text=f"Name: {full_name}", font=("Helvetica", 12))
     profile_name_label.pack(pady=5)
 
     profile_email_label = tk.Label(frame, text=f"Email: {current_user.get('email', 'N/A')}", font=("Helvetica", 12))
@@ -488,17 +785,45 @@ def show_profile(frame):
             new_password = new_password_entry.get().strip()
             confirm_password = confirm_new_pw_entry.get().strip()
 
-            if current_password != users[current_user["email"]]["password"]:
-                messagebox.showerror("Error", "Current password is incorrect.", parent=password_window)
+            # open db connection
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+    # get stored hashed password from db
+            cursor.execute("SELECT password_hash FROM users WHERE email = ?", (current_user["email"],))
+            row = cursor.fetchone()
+
+            if not row:
+                messagebox.showerror("Error", "User record not found in database.", parent=password_window)
+                conn.close()
                 return
+
+            stored_hash = row[0]
+
+            # verify current password matches the stored hash
+            if not bcrypt.checkpw(current_password.encode("utf-8"), stored_hash.encode("utf-8")):
+                messagebox.showerror("Error", "Current password is incorrect.", parent=password_window)
+                conn.close()
+                return
+
+        # confirm new passwords match
             if new_password != confirm_password:
                 messagebox.showerror("Error", "New passwords do not match.", parent=password_window)
+                conn.close()
                 return
+
             if len(new_password) < 8:
                 messagebox.showerror("Error", "Password must be at least 8 characters long.", parent=password_window)
                 return
 
-            users[current_user["email"]]["password"] = new_password
+            # hash new password
+            new_hash = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    # update password in DB
+            cursor.execute("UPDATE users SET password_hash = ? WHERE email = ?", (new_hash, current_user["email"]))
+            conn.commit()
+            conn.close()
+
             messagebox.showinfo("Success", "Password changed successfully!", parent=password_window)
             logger.info(f"User '{current_user['email']}' changed password.")
             password_window.destroy()
@@ -536,6 +861,7 @@ def show_help(frame):
    search_label.pack(pady=5, anchor="w")
    search_entry = ttk.Entry(help_frame, width=50)
    search_entry.pack(pady=5, anchor="w")
+
    def search_help():
         query = search_entry.get()
         messagebox.showinfo("Coming soon", "coming soon")
