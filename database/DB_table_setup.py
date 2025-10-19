@@ -38,15 +38,13 @@ try:
     CREATE TABLE IF NOT EXISTS feedback (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         elective_id INTEGER NOT NULL,
-        elective_code TEXT NOT NULL,
         user_id INTEGER NOT NULL,
         comment TEXT NOT NULL,
         rating REAL CHECK(rating >= 0.0 AND rating <= 5.0),
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (elective_id) REFERENCES electives(id),
-        FOREIGN KEY (elective_code) REFERENCES electives(code),
         FOREIGN KEY (user_id) REFERENCES users(id)
-    )
+        )
     """)
     conn.commit()
     print("Tables created successfully.")
