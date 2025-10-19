@@ -1,3 +1,4 @@
+
 import sqlite3
 
 
@@ -24,25 +25,26 @@ try:
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS electives (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        category TEXT NOT NULL,
+        course_code TEXT NOT NULL,
+        course_title TEXT NOT NULL,
+        category_id INTEGER NOT NULL,
         credits INTEGER NOT NULL,
         description TEXT,
         prerequisites TEXT
-    )
+        )
     """)
     #feedback table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS feedback (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         elective_id INTEGER NOT NULL,
-        elective_title TEXT NOT NULL,
+        elective_code TEXT NOT NULL,
         user_id INTEGER NOT NULL,
         comment TEXT NOT NULL,
         rating REAL CHECK(rating >= 0.0 AND rating <= 5.0),
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (elective_id) REFERENCES electives(id),
-        FOREIGN KEY (elective_title) REFERENCES electives(title),
+        FOREIGN KEY (elective_code) REFERENCES electives(code),
         FOREIGN KEY (user_id) REFERENCES users(id)
     )
     """)

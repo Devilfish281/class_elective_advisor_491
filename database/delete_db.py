@@ -1,3 +1,5 @@
+
+#delete_db.py
 import os
 #if changeges are made this can delete the data base
 file_path = r"ai_advice.db"
