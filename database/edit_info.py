@@ -10,7 +10,7 @@ def change_password(user_id, new_password, db_path="ai_advice.db"):
     try:
         cursor.execute("""
             UPDATE users
-            SET password = ?
+            SET password_hash = ?
             WHERE id = ?
         """, (new_password, user_id))
         conn.commit()

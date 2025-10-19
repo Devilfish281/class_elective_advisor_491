@@ -33,15 +33,24 @@ def add_elective(course_code, course_title, category_id, credits, description, p
     return elective_id
 
 #add feedback
-def add_feedback(user_id, elective_id, course_code, comment, rating):
-    conn = sqlite3.connect("ai_advice.db")
+def add_feedback(user_id, elective_id, comment, rating, db_path="ai_advice.db"):
+    conn = sqlite3.connect(db_path)
+    conn.execute("PRAGMA foreign_keys = ON")
     cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO feedback (user_id, elective_id, course_code, comment, rating)
-        VALUES (?, ?, ?, ?, ?)
-    """, (user_id, elective_id, course_code, comment, rating))
-    conn.commit()
-    conn.close()
+
+    try:
+        cursor.execute("""
+            INSERT INTO feedback (user_id, elective_id, comment, rating)
+            VALUES (?, ?, ?, ?)
+        """, (user_id, elective_id, comment, rating))
+        conn.commit()
+        feedback_id = cursor.lastrowid
+        return feedback_id
+    except sqlite3.Error as e:
+        print(f"Error adding feedback: {e}")
+        return None
+    finally:
+        conn.close()
 
 #Test usage
 if __name__ == "__main__":
