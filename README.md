@@ -1,5 +1,3 @@
----
-
 # Smart Elective Advisor: AI-Driven Course Selection Tool for CS Students
 
 ## Overview
@@ -8,17 +6,17 @@ Smart Elective Advisor is a Python-based application designed to assist undergra
 
 ## Features
 
-* **AI-Powered Recommendations:** Utilizes advanced AI to suggest courses tailored to individual preferences.
-* **User-Friendly Interface:** Built with Tkinter for easy navigation and interaction.
-* **Local Data Management:** Employs SQLite for efficient data storage and retrieval.
-* **Comprehensive Documentation:** Maintained using Sphinx for easy reference and onboarding.
+- **AI-Powered Recommendations:** Utilizes advanced AI to suggest courses tailored to individual preferences.
+- **User-Friendly Interface:** Built with Tkinter for easy navigation and interaction.
+- **Local Data Management:** Employs SQLite for efficient data storage and retrieval.
+- **Comprehensive Documentation:** Maintained using Sphinx for easy reference and onboarding.
 
 ## Installation
 
 ### Prerequisites
 
-* **Python 3.12.7**
-* **Poetry:** For dependency management and virtual environment setup.
+- **Python 3.12.7**
+- **Poetry:** For dependency management and virtual environment setup.
 
 ### Steps
 
@@ -41,7 +39,7 @@ Smart Elective Advisor is a Python-based application designed to assist undergra
    & ((poetry env info --path) + "/Scripts/activate.ps1")
    ```
 
-   *Note:* Poetry 2.x replaced `poetry shell` with the `poetry env activate` flow (which prints an activation command). The one-liner above uses `poetry env info --path` to get the venv path and activates it directly in PowerShell. 
+   _Note:_ Poetry 2.x replaced `poetry shell` with the `poetry env activate` flow (which prints an activation command). The one-liner above uses `poetry env info --path` to get the venv path and activates it directly in PowerShell.
 
 4. **Set Up Environment Variables:**
 
