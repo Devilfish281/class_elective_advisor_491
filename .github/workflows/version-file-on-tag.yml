@@ -3,10 +3,10 @@ name: Write version files on semantic tag push
 on:
   push:
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+" # only semantic v* tags
+      - "v*" # glob, not regex: runs for any tag starting with v
 
 permissions:
-  contents: write # allow committing back to the repo
+  contents: write
 
 jobs:
   write-version-files:
@@ -21,30 +21,22 @@ jobs:
         id: meta
         shell: bash
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          TAG="${GITHUB_REF_NAME}"                                 # short ref like v0.0.13
           SHA_SHORT="$(git rev-parse --short=7 "$GITHUB_SHA")"
           DATE_UTC="$(date -u +'%Y-%m-%d')"
           ISO_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
-          REPO="${{ github.repository }}"
-          RUN_ID="${{ github.run_id }}"
-          RUN_NUMBER="${{ github.run_number }}"
-
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "sha=$SHA_SHORT" >> "$GITHUB_OUTPUT"
           echo "date=$DATE_UTC" >> "$GITHUB_OUTPUT"
           echo "iso=$ISO_UTC" >> "$GITHUB_OUTPUT"
           echo "default_branch=$DEFAULT_BRANCH" >> "$GITHUB_OUTPUT"
-          echo "repo=$REPO" >> "$GITHUB_OUTPUT"
-          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
-          echo "run_number=$RUN_NUMBER" >> "$GITHUB_OUTPUT"
 
-      # Ensure the tag’s commit is contained in the default branch
       - name: Check if tag commit is on default branch
         id: check
         shell: bash
         run: |
-          git fetch origin "${{ steps.meta.outputs.default_branch }}"
+          git fetch origin "${{ steps.meta.outputs.default_branch }}" --depth=1
           if git branch --remotes --contains "$GITHUB_SHA" | grep -q "origin/${{ steps.meta.outputs.default_branch }}"; then
             echo "on_default=true" >> "$GITHUB_OUTPUT"
           else
@@ -53,42 +45,35 @@ jobs:
 
       - name: Stop if not on default branch
         if: steps.check.outputs.on_default == 'false'
-        run: |
-          echo "Tag commit is not on default branch (${{ steps.meta.outputs.default_branch }}). Skipping commit."
-          exit 0
+        run: echo "Tag commit is not on default branch (${{ steps.meta.outputs.default_branch }}). Skipping commit."
 
       - name: Switch to default branch working tree
+        if: steps.check.outputs.on_default == 'true'
         run: |
           git checkout "${{ steps.meta.outputs.default_branch }}"
           git pull --ff-only origin "${{ steps.meta.outputs.default_branch }}"
 
       - name: Write version.txt and version.json
+        if: steps.check.outputs.on_default == 'true'
         shell: bash
         run: |
+          # version.txt: vMAJOR.MINOR.PATCH (commit, date)
           echo "${{ steps.meta.outputs.tag }} (${{ steps.meta.outputs.sha }}, ${{ steps.meta.outputs.date }})" > version.txt
 
-          cat > version.json <<'JSON'
-          {
-            "version": "${{ steps.meta.outputs.tag }}",
-            "commit": "${{ steps.meta.outputs.sha }}",
-            "date": "${{ steps.meta.outputs.date }}",
-            "datetime": "${{ steps.meta.outputs.iso }}",
-            "defaultBranch": "${{ steps.meta.outputs.default_branch }}",
-            "repository": "${{ steps.meta.outputs.repo }}",
-            "run": {
-              "id": "${{ steps.meta.outputs.run_id }}",
-              "number": "${{ steps.meta.outputs.run_number }}"
-            }
-          }
-          JSON
+          # version.json: keep it simple; no heredoc, no YAML-sensitive tokens
+          printf '{\n'                                  >  version.json
+          printf '  "version": "%s",\n'   "${{ steps.meta.outputs.tag }}" >> version.json
+          printf '  "commit": "%s",\n'    "${{ steps.meta.outputs.sha }}" >> version.json
+          printf '  "date": "%s",\n'      "${{ steps.meta.outputs.date }}" >> version.json
+          printf '  "datetime": "%s",\n'  "${{ steps.meta.outputs.iso }}" >> version.json
+          printf '  "defaultBranch": "%s"\n' "${{ steps.meta.outputs.default_branch }}" >> version.json
+          printf '}\n' >> version.json
 
-          echo "== version.txt =="
-          cat version.txt
-          echo "== version.json =="
-          cat version.json
-          echo
+          echo "== version.txt ==" && cat version.txt
+          echo "== version.json ==" && cat version.json
 
       - name: Commit and push if changed
+        if: steps.check.outputs.on_default == 'true'
         shell: bash
         run: |
           if ! git diff --quiet -- version.txt version.json; then
