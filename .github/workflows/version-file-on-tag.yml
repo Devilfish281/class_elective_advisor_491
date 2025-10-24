@@ -1,3 +1,5 @@
+# This workflow writes version.txt/json on tag pushes
+# It only commits when the tag commit is contained in the default branch
 name: Write version files on semantic tag push
 
 on:
