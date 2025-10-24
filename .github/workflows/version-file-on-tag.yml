@@ -3,7 +3,7 @@ name: Write version files on semantic tag push
 on:
   push:
     tags:
-      - 'v*' # run only for tags starting with v
+      - 'v*'  # run only for tags starting with v
 
 permissions:
   contents: write
