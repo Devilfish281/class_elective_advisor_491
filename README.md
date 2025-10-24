@@ -38,7 +38,7 @@ Smart Elective Advisor is a Python-based application designed to assist undergra
 3. **Activate the Virtual Environment (Poetry 2.x):**
 
    ```powershell
-   & ((poetry env info --path) + "\Scripts\activate.ps1")
+   & ((poetry env info --path) + "/Scripts/activate.ps1")
    ```
 
    *Note:* Poetry 2.x replaced `poetry shell` with the `poetry env activate` flow (which prints an activation command). The one-liner above uses `poetry env info --path` to get the venv path and activates it directly in PowerShell. 
