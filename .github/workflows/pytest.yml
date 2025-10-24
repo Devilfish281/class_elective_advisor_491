@@ -4,9 +4,7 @@
 
 name: Pytest
 
-on:
-  push: # Run on any push (all branches) to validate commits before/after merging.
-  pull_request: # Run on PRs so reviewers see pass/fail status before approval.
+on: [push, pull_request]
 
 # Prevent duplicate runs on the same ref (e.g., push + PR for the same branch).
 # Keeps the most recent run and cancels any in-progress older ones.
@@ -76,7 +74,7 @@ jobs:
       # OPENAI_API_KEY  : provided via GitHub Actions secret so tests depending on it can run
       # Notes:
       # * If some UI tests require a display, make them headless-safe or skip when $DISPLAY is missing.
-      # * Define the secret in GitHub: Settings → Secrets and variables → Actions → New repository secret.
+      # * Define the secret in GitHub: Settings â†’ Secrets and variables â†’ Actions â†’ New repository secret.
       - name: Run tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} # Set this in repo settings if needed by tests
