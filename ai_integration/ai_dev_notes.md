@@ -137,3 +137,5 @@ Practical tips
 - Integrate with the DB/UI layers: persist last recommendation run; display nicely in Tkinter; add a manual “refresh” button.
 
 # Generate recommendations based on job and degree information using a ChatOpenAI model.
+
+- About button on the Help page that opens a dialog showing the full contents of version.json.
