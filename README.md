@@ -1,3 +1,5 @@
+---
+
 # Smart Elective Advisor: AI-Driven Course Selection Tool for CS Students
 
 ## Overview
@@ -6,24 +8,24 @@ Smart Elective Advisor is a Python-based application designed to assist undergra
 
 ## Features
 
-- **AI-Powered Recommendations:** Utilizes advanced AI to suggest courses tailored to individual preferences.
-- **User-Friendly Interface:** Built with Tkinter for easy navigation and interaction.
-- **Local Data Management:** Employs SQLite for efficient data storage and retrieval.
-- **Comprehensive Documentation:** Maintained using Sphinx for easy reference and onboarding.
+* **AI-Powered Recommendations:** Utilizes advanced AI to suggest courses tailored to individual preferences.
+* **User-Friendly Interface:** Built with Tkinter for easy navigation and interaction.
+* **Local Data Management:** Employs SQLite for efficient data storage and retrieval.
+* **Comprehensive Documentation:** Maintained using Sphinx for easy reference and onboarding.
 
 ## Installation
 
 ### Prerequisites
 
-- **Python 3.12.7**
-- **Poetry:** For dependency management and virtual environment setup.
+* **Python 3.12.7**
+* **Poetry:** For dependency management and virtual environment setup.
 
 ### Steps
 
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/yourusername/class_elective_advisor.git
+   git clone https://github.com/Devilfish281/class_elective_advisor.git
    cd class_elective_advisor
    ```
 
@@ -33,11 +35,13 @@ Smart Elective Advisor is a Python-based application designed to assist undergra
    poetry install
    ```
 
-3. **Activate the Virtual Environment:**
+3. **Activate the Virtual Environment (Poetry 2.x):**
 
-   ```bash
-   poetry shell
+   ```powershell
+   & ((poetry env info --path) + "\Scripts\activate.ps1")
    ```
+
+   *Note:* Poetry 2.x replaced `poetry shell` with the `poetry env activate` flow (which prints an activation command). The one-liner above uses `poetry env info --path` to get the venv path and activates it directly in PowerShell. 
 
 4. **Set Up Environment Variables:**
 
@@ -65,3 +69,52 @@ Run the application using:
 ```bash
 python main.py
 ```
+
+---
+
+## Git: Check Current Branch, Switch to `main`, and Sync
+
+1. **Check your current branch**
+
+   ```bash
+   git branch
+   ```
+
+   This shows all branches. The one with a `*` is your current branch.
+   Example output:
+
+   ```
+   * feature/login
+     main
+     dev
+   ```
+
+   So here, the current branch is `feature/login`.
+
+2. **Switch to the `main` branch**
+
+   ```bash
+   git checkout main
+   ```
+
+   > Tip: On newer Git versions you can also use `git switch main`.
+
+3. **Sync (update) your local `main` with GitHub**
+
+   ```bash
+   git pull origin main
+   ```
+
+4. **Confirm you’re on `main` and up to date**
+
+   ```bash
+   git status
+   ```
+
+   You should see something like:
+
+   ```
+   On branch main
+   Your branch is up to date with 'origin/main'.
+   nothing to commit, working tree clean
+   ```
