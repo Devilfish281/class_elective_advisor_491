@@ -1,9 +1,0 @@
-name: Minimal check
-on:
-  push:
-    tags: [ "v*" ]
-jobs:
-  ok:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo hello
