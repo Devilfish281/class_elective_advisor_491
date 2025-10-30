@@ -288,11 +288,95 @@ def show_login(frame):
     # Forgot password link
     forgot_password_label = tk.Label(frame, text="Forgot password?", fg="blue", cursor="hand2")
     forgot_password_label.pack(pady=(5, 2))
+    forgot_password_label.bind("<Button-1>", lambda e: show_forgot_password())
     
     # Registration link 
     reg_label = tk.Label(frame, text="Don't have an account? Register", fg="blue", cursor="hand2")
     reg_label.pack(pady=(2,10))
     reg_label.bind("<Button-1>", lambda e: show_registration(frame))
+
+# Forgot Password Functionality 
+def show_forgot_password():
+    """Handles forgot password functionality."""
+    logger.info("User initiated forgot password process.")
+    """Opens a password recovery popup"""
+    popup = tk.Toplevel()
+    popup.title("Password Reset")
+    popup.geometry("400x200")
+
+    tk.Label(popup, text="Reset Your Password", font=("Helvetica", 14, "bold")).pack(pady=15)
+
+    # Email input
+    tk.Label(popup, text="Registered Email:", font=("Helvetica", 10)).pack(pady=(5, 0))
+    email_entry = tk.Entry(popup, width=35)
+    email_entry.pack(pady=(0, 10))
+
+    # New Password input
+    tk.Label(popup, text="New Password:", font=("Helvetica", 10)).pack(pady=(5, 0))
+    new_pw_entry = tk.Entry(popup, width=35, show="*")
+    new_pw_entry.pack(pady=(0, 10))
+
+    # Confirm Password input
+    tk.Label(popup, text="Confirm Password:", font=("Helvetica", 10)).pack(pady=(5, 0))
+    confirm_pw_entry = tk.Entry(popup, width=35, show="*")
+    confirm_pw_entry.pack(pady=(0, 10))
+
+    # Hint text
+    tk.Label(
+        popup,
+        text="Password must be at least 8 characters long and include numbers & symbols.",
+        font=("Helvetica", 8),
+        fg="gray"
+    ).pack(pady=(0, 10))
+
+    def reset_password():
+        email = email_entry.get().strip().lower()
+        new_pw = new_pw_entry.get().strip()
+        confirm_pw = confirm_pw_entry.get().strip()
+
+        # Validate input
+        if not email or not new_pw or not confirm_pw:
+            messagebox.showerror("Error", "All fields are required.", parent=popup)
+            return
+        if new_pw != confirm_pw:
+            messagebox.showerror("Error", "Passwords do not match.", parent=popup)
+            return
+        if len(new_pw) < 8:
+            messagebox.showerror("Error", "Password must be at least 8 characters long.", parent=popup)
+            return
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Check if user exists
+            cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+            user = cursor.fetchone()
+            if not user:
+                messagebox.showerror("Error", "No account found with that email.", parent=popup)
+                conn.close()
+                return
+
+            # Hash and update password
+            new_hash = bcrypt.hashpw(new_pw.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+            cursor.execute("UPDATE users SET password_hash = ? WHERE email = ?", (new_hash, email))
+            conn.commit()
+            conn.close()
+
+            logger.info(f"Password reset successful for {email}")
+            messagebox.showinfo("Success", "Your password has been reset!", parent=popup)
+            popup.destroy()
+        except Exception as e:
+            logger.error(f"Password reset error: {e}")
+            messagebox.showerror("Database Error", f"An error occurred: {e}", parent=popup)
+
+    # Submit button
+    tk.Button(popup, text="Reset Password", command=reset_password).pack(pady=15)
+
+    # Modal behavior
+    popup.transient()
+    popup.grab_set()
+    popup.focus()
 
 #Placeholder for Logout
 def show_logout(frame):
@@ -301,6 +385,11 @@ def show_logout(frame):
     global login_status, current_user
     clear_content(frame)
     logger.info("User initaited logout.")
+
+    # Logout confirmation
+    if not messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?"):
+        logger.info("Logout cancelled by user.")
+        return
 
     login_status = False # reset login status
     current_user = None # clear current user
@@ -589,6 +678,12 @@ def show_preferences(frame):
 
      def clear_preferences():
             """Clears all preference fields"""
+            # Confirmation dialog
+            if not messagebox.askyesno("Confirm Clear", "Are you sure you want to clear all preferences?"):
+                logger.info("Clear preferences action cancelled by user.")
+                return
+            
+            # Reset all fields to default/empty values
             college_var.set("")
             department_var.set("")
             degree_level_var.set("")
@@ -629,6 +724,9 @@ def show_recommendations(frame):
     generate_button = tk.Button(frame, text="Generate Recommendations", width=25,
                                 command=lambda: generate_recommendations_ui(frame))
     generate_button.pack(pady=10)
+
+    tk.Button(frame, text="View Saved Recommendations", command=lambda: load_saved_recommendations(frame)).pack(pady=10)
+    logger.info("Course recommendations generated and displayed successfully.")
     
     # Recommendations Display Frame
     rec_frame = ttk.Frame(frame)
@@ -824,57 +922,97 @@ def generate_recommendations_ui(frame):
         rec_frame = frame.winfo_children()[-1] # Get the last child, which is rec_frame
         clear_content(rec_frame)
         display_recommendations_ui(rec_frame, recommendations)
-
-        # Old Logic 
-        """
-        # Parse JSON response
-        rec_data = json.loads(response)
-        loading_label.destroy()  # Remove loading label
-
-        # Display recommendations
-        results_frame = ttk.Frame(frame)
-        results_frame.pack(pady=10, padx=20, fill="both", expand=True)
-
-        canvas = tk.Canvas(results_frame)
-        scrollbar = ttk.Scrollbar(results_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
-
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
-            ))
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-
-        # Show each recommended course
-        if isinstance(rec_data, list) and rec_data:
-            for course in rec_data:
-                title = course.get("Course Name", "N/A")
-                desc = course.get("Description", "No description available.")
-                units = course.get("Units", "N/A")
-                prereqs = ", ".join([course.get(f"Prereq{i}", "") for i in range(1, 4) if course.get(f"Prereq{i}")])
-                card = ttk.LabelFrame(scrollable_frame, text=title)
-                card.pack(fill="x", pady=5, padx=5)
-
-                info = f"Units: {units}\nPrerequisites: {prereqs}\n\n{desc}"
-                tk.Label(card, text=info, justify = "left", wraplength=800, font=("Helvetica", 10, "bold")).pack(anchor="w", padx=10, pady=5)
-
+        saved = save_recommendations_to_db(recommendations)
+        if saved > 0:
+            logger.info(f"Saved {saved} recommendations to database for user ID {current_user['id']}.")
         else:
-           tk.Label(scrollable_frame, text="No recommendations found.", font=("Helvetica", 12)).pack(pady=20)
-           logger.info("No recommendations returned from AI module.")
- """
-        logger.info("Course recommendations generated and displayed successfully.")
+            logger.warning("No recommendations were saved to the database.")
+        
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {e}")
         logger.error(f"Error checking user preferences: {e}")
         return
-
+    
 def save_recommendations_to_db(recommendations):
     """Saves Recommendations to the database (Placeholder function)"""
-    saved_count = 0
+    global current_user
+    if not current_user or "id" not in current_user:
+        logger.error("Cannot save recommendations: No user logged in.")
+        return 0
+    
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Clear existing recommendations for the user
+        cursor.execute("DELETE FROM recommendations WHERE user_id = ?", (current_user["id"],))
+        logger.info(f"Cleared existing recommendations for user ID {current_user['id']}.")
+
+        # Insert new recommendations
+        for rec in recommendations:
+            cursor.execute(
+                """
+                INSERT INTO recommendations (user_id, course_code, course_title, rating, prerequisites, explanation)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    current_user["id"],
+                    rec.get("Course Code", ""),
+                    rec.get("Course Name", ""),
+                    rec.get("Rating", 0),
+                    rec.get("Prerequisites", ""),
+                    rec.get("Explanation", ""),
+                ),
+            )
+        conn.commit()
+        count = len(recommendations)
+        logger.info(f"Saved {count} recommendations to database for user ID {current_user['id']}.")
+        return count
+    except sqlite3.Error as e:
+        logger.error(f"Database error while saving recommendations: {e}")
+        return 0
+    finally:
+        if conn:
+            conn.close()
+
+def load_saved_recommendations(frame):
+    """Loads saved recommendations from the database"""
+    global current_user
+    if not current_user or "id" not in current_user:
+        messagebox.showerror("Error", "No user logged in.")
+        return
+    try: 
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""SELECT course_code, course_title, rating, explanation FROM recommendations WHERE user_id = ?"""
+                       , (current_user["id"],))
+        data = cursor.fetchall()
+        conn.close()
+
+        if not data:
+            messagebox.showinfo("No Saved Recommendations", "You have no saved recommendations.")
+            return
+        
+        recommendations = []
+        for row in data:
+            recommendations.append({
+                "Course Code": row[0],
+                "Course Name": row[1],
+                "Rating": row[2],
+                "Explanation": row[3],
+            })
+        clear_content(frame)
+        header_label = tk.Label(frame, text = "Saved Course Recommendations", font = ("Helvetica", 14))
+        header_label.pack(pady=20)
+        rec_frame = ttk.Frame(frame)
+        rec_frame.pack(pady=10, padx=20, fill="both", expand=True)
+        display_recommendations_ui(rec_frame, recommendations)
+
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred while loading saved recommendations: {e}")
+        logger.error(f"Error loading saved recommendations: {e}")
+
 
 # Placeholder for course details page
 def show_course_details(frame):
