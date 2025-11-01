@@ -7,6 +7,7 @@ can run headless and deterministically (no real windows, no blocking mainloops).
 import threading  # used by gui.main_test_ui option 3 implementation (it spawns a thread)
 import time  # only imported here historically; not required for the dummy approach
 import tkinter as tk  # we patch attributes on this module during tests
+import tkinter.ttk as ttk
 
 from ui import gui  # module under test (contains main_int_ui and main_test_ui)
 
@@ -23,9 +24,26 @@ class DummyTk:
     def __init__(self):
         # track whether destroy() was called (useful for debug/asserts if needed)
         self._destroyed = False
+        self.tk = object()  # minimal placeholder so attributes exist
+        self._children = []  #: track children like real Tk
+
+        # Register the Tk "default root" so ttk.Style() doesn't assert.
+        import tkinter as _tk
+
+        _tk._default_root = self
+
+    # NEW: Tkinter variables call master._root(), so provide it.
+    def _root(self):
+        return self
 
     def title(self, *args, **kwargs):
         # GUI sets window title — noop in tests
+        return None
+
+    def columnconfigure(self, *args, **kwargs):
+        return None
+
+    def rowconfigure(self, *args, **kwargs):
         return None
 
     def geometry(self, *args, **kwargs):
@@ -39,6 +57,13 @@ class DummyTk:
     def destroy(self):
         # mark destroyed quickly so tests observing state can detect it
         self._destroyed = True
+        # detach children
+        for c in list(self._children):
+            try:
+                c.destroy()
+            except Exception:
+                pass
+        self._children.clear()
         return None
 
     def protocol(self, *args, **kwargs):
@@ -68,15 +93,157 @@ class DummyTk:
         return None
 
 
-class DummyLabel:
-    def __init__(self, parent, text=""):
+# minimal stand-in for tk.StringVar used by Label(textvariable=...)
+class DummyStringVar:
+    def __init__(self, master=None, value="", name=None):
+        self._value = value
+
+    def set(self, value):
+        self._value = value
+
+    def get(self):
+        return self._value
+
+    # Tkinter exposes trace_add/trace in modern/legacy APIs; keep as no-ops.
+    def trace_add(self, mode, callback):
+        return None
+
+    def trace(self, mode, callback):
+        return None
+
+
+# Added Code: a tiny generic widget used to stand in for tk.Frame (and could be re-used if we need more)
+class _DummyWidget:
+    def __init__(self, *a, **kw):
+        self._packed = False
+        self._gridded = False
+        self._placed = False
+        self._children = []
+        self.master = None
+
+    # Tk geometry managers — noops for tests
+    def pack(self, *a, **kw):
+        self._packed = True
+
+    def grid(self, *a, **kw):
+        self._gridded = True
+
+    def place(self, *a, **kw):
+        self._placed = True
+
+    # Common config helpers used by real widgets — also noops
+    def config(self, *a, **kw):
+        return None
+
+    configure = config
+
+    # Some UIs call column/row configure on frames
+    def columnconfigure(self, *a, **kw):
+        return None
+
+    def rowconfigure(self, *a, **kw):
+        return None
+
+    def grid_propagate(self, flag):
+        return None
+
+    def grid_remove(self, *a, **kw):
+        """Simulate hiding the widget while preserving grid options."""
+        self._gridded = False
+        return None
+
+    def grid_forget(self, *a, **kw):
+        """Simulate removing the widget from the grid entirely."""
+        self._gridded = False
+        return None
+
+    def winfo_children(self):
+        """Return a shallow copy of children like real Tk."""
+        return list(self._children)
+
+    def destroy(self):
+        self._packed = self._gridded = self._placed = False
+        for c in list(self._children):
+            try:
+                c.destroy()
+            except Exception:
+                pass
+        self._children.clear()
+        if self.master and hasattr(self.master, "_children"):
+            try:
+                self.master._children.remove(self)
+            except ValueError:
+                pass
+
+
+class DummyFrame(_DummyWidget):
+    """Drop-in stand-in for tk.Frame in tests (no real Tk calls)."""
+
+    def __init__(self, master, *a, **kw):
+        super().__init__()
+        self.master = master
+        if hasattr(master, "_children"):
+            master._children.append(self)
+
+
+class DummyButton(_DummyWidget):  # (future-proofing if gui creates buttons)
+    def __init__(self, master=None, *a, **kw):
+        super().__init__()
+        self.master = master
+        if master is not None and hasattr(master, "_children"):
+            master._children.append(self)
+
+
+class DummyLabel(_DummyWidget):
+    """
+    Drop-in stand-in for tk.Label with support for text/textvariable and
+    no-op geometry managers (pack/grid/place).
+    """
+
+    def __init__(self, parent, text="", textvariable=None, **kwargs):
+        super().__init__()
         # store a couple fields in case tests want to inspect them
         self.parent = parent
         self.text = text
+        self.textvariable = textvariable
+        # swallow any other Label options (bd, relief, anchor, padx, pady, etc.)
+        self._options = dict(kwargs)
+        self.master = parent
+        if hasattr(parent, "_children"):
+            parent._children.append(self)
 
-    def pack(self, *args, **kwargs):
-        # GUI calls pack(); noop here
+    # Allow runtime updates (e.g., .config(text="...") or .config(textvariable=var))
+    def config(self, **kwargs):
+        if "text" in kwargs:
+            self.text = kwargs["text"]
+        if "textvariable" in kwargs:
+            self.textvariable = kwargs["textvariable"]
+        # retain anything else to mimic Tk option bag
+        self._options.update(kwargs)
+
+    configure = config
+
+
+class DummyStyle:
+    """No-op replacement for ttk.Style used by main_int_ui during tests."""
+
+    def __init__(self, *a, **kw):
+        pass
+
+    def theme_use(self, *a, **kw):
         return None
+
+    def configure(self, *a, **kw):
+        return None
+
+    def map(self, *a, **kw):
+        return {}
+
+
+# --- New stubs used only in tests to avoid a real Tcl/Tk interpreter ---
+class DummyPhotoImage:
+    def __init__(self, *a, **kw):
+        pass
 
 
 # --- Tests ---
@@ -90,6 +257,14 @@ def test_main_test_ui_option1_monkeypatched(monkeypatch):
     # pytest.monkeypatch will undo these replacements at test teardown.
     monkeypatch.setattr(tk, "Tk", DummyTk, raising=False)
     monkeypatch.setattr(tk, "Label", DummyLabel, raising=False)
+    monkeypatch.setattr(tk, "Frame", DummyFrame, raising=False)
+    monkeypatch.setattr(tk, "Button", DummyButton, raising=False)
+    monkeypatch.setattr(tk, "StringVar", DummyStringVar, raising=False)
+    monkeypatch.setattr(ttk, "Style", DummyStyle, raising=False)
+    monkeypatch.setattr(ttk, "Button", DummyButton, raising=False)
+
+    # Critical: ui.gui imports PhotoImage directly; stub it at the module-under-test symbol.
+    monkeypatch.setattr(gui, "PhotoImage", DummyPhotoImage, raising=False)
 
     # Now gui.main_test_ui(1) executes the same code paths but with Dummy widgets.
     assert gui.main_test_ui(1) is True
