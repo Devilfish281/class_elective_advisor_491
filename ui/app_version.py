@@ -12,20 +12,14 @@ except Exception:
 
 
 def _load_version_json_text() -> tuple[str, str]:
-    """Load contents of version.json from common locations. Returns (text, path)."""
-    candidates = [
-        "version.json",
-        os.path.join("config", "version.json"),
-        os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "version.json")),
-    ]
-    for p in candidates:
-        p = os.path.normpath(p)
-        if os.path.exists(p):
-            with open(p, "r", encoding="utf-8") as f:
-                return f.read(), p
-    raise FileNotFoundError(
-        f"version.json not found. Looked in: {', '.join(map(os.path.normpath, candidates))}"
-    )
+    """Load contents of version.json from the project root ONLY. Returns (text, raw_path)."""  # Changed Code
+    # Root-only policy: look for ./version.json relative to the current working directory.  # Added Code
+    raw_path = os.path.join(".", "version.json")  # Added Code
+    normalized = os.path.normpath(raw_path)  # Added Code
+    if os.path.exists(normalized) and os.path.isfile(normalized):  # Added Code
+        with open(normalized, "r", encoding="utf-8") as f:  # Added Code
+            return f.read(), raw_path  # Added Code
+    raise FileNotFoundError("version.json not found in project root")  # Changed Code
 
 
 def _format_version_text(raw_text: str) -> str:
