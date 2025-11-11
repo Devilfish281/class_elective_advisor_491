@@ -1,0 +1,154 @@
+:
+        utc_offset = "+00:00"
+    else:
+        total_minutes = int(offset.total_seconds() // 60)
+        sign = "+" if total_minutes >= 0 else "-"
+        total_minutes = abs(total_minutes)
+        utc_offset = f"{sign}{total_minutes // 60:02d}:{total_minutes % 60:02d}"
+
+    return {
+        "original": ts,
+        "date": f"{year}-{month}-{day}",
+        "year": year,
+        "month": month,
+        "day": day,
+        "iso8601_separator": "T",
+        "time_UTC": f"{hour}:{minute}:{second}",
+        "hour": hour,
+        "minute": minute,
+        "second": second,
+        "timezone_designator": "Z" if ts.endswith("Z") else "",
+        "utc_offset": utc_offset,
+    }```
+
+########################################
+Here is my code for __init__.py BELOW:
+########################################
+
+```python
+```
+
+########################################
+Here is my code for load_env.py BELOW:
+########################################
+
+```python
+# utilities/load_env.py
+
+import logging
+import os
+import re
+from pathlib import Path
+from typing import Optional
+
+from dotenv import find_dotenv, load_dotenv
+
+logger = logging.getLogger(__name__)
+
+
+def _validate_api_key(key: str) -> bool:
+    """
+    Conservative validation for the OpenAI API key:
+    - must be at least 20 characters (adjust to your provider's expected length)
+    - contains at least one alphanumeric character
+    """
+    if not key:
+        return False
+    if len(key) < 20:
+        return False
+    if not re.search(r"[A-Za-z0-9]", key):
+        return False
+    return True
+
+
+def load_environment() -> None:
+    """
+    Load environment variables from .env (if present) and validate required vars.
+    Raises ValueError on missing/invalid critical variables.
+    """
+    logger.info("Loading environment variables.")
+
+    env_path = find_dotenv()
+    if env_path:
+        load_dotenv(env_path, override=False)
+        logger.debug("Loaded .env from %s", env_path)
+    else:
+        logger.debug(
+            ".env file not found; continuing with existing environment variables"
+        )
+
+    apikey = os.getenv("OPENAI_API_KEY")
+    if not _validate_api_key(apikey or ""):
+        logger.error("OPENAI_API_KEY is missing or invalid")
+        raise ValueError("OPENAI_API_KEY environment variable missing or invalid")
+
+    logger.info("API Key loaded successfully.")```
+
+########################################
+Here is my code for logger_setup.py BELOW:
+########################################
+
+```python
+# utilities/logger_setup.py
+
+import logging
+
+
+
+def setup_logger():
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(
+                "app.log", mode="a", encoding="utf-8"
+            ),
+        ],
+    )
+    return logging.getLogger(__name__)```
+
+########################################
+Here is my pytest.ini BELOW:
+########################################
+
+```ini
+#pytest.ini
+[pytest]
+# Minimum pytest version required for this repo — prevents running with older incompatible pytest.
+# ensure pytest >= 7.0 is used (helps avoid subtle incompatibilities). 
+minversion = 7.0  
+
+# Default CLI options applied to every pytest invocation from this repo.
+# - --strict-markers: fail on unknown/typoed @pytest.mark.X decorators (helps catch mis-typed markers).
+#   If you enable strict markers, also declare your custom markers below via the `markers` option.
+# - -q: quiet mode (limited console output); remove or use -v for verbose output in local debugging.
+# - --cov=src: measure coverage for the `src` package (adjust path to your package directory if different).
+# - --cov-report=term-missing: show coverage summary in terminal and list missing lines per file.
+ # default flags for all runs. 
+# TEST Code
+addopts = --strict-markers -q --cov=ai_integration --cov=utilities --cov=database --cov=ui --cov=src --cov=main --cov-report=term-missing --cov-report=html 
+#addopts = --strict-markers -q --cov=src --cov-report=term-missing 
+
+# By default pytest will look here for tests when run from project root.
+# keep tests in `tests/` directory to match this setting. 
+testpaths = tests  
+
+# Pattern used to detect test files. Ex: test_example.py, test_foo.py
+# explicit discovery pattern; change if your test filenames differ.
+python_files = test_*.py   
+ # TEST Code
+log_cli = true  
+ # TEST Code
+log_cli_level = INFO  
+
+# Optional: explicitly declare any custom markers used in your suite to make marker usage discoverable
+# (useful combined with --strict-markers so typos error out rather than silently being ignored).
+# Example:
+# markers =
+#     slow: marks tests as slow (deselect with '-m "not slow"')
+#     gui: marks tests that touch GUI code and may require headless setup
+#
+# If you use many custom markers, uncomment and list them here. 
+
+```
