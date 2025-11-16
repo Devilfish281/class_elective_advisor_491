@@ -5,7 +5,7 @@ import sqlite3
 #this line of code create a connection in sqlite3
 #ai_advice.db
 try:
-    conn = sqlite3.connect("ai_advice.db")
+    conn = sqlite3.connect("db/ai_advice.db")
     cursor = conn.cursor()
 
     #user table 
@@ -33,6 +33,22 @@ try:
         prerequisites TEXT
         )
     """)
+
+    # recommendations table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS recommendations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        course_code TEXT, 
+        course_title TEXT,
+        rating REAL,
+        prerequisites TEXT,
+        explanation TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    """)
+
     #feedback table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS feedback (

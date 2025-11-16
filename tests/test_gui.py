@@ -265,6 +265,8 @@ def test_main_test_ui_option1_monkeypatched(monkeypatch):
 
     # Critical: ui.gui imports PhotoImage directly; stub it at the module-under-test symbol.
     monkeypatch.setattr(gui, "PhotoImage", DummyPhotoImage, raising=False)
+    # Also patch Toplevel since main_int_ui creates one.
+    monkeypatch.setattr(tk, "Toplevel", DummyFrame, raising=False)
 
     # Now gui.main_test_ui(1) executes the same code paths but with Dummy widgets.
     assert gui.main_test_ui(1) is True
@@ -293,3 +295,181 @@ def test_main_test_ui_option3_auto_close(monkeypatch):
     # Because DummyTk.after() executes the scheduled callback immediately,
     # this test runs fast and deterministically.
     assert gui.main_test_ui(3) is True
+
+
+# --- Additional tests for individual UI functions to ensure they build without errors ---
+
+def test_show_home(monkeypatch):
+    """Ensure show_home builds UI without errors."""
+    monkeypatch.setattr(tk, "Label", DummyLabel)
+    monkeypatch.setattr(gui, "set_active_button", lambda *args, **kwargs: None)
+
+    root = DummyTk()
+    frame = DummyFrame(root)
+
+    gui.show_home(frame)
+
+    # home view creates labels inside the frame
+    assert len(frame._children) > 0
+
+
+def test_show_login(monkeypatch):
+    """Ensure show_login builds UI without errors."""
+    monkeypatch.setattr(tk, "Label", DummyLabel)
+    monkeypatch.setattr(tk, "Entry", DummyFrame)
+    monkeypatch.setattr(tk, "Button", DummyButton)
+    monkeypatch.setattr(tk, "StringVar", DummyStringVar)
+
+    monkeypatch.setattr(ttk, "Frame", DummyFrame)
+    monkeypatch.setattr(ttk, "Button", DummyButton)
+    monkeypatch.setattr(gui, "set_active_button", lambda *args, **kwargs: None)
+
+    root = DummyTk()
+    frame = DummyFrame(root)
+
+    gui.show_login(frame)
+
+    assert len(frame._children) > 0
+
+
+def test_show_forgot_password(monkeypatch):
+    """Ensure forgot-password modal builds UI without errors."""
+    monkeypatch.setattr(tk, "Toplevel", DummyFrame)
+    monkeypatch.setattr(tk, "Label", DummyLabel)
+    monkeypatch.setattr(tk, "StringVar", DummyStringVar)
+
+    monkeypatch.setattr(ttk, "Entry", DummyFrame)
+    monkeypatch.setattr(ttk, "Button", DummyButton)
+    monkeypatch.setattr(gui, "set_active_button", lambda *args, **kwargs: None)
+
+    root = DummyTk()
+    frame = DummyFrame(root)
+
+    gui.show_forgot_password(frame)
+
+def test_update_nav_buttons_logged_out():
+    gui.nav_buttons = {
+        "Login": DummyButton(),
+        "Logout": DummyButton(),
+        "Home": DummyButton(),
+        "Preferences": DummyButton(),
+        "Recommendations": DummyButton(),
+        "Profile": DummyButton(),
+        "Help": DummyButton(),
+    }
+    gui.login_status = False
+    gui.current_user = None
+
+    gui.update_nav_buttons()
+
+    assert gui.nav_buttons["Login"]._gridded is True
+    assert gui.nav_buttons["Logout"]._gridded is False
+
+def test_show_registration(monkeypatch):
+    """Ensure show_registration builds UI without errors."""
+    monkeypatch.setattr(tk, "Label", DummyLabel)
+    monkeypatch.setattr(tk, "StringVar", DummyStringVar)
+
+    monkeypatch.setattr(ttk, "Frame", DummyFrame)
+    monkeypatch.setattr(ttk, "Entry", DummyFrame)
+    monkeypatch.setattr(ttk, "Button", DummyButton)
+    monkeypatch.setattr(ttk, "Label", DummyLabel)
+
+    monkeypatch.setattr(gui, "set_active_button", lambda *args, **kwargs: None)
+
+    root = DummyTk()
+    frame = DummyFrame(root)
+
+    gui.show_registration(frame)
+
+    # Should create many fields: labels, entries, frames
+    assert len(frame._children) > 0
+
+def test_show_help(monkeypatch):
+    """Ensure the Help page builds without errors."""
+    monkeypatch.setattr(tk, "Label", DummyLabel)
+    monkeypatch.setattr(ttk, "Label", DummyLabel)
+    monkeypatch.setattr(ttk, "Entry", DummyFrame)
+    monkeypatch.setattr(ttk, "Button", DummyButton)
+    monkeypatch.setattr(ttk, "Frame", DummyFrame)
+
+    monkeypatch.setattr(gui, "set_active_button", lambda *args, **kwargs: None)
+    monkeypatch.setattr(gui, "show_about_dialog", lambda *args, **kwargs: None)  # stub for About
+
+    root = DummyTk()
+    frame = DummyFrame(root)
+
+    gui.show_help(frame)
+
+    # Should have help content and search area
+    assert len(frame._children) > 0
+
+def test_show_profile(monkeypatch): 
+    """Ensure profile page builds without errors with a mock current_user."""
+    # Patch widgets
+    monkeypatch.setattr(tk, "Label", DummyLabel)
+    monkeypatch.setattr(ttk, "Label", DummyLabel)
+    monkeypatch.setattr(ttk, "LabelFrame", DummyFrame)
+    monkeypatch.setattr(ttk, "Button", DummyButton)
+    monkeypatch.setattr(tk, "Toplevel", DummyFrame)
+    monkeypatch.setattr(gui, "set_active_button", lambda *args, **kwargs: None)
+
+    # Fake logged-in user
+    gui.current_user = {
+        "first_name": "Test",
+        "last_name": "User",
+        "email": "test@example.com",
+    }
+
+    root = DummyTk()
+    frame = DummyFrame(root)
+
+    gui.show_profile(frame)
+
+    # Should create child widgets: labels, settings frame, button(s)
+    assert len(frame._children) > 0
+
+    # Grab first label - profile header exists
+    header = frame._children[0]
+    assert isinstance(header, DummyLabel)
+
+    # Ensure email/name were inserted somewhere in UI
+    texts = [w.text for w in frame._children if hasattr(w, "text")]
+    assert any("Test User" in t for t in texts if t)
+    assert any("test@example.com" in t for t in texts if t) 
+
+def test_show_logout(monkeypatch):
+    """Ensure show_logout logs out user, clears state, and rebuilds UI without errors."""
+    
+    # Patch set_active_button 
+    monkeypatch.setattr(gui, "set_active_button", lambda *a, **k: None)
+
+    # Patch messagebox.showinfo so it doesn't open real popups
+    monkeypatch.setattr(gui.tk, "Label", DummyLabel)
+    monkeypatch.setattr(gui.messagebox, "showinfo", lambda *a, **k: None)
+
+    # Patch update_nav_buttons so it doesn’t expect real buttons
+    monkeypatch.setattr(gui, "update_nav_buttons", lambda *a, **k: None)
+
+    # Fake user is currently logged in
+    gui.login_status = True
+    gui.current_user = {"email": "test@example.com"}
+
+    # Prepare a dummy frame
+    root = DummyTk()
+    frame = DummyFrame(root)
+
+    monkeypatch.setattr(gui, "show_home", lambda f: DummyLabel(f, text="HomePageLoaded"))
+
+    # Call function under test
+    gui.show_logout(frame)
+
+    # logout should clear login state
+    assert gui.login_status is False
+    assert gui.current_user is None
+
+    # After logout, show_home should have been invoked → frame contains label "HomePageLoaded"
+    assert len(frame._children) > 0
+    texts = [child.text for child in frame._children if hasattr(child, "text")]
+    assert "HomePageLoaded" in texts
+
