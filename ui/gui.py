@@ -321,13 +321,67 @@ def show_login(frame):
         frame, text="Forgot password?", fg="blue", cursor="hand2"
     )
     forgot_password_label.pack(pady=(5, 2))
+    forgot_password_label.bind("<Button-1>", lambda e: show_forgot_password(frame))
     
     # Registration link 
     reg_label = tk.Label(frame, text="Don't have an account? Register", fg="blue", cursor="hand2")
     reg_label.pack(pady=(2,10))
     reg_label.bind("<Button-1>", lambda e: show_registration(frame))
 
-#Placeholder for Logout
+def show_forgot_password(frame):
+    """Open a modal password reset prompt without leaking user enumeration."""
+    logger.info("User initiated forgot password process.")
+
+    parent = frame.winfo_toplevel()
+    popup = tk.Toplevel(parent)
+    popup.title("Password Reset")
+    popup.geometry("400x220")
+
+    # Make it modal
+    popup.transient(parent)
+    popup.grab_set()
+
+    tk.Label(
+        popup, text="Reset Your Password", font=("Helvetica", 14, "bold")
+    ).pack(pady=12)
+
+    tk.Label(
+        popup, text="Enter the email associated with your account:"
+    ).pack(pady=(0, 6))
+
+    email_var = tk.StringVar()
+    email_entry = ttk.Entry(popup, textvariable=email_var, width=36)
+    email_entry.pack(pady=(0, 10))
+
+    def is_valid_email(s: str) -> bool:
+        """Very light client-side check (server must verify)."""
+        return "@" in s and "." in s.split("@")[-1]
+
+    def submit_reset():
+        candidate = email_var.get().strip().lower()
+        if not is_valid_email(candidate):
+            messagebox.showerror(
+                "Invalid Email",
+                "Please enter a valid email address.",
+                parent=popup,
+            )
+            return
+
+        # Prevent account enumeration: always show same message
+        messagebox.showinfo(
+            "If the email exists",
+            "If an account exists, you'll receive reset instructions.",
+            parent=popup,
+        )
+
+        popup.destroy()
+
+    ttk.Button(popup, text="Submit", command=submit_reset).pack(pady=6)
+    ttk.Button(popup, text="Cancel", command=popup.destroy).pack()
+
+    email_entry.focus_set()
+
+# Logout
 def show_logout(frame):
     """Handles user logging out."""
     set_active_button("Logout")
@@ -666,17 +720,17 @@ def show_preferences(frame):
             logger.info("User cleared all preferences fields.")
 
         # Updates the in memory current_user preferences as well
-        for key in [
-            "college",
-            "department",
-            "degree_level",
-            "degree",
-            "job",
-            "job_description",
+            for key in [
+                "college",
+                "department",
+                "degree_level",
+                "degree",
+                "job",
+                "job_description",
         ]:
-            current_user[key] = ""
-        logger.info("Current user preferences reset in memory.")
-        messagebox.showinfo(
+                current_user[key] = ""
+            logger.info("Current user preferences reset in memory.")
+            messagebox.showinfo(
             "Preferences Cleared", "All preference fields have been cleared."
         )
 

@@ -265,6 +265,8 @@ def test_main_test_ui_option1_monkeypatched(monkeypatch):
 
     # Critical: ui.gui imports PhotoImage directly; stub it at the module-under-test symbol.
     monkeypatch.setattr(gui, "PhotoImage", DummyPhotoImage, raising=False)
+    # Also patch Toplevel since main_int_ui creates one.
+    monkeypatch.setattr(tk, "Toplevel", DummyFrame, raising=False)
 
     # Now gui.main_test_ui(1) executes the same code paths but with Dummy widgets.
     assert gui.main_test_ui(1) is True
