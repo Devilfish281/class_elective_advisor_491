@@ -7,7 +7,7 @@
 import sqlite3
 from db_add import add_user, add_elective, add_feedback
 from user_actions import (
-    login_user,
+    login_user_email,
     search_course,
     search_feedback_by_course,
     search_feedback_by_user_id,
@@ -57,7 +57,7 @@ def test_login_user():
     cursor.execute("SELECT email FROM users WHERE id = ?", (user_id,))
     email = cursor.fetchone()[0]
     conn.close()
-    result = login_user(email, "securepass123")
+    result = login_user_email(email, "securepass123")
     assert result == user_id
 
 # Test: search_course
