@@ -655,7 +655,7 @@ def show_preferences(frame):
         logger.info(f"User preferences saved: {prefs}")
         messagebox.showinfo("Preferences Saved", "Your preferences have been saved.")
 
-     def clear_preferences():
+    def clear_preferences():
             """Clears all preference fields"""
             college_var.set("")
             department_var.set("")
