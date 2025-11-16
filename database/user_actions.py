@@ -1,7 +1,7 @@
 import sqlite3
 
-#Log in using the user email and past word and the data base 
-def login_user(email, password_hash, db_path="ai_advice.db"):
+#Log in using the user email and password and the data base 
+def login_user_email(email, password_hash, db_path="ai_advice.db"):
     conn = sqlite3.connect(db_path)
     conn.execute("PRAGMA foreign_keys = ON")
     cursor = conn.cursor()
