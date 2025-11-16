@@ -1,0 +1,15 @@
+# .coveragerc (repo root)
+[run]
+source =
+    src
+    ui
+    database
+omit =
+    */.venv/*
+    */tests/*
+    */__init__.py
+relative_files = True
+
+[report]
+show_missing = True
+skip_empty = True
