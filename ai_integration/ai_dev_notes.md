@@ -139,3 +139,5 @@ Practical tips
 # Generate recommendations based on job and degree information using a ChatOpenAI model.
 
 - About button on the Help page that opens a dialog showing the full contents of version.json.
+
+11. Parses the array of starred lines and converts them into a list of dictionaries.

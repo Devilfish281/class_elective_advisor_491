@@ -322,11 +322,14 @@ def show_login(frame):
     )
     forgot_password_label.pack(pady=(5, 2))
     forgot_password_label.bind("<Button-1>", lambda e: show_forgot_password(frame))
-    
-    # Registration link 
-    reg_label = tk.Label(frame, text="Don't have an account? Register", fg="blue", cursor="hand2")
-    reg_label.pack(pady=(2,10))
+
+    # Registration link
+    reg_label = tk.Label(
+        frame, text="Don't have an account? Register", fg="blue", cursor="hand2"
+    )
+    reg_label.pack(pady=(2, 10))
     reg_label.bind("<Button-1>", lambda e: show_registration(frame))
+
 
 def show_forgot_password(frame):
     """Open a modal password reset prompt without leaking user enumeration."""
@@ -341,13 +344,13 @@ def show_forgot_password(frame):
     popup.transient(parent)
     popup.grab_set()
 
-    tk.Label(
-        popup, text="Reset Your Password", font=("Helvetica", 14, "bold")
-    ).pack(pady=12)
+    tk.Label(popup, text="Reset Your Password", font=("Helvetica", 14, "bold")).pack(
+        pady=12
+    )
 
-    tk.Label(
-        popup, text="Enter the email associated with your account:"
-    ).pack(pady=(0, 6))
+    tk.Label(popup, text="Enter the email associated with your account:").pack(
+        pady=(0, 6)
+    )
 
     email_var = tk.StringVar()
     email_entry = ttk.Entry(popup, textvariable=email_var, width=36)
@@ -381,6 +384,7 @@ def show_forgot_password(frame):
 
     email_entry.focus_set()
 
+
 # Logout
 def show_logout(frame):
     """Handles user logging out."""
@@ -389,8 +393,8 @@ def show_logout(frame):
     clear_content(frame)
     logger.info("User initaited logout.")
 
-    login_status = False # reset login status
-    current_user = None # clear current user
+    login_status = False  # reset login status
+    current_user = None  # clear current user
 
     messagebox.showinfo("Logout Successful", "You have been logged out.")
     logger.info("User logged out successfully.")
@@ -591,9 +595,17 @@ def show_registration(frame):
             return
 
     # Registration Button
-    reg_button = tk.Button(
-        frame, text="Register", width=20, command=handle_registration
+    # reg_button = tk.Button(
+    #     frame, text="Register", width=20, command=handle_registration
+    # )
+    # reg_button.pack(pady=20)
+    reg_button = ttk.Button(
+        frame,
+        text="Register",
+        command=handle_registration,
     )
+    # Tkinter rule: you must not mix pack and grid in the same parent widget.
+    # Doing that will cause runtime geometry warnings/errors and weird layout.
     reg_button.pack(pady=20)
 
 
@@ -710,27 +722,27 @@ def show_preferences(frame):
         messagebox.showinfo("Preferences Saved", "Your preferences have been saved.")
 
     def clear_preferences():
-            """Clears all preference fields"""
-            college_var.set("")
-            department_var.set("")
-            degree_level_var.set("")
-            degree_var.set("")
-            job_var.set("")
-            job_desc_text.delete("1.0", "end")
-            logger.info("User cleared all preferences fields.")
+        """Clears all preference fields"""
+        college_var.set("")
+        department_var.set("")
+        degree_level_var.set("")
+        degree_var.set("")
+        job_var.set("")
+        job_desc_text.delete("1.0", "end")
+        logger.info("User cleared all preferences fields.")
 
         # Updates the in memory current_user preferences as well
-            for key in [
-                "college",
-                "department",
-                "degree_level",
-                "degree",
-                "job",
-                "job_description",
+        for key in [
+            "college",
+            "department",
+            "degree_level",
+            "degree",
+            "job",
+            "job_description",
         ]:
-                current_user[key] = ""
-            logger.info("Current user preferences reset in memory.")
-            messagebox.showinfo(
+            current_user[key] = ""
+        logger.info("Current user preferences reset in memory.")
+        messagebox.showinfo(
             "Preferences Cleared", "All preference fields have been cleared."
         )
 
@@ -775,7 +787,7 @@ def show_recommendations(frame):
         command=lambda: generate_recommendations_ui(frame),
     )
     generate_button.pack(pady=10)
-    
+
     # Recommendations Display Frame
     rec_frame = ttk.Frame(frame)
     rec_frame.pack(pady=10, padx=20, fill="both", expand=True)
@@ -983,7 +995,7 @@ def generate_recommendations_ui(frame):
         clear_content(rec_frame)
         display_recommendations_ui(rec_frame, recommendations)
 
-        # Old Logic 
+        # Old Logic
         """
         # Parse JSON response
         rec_data = json.loads(response)
@@ -1029,6 +1041,7 @@ def generate_recommendations_ui(frame):
         messagebox.showerror("Error", f"An error occurred: {e}")
         logger.error(f"Error checking user preferences: {e}")
         return
+
 
 def save_recommendations_to_db(recommendations):
     """Saves Recommendations to the database (Placeholder function)"""

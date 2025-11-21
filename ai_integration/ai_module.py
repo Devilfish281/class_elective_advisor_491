@@ -559,6 +559,86 @@ def extract_starred_lines(input_text):
     return starred_lines
 
 
+def parse_course_data(starred_lines):
+    """
+    Parses the array of starred lines and converts them into a list of dictionaries.
+
+    Args:
+        starred_lines (list): A list of lines containing course details.
+
+    Returns:
+        list: A list of dictionaries, each representing a course.
+    """
+    courses = []
+    course = {}
+    explanation_key = "**Explanation:**"
+    prerequisites_key = "**Prerequisites:**"
+    current_key = None
+    explanation_lines = []
+
+    for line in starred_lines:
+        # Check if the line starts with a key pattern
+        key_match = re.match(r"\*\*(.+?):\*\*\s*(.*)", line)
+        if key_match:
+            key, value = key_match.groups()
+            key = key.strip()
+            value = value.strip()
+
+            if key == "Number":
+                # If there's an existing course being parsed, add it to the list
+                if course:
+                    # If there's any accumulated explanation lines, join them
+                    if explanation_lines:
+                        course["Explanation"] = " ".join(explanation_lines).strip()
+                        explanation_lines = []
+                    courses.append(course)
+                    course = {}
+                course["Number"] = int(value)
+                current_key = "Number"
+
+            elif key == "Course Code":
+                course["Course Code"] = value
+                current_key = "Course Code"
+
+            elif key == "Course Name":
+                course["Course Name"] = value
+                current_key = "Course Name"
+
+            elif key == "Rating":
+                try:
+                    course["Rating"] = int(value)
+                except ValueError:
+                    course["Rating"] = value  # Keep as string if not an integer
+                current_key = "Rating"
+
+            elif key == "Explanation":
+                explanation_lines = [value]
+                current_key = "Explanation"
+
+            elif key == "Prerequisites":
+                course["Prerequisites"] = value
+                current_key = "Prerequisites"
+
+            else:
+                # Handle any unexpected keys
+                course[key] = value
+                current_key = key
+
+        else:
+            # Handle multiline fields like Explanation
+            if current_key == "Explanation":
+                explanation_lines.append(line)
+                course["Explanation"] = " ".join(explanation_lines).strip()
+
+    # Add the last course after the loop ends
+    if course:
+        if explanation_lines:
+            course["Explanation"] = " ".join(explanation_lines).strip()
+        courses.append(course)
+
+    return courses
+
+
 def real_chatgpt_response(
     job_id: int,
     job_name: str,
@@ -667,8 +747,25 @@ def real_chatgpt_response(
         for idx, line in enumerate(starred_lines, start=1):
             logger.debug(line)
 
-        # return an empty json array
-        return json.dumps([])
+        # Parse the raw data
+        courses = parse_course_data(starred_lines)
+
+        logger.debug("---Parsed Courses---")
+        logger.debug(courses)
+
+        # Convert the list of courses to JSON
+        json_data = json.dumps(courses, indent=4)
+
+        # Print the JSON data
+        print("Print the JSON data:")
+        print(json_data)
+
+        # After converting to JSON
+        with open("courses.json", "w", encoding="utf-8") as json_file:
+            json_file.write(json_data)
+            logger.info("AI recommendations written to courses.json")
+
+        return json_data
 
     except Exception as e:
         logger.error(
