@@ -121,7 +121,6 @@ class _DummyWidget:
         self._children = []
         self.master = None
 
-    # Tk geometry managers — noops for tests
     def pack(self, *a, **kw):
         self._packed = True
 
@@ -131,13 +130,11 @@ class _DummyWidget:
     def place(self, *a, **kw):
         self._placed = True
 
-    # Common config helpers used by real widgets — also noops
     def config(self, *a, **kw):
         return None
 
     configure = config
 
-    # Some UIs call column/row configure on frames
     def columnconfigure(self, *a, **kw):
         return None
 
@@ -174,6 +171,42 @@ class _DummyWidget:
                 self.master._children.remove(self)
             except ValueError:
                 pass
+
+    # ---- New helpers so GUI code works under tests ----
+
+    def bind(self, *a, **kw):  # Added Code
+        """No-op event binding (for .bind calls on Labels/Entries)."""  # Added Code
+        return None  # Added Code
+
+    def pack_propagate(self, flag):  # Added Code
+        """No-op for pack_propagate used on Frames in the Help page."""  # Added Code
+        return None  # Added Code
+
+    def winfo_toplevel(self):  # Added Code
+        """Return the logical root window for Toplevel parenting."""  # Added Code
+        if getattr(self, "master", None) is not None:  # Added Code
+            return self.master  # Added Code
+        return self  # Added Code
+
+    def title(self, *a, **kw):  # Added Code
+        """No-op window title setter for dummy Toplevels."""  # Added Code
+        return None  # Added Code
+
+    def geometry(self, *a, **kw):  # Added Code
+        """No-op geometry setter for dummy Toplevels."""  # Added Code
+        return None  # Added Code
+
+    def transient(self, *a, **kw):  # Added Code
+        """No-op transient() for dummy Toplevels."""  # Added Code
+        return None  # Added Code
+
+    def grab_set(self, *a, **kw):  # Added Code
+        """No-op grab_set() for dummy Toplevels."""  # Added Code
+        return None  # Added Code
+
+    def focus_set(self, *a, **kw):  # Added Code
+        """No-op focus_set() for dummy widgets (entries, windows)."""  # Added Code
+        return None  # Added Code
 
 
 class DummyFrame(_DummyWidget):
@@ -299,6 +332,7 @@ def test_main_test_ui_option3_auto_close(monkeypatch):
 
 # --- Additional tests for individual UI functions to ensure they build without errors ---
 
+
 def test_show_home(monkeypatch):
     """Ensure show_home builds UI without errors."""
     monkeypatch.setattr(tk, "Label", DummyLabel)
@@ -347,6 +381,7 @@ def test_show_forgot_password(monkeypatch):
 
     gui.show_forgot_password(frame)
 
+
 def test_update_nav_buttons_logged_out():
     gui.nav_buttons = {
         "Login": DummyButton(),
@@ -364,6 +399,7 @@ def test_update_nav_buttons_logged_out():
 
     assert gui.nav_buttons["Login"]._gridded is True
     assert gui.nav_buttons["Logout"]._gridded is False
+
 
 def test_show_registration(monkeypatch):
     """Ensure show_registration builds UI without errors."""
@@ -385,6 +421,7 @@ def test_show_registration(monkeypatch):
     # Should create many fields: labels, entries, frames
     assert len(frame._children) > 0
 
+
 def test_show_help(monkeypatch):
     """Ensure the Help page builds without errors."""
     monkeypatch.setattr(tk, "Label", DummyLabel)
@@ -394,7 +431,9 @@ def test_show_help(monkeypatch):
     monkeypatch.setattr(ttk, "Frame", DummyFrame)
 
     monkeypatch.setattr(gui, "set_active_button", lambda *args, **kwargs: None)
-    monkeypatch.setattr(gui, "show_about_dialog", lambda *args, **kwargs: None)  # stub for About
+    monkeypatch.setattr(
+        gui, "show_about_dialog", lambda *args, **kwargs: None
+    )  # stub for About
 
     root = DummyTk()
     frame = DummyFrame(root)
@@ -404,7 +443,8 @@ def test_show_help(monkeypatch):
     # Should have help content and search area
     assert len(frame._children) > 0
 
-def test_show_profile(monkeypatch): 
+
+def test_show_profile(monkeypatch):
     """Ensure profile page builds without errors with a mock current_user."""
     # Patch widgets
     monkeypatch.setattr(tk, "Label", DummyLabel)
@@ -436,12 +476,13 @@ def test_show_profile(monkeypatch):
     # Ensure email/name were inserted somewhere in UI
     texts = [w.text for w in frame._children if hasattr(w, "text")]
     assert any("Test User" in t for t in texts if t)
-    assert any("test@example.com" in t for t in texts if t) 
+    assert any("test@example.com" in t for t in texts if t)
+
 
 def test_show_logout(monkeypatch):
     """Ensure show_logout logs out user, clears state, and rebuilds UI without errors."""
-    
-    # Patch set_active_button 
+
+    # Patch set_active_button
     monkeypatch.setattr(gui, "set_active_button", lambda *a, **k: None)
 
     # Patch messagebox.showinfo so it doesn't open real popups
@@ -459,7 +500,9 @@ def test_show_logout(monkeypatch):
     root = DummyTk()
     frame = DummyFrame(root)
 
-    monkeypatch.setattr(gui, "show_home", lambda f: DummyLabel(f, text="HomePageLoaded"))
+    monkeypatch.setattr(
+        gui, "show_home", lambda f: DummyLabel(f, text="HomePageLoaded")
+    )
 
     # Call function under test
     gui.show_logout(frame)
@@ -472,4 +515,3 @@ def test_show_logout(monkeypatch):
     assert len(frame._children) > 0
     texts = [child.text for child in frame._children if hasattr(child, "text")]
     assert "HomePageLoaded" in texts
-
