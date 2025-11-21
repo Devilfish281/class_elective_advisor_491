@@ -1,4 +1,169 @@
-:
+alt()
+            ).decode("utf-8")
+
+            cursor.execute(
+                "UPDATE users SET password_hash = ? WHERE email = ?",
+                (new_hash, current_user["email"]),
+            )
+            conn.commit()
+            conn.close()
+
+            messagebox.showinfo(
+                "Success", "Password changed successfully!", parent=password_window
+            )
+            logger.info(f"User '{current_user['email']}' changed password.")
+            password_window.destroy()
+
+        save_password_button = ttk.Button(
+            password_window, text="Save Password", command=perform_password_change
+        )
+        save_password_button.pack(pady=20)
+
+    change_password_button = ttk.Button(
+        settings_frame, text="Change Password", command=change_password
+    )
+    change_password_button.pack(pady=10, padx=10, fill="x")
+
+
+def show_help(frame):
+    """Display the Help Page"""
+    logger.info("Displaying Help Page")
+    clear_content(frame)
+    set_active_button("Help")
+
+    header_label = ttk.Label(frame, text="Help & Support", font=("Helvetica", 20))
+    header_label.pack(pady=20)
+
+    help_frame = ttk.Frame(frame)
+    help_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+    help_text = (
+        "Welcome to the Smart Elective Advisor Help Center!\n\n"
+        "If you need help navigating the application or have any questions, we've got you covered.\n\n"
+        "1. Use Guides: Detailed manuals to help you explore and make the most of the application's features\n\n"
+        "2. FAQs: Quick answers to the most common questions from other users.\n\n"
+        "3. Contact Support: Need personalized help? Reach out to our support team at support@university.edu\n\n"
+    )
+    help_label = ttk.Label(
+        help_frame,
+        text=help_text,
+        font=("Helvetica", 14),
+        wraplength=800,
+        justify="left",
+    )
+    help_label.pack(pady=10)
+
+    search_label = ttk.Label(
+        help_frame, text="Search Help Topics:", font=("Helvetica", 12)
+    )
+    search_label.pack(pady=5, anchor="w")
+    search_entry = ttk.Entry(help_frame, width=50)
+    search_entry.pack(pady=5, anchor="w")
+
+    def search_help():
+        query = search_entry.get()
+        messagebox.showinfo("Coming soon", "coming soon")
+
+    search_button = ttk.Button(help_frame, text="Search", command=search_help)
+    search_button.pack(pady=5, anchor="w")
+
+    help_frame.pack_propagate(False)
+    spacer = ttk.Frame(help_frame)
+    spacer.pack(fill="both", expand=True)
+    about_button = ttk.Button(
+        help_frame,
+        text="About",
+        command=lambda: show_about_dialog(frame),
+    )
+    about_button.pack(pady=10, anchor="e")
+
+
+def main_test_ui(option: int) -> bool:
+    """
+    UI test dispatcher:
+      option 1 -> launch the real GUI (blocking; user must close window)
+      option 2 -> sanity create/destroy root without entering mainloop (fast)
+      option 3 -> launch GUI and auto-close after 1 second (useful for CI)
+    Returns True on success, False on failure.
+    """
+    logger.info("main_test_ui: selected option %s", option)
+
+    if option == 1:
+        try:
+            main_int_ui()
+            return True
+        except Exception:
+            logger.exception("main_test_ui option 1 failed")
+            return False
+
+    elif option == 2:
+        try:
+            root = tk.Tk()
+            root.update_idletasks()
+            root.destroy()
+            logger.info("main_test_ui option 2: sanity create/destroy succeeded")
+            return True
+        except Exception:
+            logger.exception("main_test_ui option 2 failed")
+            return False
+
+    elif option == 3:
+        try:
+            def _run_and_close():
+                root = tk.Tk()
+                root.title("Smart Elective Advisor (auto-close test)")
+                label = tk.Label(root, text="Auto-close test (1s)")
+                label.pack(padx=10, pady=10)
+                root.after(1000, root.destroy)
+                try:
+                    root.mainloop()
+                except Exception:
+                    logger.exception("Exception in auto-close GUI thread")
+
+            t = threading.Thread(target=_run_and_close, daemon=True)
+            t.start()
+            time.sleep(1.5)
+            logger.info("main_test_ui option 3: auto-close GUI test completed")
+            return True
+        except Exception:
+            logger.exception("main_test_ui option 3 failed")
+            return False
+
+    else:
+        logger.error("main_test_ui: unknown option %s", option)
+        return False
+
+
+if __name__ == "__main__":
+    main_test_ui(1)```
+
+########################################
+Here is my code for zulu_timestamp.py BELOW:
+########################################
+
+```python
+# ui/zulu_timestamp.py
+
+from datetime import datetime
+
+
+def iso_zulu_to_json_parts(ts: str) -> dict:
+    """
+    Parse an ISO-8601 UTC ('Z') timestamp like 'YYYY-MM-DDTHH:MM:SSZ'
+    and return a dict of each component using only the Python stdlib.
+    """
+    norm = ts.replace("Z", "+00:00")
+    dt = datetime.fromisoformat(norm)
+
+    year = f"{dt.year:04d}"
+    month = f"{dt.month:02d}"
+    day = f"{dt.day:02d}"
+    hour = f"{dt.hour:02d}"
+    minute = f"{dt.minute:02d}"
+    second = f"{dt.second:02d}"
+
+    offset = dt.utcoffset()
+    if offset is None:
         utc_offset = "+00:00"
     else:
         total_minutes = int(offset.total_seconds() // 60)
