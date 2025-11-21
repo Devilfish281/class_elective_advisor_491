@@ -66,3 +66,6 @@ ENV/
 # Windows and Mac OS system files
 Thumbs.db
 .DS_Store
+
+db/ai_advice.db
+database/ai_advice.db

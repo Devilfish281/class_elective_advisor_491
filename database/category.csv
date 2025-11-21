@@ -1,2 +1,9 @@
 id_category, Name_category
 0, "undefine"
+1, "Software Engineering"
+2, "Artificial Intelligence (AI) & Machine Learning"
+3, "Cybersecurity"
+4, "Data Science & Big Data"
+5, "Game Development"
+6, "Web Development"
+7, "Mobile App Development"
