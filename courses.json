@@ -5,78 +5,78 @@
         "Course Name": "Web Front-End Engineering",
         "Rating": 100,
         "Prerequisites": "CPSC 131",
-        "Explanation": "As a web developer, proficiency in front-end engineering is critical. This elective provides a comprehensive overview of interactive web applications, focusing on key areas such as markup languages, stylesheets, and JavaScript. Students will gain practical skills in using functional and object-oriented JavaScript, the de facto language for client-side scripting. The course further explores essential design patterns such as Model-View patterns and introduces templates and frameworks that are crucial for modern web application development. Understanding client-side technologies for asynchronous events and real-time interaction will equip students with the skills necessary to create dynamic and engaging user experiences. The knowledge gained in this course directly impacts the ability to design and implement front-end solutions, making it invaluable for aspiring web developers."
+        "Explanation": "This course focuses on the essential skills for developing interactive web applications, a fundamental aspect of any web developer's career. By studying CPSC 349, you will gain a comprehensive understanding of web architecture, focusing on the client-side aspects like markup, stylesheets, and JavaScript\u2014key technologies for web development. With hands-on experience in JavaScript's functional and object-oriented programming, you will delve into model-view design patterns, templates, and frameworks. The course also covers client-side technologies for real-time interaction and accessing back-end services. These skills are crucial for creating responsive and intuitive user interfaces, expanding your ability to deliver a complete web solution."
     },
     {
         "Number": 2,
-        "Course Code": "CPSC 449",
-        "Course Name": "Web Back-End Engineering",
+        "Course Code": "CPSC 455",
+        "Course Name": "Web Security",
         "Rating": 95,
-        "Prerequisites": "CPSC 332",
-        "Explanation": "Back-end engineering is vital for developing functional and scalable web applications. This course offers an in-depth exploration of design and architecture focusing on scalability, session management, and load balancing\u2014key for handling high demand and traffic. Topics like dependency injection, application tiers, message queues, and REST architecture are crucial for constructing solid back-end solutions. Additionally, the course covers data models, partitioning, and replication in both relational and non-relational databases, preparing students to deal with diverse database management tasks. These skills ensure that students can design and manage complex web application back-ends, making this elective instrumental for a career in web development."
+        "Prerequisites": "CPSC 351 or CPSC 353",
+        "Explanation": "As a web developer, understanding web security is crucial for ensuring the protection of web applications against prevalent threats. CPSC 455 equips you with knowledge of various web security mechanisms, highlighting areas like authentication, access control, and data protection. Exploring common vulnerabilities, such as SQL injection and cross-site scripting, provides insight into real-world challenges web applications face. The course emphasizes hands-on projects to implement and test web application security, which is invaluable for developing secure and robust applications. This elective aligns closely with industry demands for developers proficient in identifying and mitigating security threats."
     },
     {
         "Number": 3,
-        "Course Code": "CPSC 455",
-        "Course Name": "Web Security",
-        "Rating": 90,
-        "Prerequisites": "CPSC 351 or CPSC 353",
-        "Explanation": "Understanding web security is paramount for any web developer, as it ensures the protection of both application and user data. This course covers essential security mechanisms, including authentication, access control, and methods for protecting sensitive data. It also examines common vulnerabilities like SQL injection and cross-site scripting. By implementing hands-on security mechanisms and conducting security testing, students will understand how to secure web applications effectively. The skills acquired here are critical for mitigating security risks and protecting data integrity, bolstering confidence in any web development role."
+        "Course Code": "CPSC 449",
+        "Course Name": "Web Back-End Engineering",
+        "Rating": 92,
+        "Prerequisites": "CPSC 332",
+        "Explanation": "Web developers must excel in both front-end and back-end technologies to build comprehensive web applications. CPSC 449 focuses on back-end engineering, ensuring that you understand the server-side components required for scalable and efficient web applications. Topics such as web services, session management, load balancing, and REST architecture are covered thoroughly. Practical knowledge of data models, caching, and database management in both relational and non-relational settings will prepare you to handle the complexities of back-end systems. This comprehensive knowledge enhances your ability to create reliable and high-performance applications, catering to sophisticated web demands."
     },
     {
         "Number": 4,
         "Course Code": "CPSC 431",
         "Course Name": "Database and Applications",
-        "Rating": 85,
+        "Rating": 90,
         "Prerequisites": "CPSC 332",
-        "Explanation": "A foundational course for web developers, this elective helps students grasp the essentials of database design and application development. Through system analysis, requirement specifications, conceptual modeling, and logic design, students learn how to develop functional and efficient databases. The course involves creating projects using contemporary database management systems, emphasizing web-based application development. As databases are integral to web applications, the knowledge gained here ensures students can effectively design and manage databases, enhancing overall application functionality and performance."
+        "Explanation": "A deep understanding of database systems is a cornerstone for any web developer. CPSC 431 introduces you to crucial techniques in database design and application development. You'll learn to conduct system analysis, specify requirements, and engage in conceptual and logical design. Developing web interfaces with contemporary database management systems will feature prominently in this course. This elective facilitates an essential skill set for web developers who must manage vast amounts of data efficiently and meet various compliance and security standards. It empowers you to optimize database interactions essential for high-performance web applications."
     },
     {
         "Number": 5,
         "Course Code": "CPSC 484",
         "Course Name": "Principles of Computer Graphics",
-        "Rating": 80,
-        "Prerequisites": "CPSC 131, MATH 150B or MATH 270B",
-        "Explanation": "For web developers, understanding computer graphics is crucial for creating visually appealing web pages. This elective investigates computer graphics software structures, display processor organization, and graphical input/output devices. The course addresses algorithmic techniques for tasks such as clipping and windowing\u2014essential for rendering graphics in web development. With the rise of interactive and visually rich content, mastering the principles of computer graphics can significantly enhance user interfaces and user experience on the web."
+        "Rating": 85,
+        "Prerequisites": "CPSC 131 and MATH 150B or MATH 270B",
+        "Explanation": "For web developers keen on emphasizing visual and interactive design, CPSC 484 is invaluable. It covers key aspects of computer graphics, such as display processor organization and interaction techniques, essential for enhancing user experience. Hands-on learning in graphical input/output devices and algorithmic techniques improves your capability to produce visually appealing and technically sound web applications. This knowledge becomes increasingly relevant as web platforms move towards highly interactive and dynamic user interfaces, making you adept at integrating creative and technical aspects within web environments."
     },
     {
         "Number": 6,
-        "Course Code": "CPSC 464",
-        "Course Name": "Software Architecture",
-        "Rating": 75,
-        "Prerequisites": "CPSC 362",
-        "Explanation": "Software architecture is a key component of software development that affects both design and maintenance. This elective focuses on principles and practices, including high-level design and architecture evaluation. For web developers tasked with building complex applications, understanding architectural principles ensures that solutions are scalable, maintainable, and adaptable. Exposure to these concepts aids students in bridging the gap between development and deployment, offering comprehensive skills beneficial for long-term success in web development roles."
+        "Course Code": "CPSC 483",
+        "Course Name": "Introduction to Machine Learning",
+        "Rating": 83,
+        "Prerequisites": "CPSC 335 or MATH 338",
+        "Explanation": "With the growing integration of AI into web applications, understanding machine learning can elevate your development projects significantly. CPSC 483 offers foundational knowledge in designing and implementing machine learning algorithms, applicable to creating smarter and more responsive web systems. By engaging with real-world data projects, you\u2019ll learn to address uncertainties and employ algorithms for both supervised and unsupervised learning. This confluence of web development and AI can be transformative, allowing you to build systems that personalize user experiences and provide advanced analytical functionalities."
     },
     {
         "Number": 7,
-        "Course Code": "MATH 335",
-        "Course Name": "Mathematical Probability",
-        "Rating": 70,
-        "Prerequisites": "MATH 250A",
-        "Explanation": "While not directly related to web development, understanding mathematical probability can be useful in improving algorithms that drive data-driven websites. This course explores discrete and continuous probability distributions, expectation, and the central limit theorem. Such knowledge is beneficial for handling statistical models and synthesizing data, pertinent for analytics in web development. Insights from probability theory can enhance the way developers tackle data-related challenges, offering greater accuracy and efficiency in application design."
+        "Course Code": "CPSC 452",
+        "Course Name": "Cryptography",
+        "Rating": 80,
+        "Prerequisites": "MATH 270B or CPSC 131",
+        "Explanation": "For web developers, encryption skills are vital in safeguarding user data and ensuring secure communications. CPSC 452's curriculum introduces cryptography and steganography fundamentals, including encryption protocols, cryptographic hashing, and key ciphers. With an emphasis on hands-on programming projects, you\u2019ll develop encryption systems, understanding their application in protecting data integrity and confidentiality. This protects against cyber threats like man-in-the-middle and exhaustive search attacks. A sharply honed skill in cryptography enhances your web applications\u2019 security, providing value to both users and organizations."
     },
     {
         "Number": 8,
-        "Course Code": "CPSC 452",
-        "Course Name": "Cryptography",
-        "Rating": 65,
-        "Prerequisites": "MATH 270B or CPSC 131",
-        "Explanation": "As a web developer, ensuring the security of transactions and personal information is vital. The cryptography course covers encryption, cryptographic hashing, and certificates, which are foundational for securing web applications. Students will explore classical and modern ciphers, block modes of operation, and techniques for cryptanalysis, equipping them with the skills needed to implement robust security measures. Understanding cryptography bolsters a developer's ability to protect data, which is paramount in today's increasingly digital and connected world."
+        "Course Code": "CPSC 439",
+        "Course Name": "Theory of Computation",
+        "Rating": 78,
+        "Prerequisites": "CPSC 121 or MATH 320 or MATH 270B or MATH 280",
+        "Explanation": "While not directly applied to web development, CPSC 439 offers the theoretical underpinning crucial for advanced computer science topics. This course explores essential computational theories, such as automata theory and computability, enhancing your understanding of the theoretical limits of what can be computed. The coverage of topics like Turing machines, formal languages, and computational complexity provides foundational knowledge that might inform innovative development approaches or contribute to high-level problem-solving strategies. Understanding these theoretical concepts can refine your analytical skills and broaden your approach to tackling complex web development tasks."
     },
     {
         "Number": 9,
-        "Course Code": "MATH 370",
-        "Course Name": "Mathematical Model Building",
-        "Rating": 60,
-        "Prerequisites": "MATH 250B, MATH 320 or CPSC 120 or CPSC 121",
-        "Explanation": "While mostly applied in engineering and science, mathematical modeling can enhance a web developer\u2019s approach to problem-solving. This course covers dimensional analysis and dynamical systems, offering tools to simulate and resolve complex issues. By understanding model building, web developers can better design algorithms that optimize functionality or simulate user interactions on web platforms. These skills are especially relevant when aiming to create responsive and dynamic web applications that adapt based on user data."
+        "Course Code": "CPSC 456",
+        "Course Name": "Network Security Fundamentals",
+        "Rating": 75,
+        "Prerequisites": "CPSC 351",
+        "Explanation": "As applications shift towards cloud and distributed systems, understanding network security ensures you can address vulnerabilities that span beyond single-system scopes. CPSC 456 explores the vulnerabilities associated with network protocols and the impact on data integrity across web environments. Hands-on exercises make this course relevant for web developers looking to secure connections and data transmissions across networked applications. Advanced insight into network security topics directly benefits developers who wish to build enhanced security mechanisms within their web structures, providing safer user interactions."
     },
     {
         "Number": 10,
-        "Course Code": "CPSC 459",
-        "Course Name": "Blockchain Technologies",
-        "Rating": 55,
-        "Prerequisites": "CPSC 351 or CPSC 353 or CPSC 452",
-        "Explanation": "Blockchain technology, though not mainstream in web development, offers emerging opportunities for decentralized applications. This course familiarizes students with blockchain mechanics, digital assets, and smart contracts\u2014crucial for developing trustless and secure web solutions. Understanding blockchain can position students on the cusp of innovative practices within the field, enabling them to leverage technology to enhance the security and efficiency of web transactions."
+        "Course Code": "CPSC 474",
+        "Course Name": "Parallel and Distributed Computing",
+        "Rating": 70,
+        "Prerequisites": "CPSC 351",
+        "Explanation": "This course delves into distributed and parallel computing concepts, which are crucial for understanding how modern web applications are architected to handle large volumes and diverse types of data. As a web developer, learning how to optimize tasks across distributed networks can lead to more efficient application designs. The hands-on approach in developing distributed applications ensures you gain practical experience in synchronizing across different system memory architectures. This knowledge is particularly beneficial in real-world scenarios where high performance across multiple servers is needed, making your applications scalable and reliable."
     }
 ]

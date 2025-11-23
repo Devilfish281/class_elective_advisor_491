@@ -20,6 +20,7 @@ from database import db_add  # For database interactions
 
 # Import About dialog
 from ui.app_version import show_about_dialog  # Added Code
+from ui.gui_titanpark_integration import show_parking_helper
 
 logger = logging.getLogger(__name__)  # Reuse the global logger
 
@@ -114,6 +115,7 @@ def main_int_ui() -> None:
         ("Preferences", "icons/preferences.png", show_preferences),
         ("Recommendations", "icons/recommendations.png", show_recommendations),
         ("Profile", "icons/profile.png", show_profile),
+        ("Parking", "icons/parking.png", show_parking_helper),  # Added Code
         ("Help", "icons/help.png", show_help),
     ]
 
