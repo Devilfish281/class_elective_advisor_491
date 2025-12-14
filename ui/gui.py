@@ -8,6 +8,7 @@ import threading
 import time
 import tkinter as tk
 from tkinter import PhotoImage, messagebox, ttk
+from PIL import Image, ImageTk
 from typing import Optional
 
 import bcrypt  # For password hashing (if needed in future)
@@ -40,7 +41,7 @@ TP_TEXT_MUTED = "#9CA3AF"
 
 # Use the same family name as your TitanPark Flutter app here.
 # If the font is not installed, Tk will fall back gracefully.
-TP_FONT_FAMILY = "Poppins"  # change to your actual font name if different
+TP_FONT_FAMILY = "Museo Sans"  # change to your actual font name if different
 
 BASE_FONT = (TP_FONT_FAMILY, 11)
 HEADER_FONT = (TP_FONT_FAMILY, 16, "bold")
@@ -85,7 +86,9 @@ def main_int_ui() -> None:
 
         # Minimal Tkinter window (UPDATED STYLING)
     root = tk.Tk()
-    root.title("Smart Elective Advisor")
+    theme.init_fonts(root)
+    theme.apply_root_theme(root)
+    root.title("Smart Elective Advisor with TitanPark")
     root.geometry("1200x800")
     root.configure(bg=TP_BG)  # New dark background
 
@@ -274,25 +277,63 @@ def show_home(frame):
     """Displays the Home Dashboard"""
     set_active_button("Home")
     clear_content(frame)
-    theme.style_main_frame(frame)  # NEW: TitanPark background for home
+    theme.style_main_frame(frame)
 
-    # NEW: TitanPark-style card container
-    card = tk.Frame(frame, bg=theme.CARD_BG, bd=0, highlightthickness=1, highlightbackground=theme.CARD_BORDER)
+    card = tk.Frame(
+        frame,
+        bg=theme.CARD_BG,
+        bd=0,
+        highlightthickness=1,
+        highlightbackground=theme.CARD_BORDER
+    )
     card.pack(padx=40, pady=60, fill="x")
 
     label = tk.Label(
-        card, text="Welcome to Smart Elective Advisor", font=("Helvetica", 18, "bold")
+        card,
+        text="Welcome to Smart Elective Advisor with TitanPark",
+        font=(TP_FONT_FAMILY, 18, "bold"),
+        bg=theme.CARD_BG,
+        fg=theme.TEXT_PRIMARY,
     )
-    label.configure(bg=theme.CARD_BG, fg=theme.TEXT_PRIMARY) 
     label.pack(padx=24, pady=(20, 8), anchor="w")
 
     info_text = (
         "The Smart Elective Advisor helps CS students select the best elective courses based on their "
         "interests, career aspirations, and academic performance. Navigate through the menu to get started."
     )
-    info = tk.Label(card, text=info_text, wraplength=700, justify="left")
-    info.configure(bg=theme.CARD_BG, fg=theme.TEXT_MUTED)
-    info.pack(padx=24, pady=(0, 24), anchor="w")
+    info = tk.Label(
+        card,
+        text=info_text,
+        wraplength=700,
+        justify="left",
+        bg=theme.CARD_BG,
+        fg=theme.TEXT_MUTED,
+        font=theme.FONT_BODY,
+    )
+    info.pack(padx=24, pady=(0, 12), anchor="w")
+
+    # Merger banner image (loads AFTER Tk root exists)
+    try:
+        img_path = os.path.join("ui", "assets", "titanpark_merge_message.png")
+        pil_img = Image.open(img_path)
+
+        # Resize to fit the card width nicely
+        target_w = 700
+        w, h = pil_img.size
+        scale = target_w / float(w)
+        pil_img = pil_img.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+
+        merge_img = ImageTk.PhotoImage(pil_img, master=frame.winfo_toplevel())
+
+        merge_img_label = tk.Label(card, image=merge_img, bg=theme.CARD_BG)
+        merge_img_label.image = merge_img  # prevent garbage collection
+        merge_img_label.pack(padx=24, pady=(0, 12), anchor="w")
+
+    except Exception as e:
+        logger.warning(f"Could not load merge image: {e}")
+
+
+    
 
 
 # Login Page
@@ -507,7 +548,7 @@ def show_forgot_password(frame):
     popup.transient(parent)
     popup.grab_set()
 
-    tk.Label(popup, text="Reset Your Password", font=("Helvetica", 14, "bold")).pack(
+    tk.Label(popup, text="Reset Your Password", font=(TP_FONT_FAMILY, 14, "bold")).pack(
         pady=12
     )
 
@@ -573,7 +614,7 @@ def show_registration(frame):
     logger.info("Displaying User Registration Form")
     clear_content(frame)
     theme.style_main_frame(frame)  # NEW: TitanPark background for registration
-    header_label = tk.Label(frame, text="User Registration", font=("Helvetica", 20, "bold"))
+    header_label = tk.Label(frame, text="User Registration", font=(TP_FONT_FAMILY, 20, "bold"))
     header_label.configure(bg=theme.CONTENT_BG, fg=theme.TEXT_PRIMARY) 
     header_label.pack(pady=20)
 
@@ -614,7 +655,7 @@ def show_registration(frame):
     password_hint = tk.Label(
         reg_frame,
         text="Password must be at least 8 characters long and include numbers and special characters.",
-        font=("Helvetica", 8),
+        font=(TP_FONT_FAMILY, 8),
         fg="gray",
     )
     password_hint.grid(row=5, column=1, sticky="w", padx=5, pady=(0, 5))
@@ -802,7 +843,7 @@ def show_registration(frame):
         borderwidth=0,
         padx=16,
         pady=8,
-        font=("Helvetica", 11, "bold"),
+        font=(TP_FONT_FAMILY, 11, "bold"),
         cursor="hand2",
     )
     # Tkinter rule: you must not mix pack and grid in the same parent widget.
@@ -826,7 +867,7 @@ def show_preferences(frame):
     clear_content(frame)
 
     header_label = tk.Label(
-        frame, text="Preferences Page", font=("Helvetica", 14, "bold")
+        frame, text="Preferences Page", font=(TP_FONT_FAMILY, 14, "bold")
     )
     header_label.pack(pady=20)
 
@@ -1398,7 +1439,7 @@ def show_recommendations(frame):
     logger.info("Displaying Recommendations Page")
     clear_content(frame)
     header_label = tk.Label(
-        frame, text="Course Recommendations", font=("Helvetica", 14)
+        frame, text="Course Recommendations", font=(TP_FONT_FAMILY, 14)
     )
     header_label.pack(pady=20)
 
@@ -1492,7 +1533,7 @@ def display_recommendations_ui(rec_frame, recommendations):
         course_label = ttk.Label(
             rec_container,
             text=f"{rec.get('Course Name', 'N/A')} ({rec.get('Course Code', 'N/A')})",
-            font=("Helvetica", 12, "bold"),
+            font=(TP_FONT_FAMILY, 12, "bold"),
             background="#ffffff",
         )
         course_label.pack(anchor="w", padx=5, pady=5)
@@ -1563,13 +1604,13 @@ def generate_recommendations_ui(frame):
     clear_content(frame)
     set_active_button("Recommendations")
     header_label = tk.Label(
-        frame, text="Course Recommendations", font=("Helvetica", 14)
+        frame, text="Course Recommendations", font=(TP_FONT_FAMILY, 14)
     )
     header_label.pack(pady=20)
 
     # Loading label
     loading_label = tk.Label(
-        frame, text="Generating recommendations, please wait...", font=("Helvetica", 12)
+        frame, text="Generating recommendations, please wait...", font=(TP_FONT_FAMILY, 12)
     )
     loading_label.pack(pady=10)
     frame.update()
@@ -1658,10 +1699,10 @@ def generate_recommendations_ui(frame):
                 card.pack(fill="x", pady=5, padx=5)
 
                 info = f"Units: {units}\nPrerequisites: {prereqs}\n\n{desc}"
-                tk.Label(card, text=info, justify = "left", wraplength=800, font=("Helvetica", 10, "bold")).pack(anchor="w", padx=10, pady=5)
+                tk.Label(card, text=info, justify = "left", wraplength=800, font=(TP_FONT_FAMILY, 10, "bold")).pack(anchor="w", padx=10, pady=5)
 
         else:
-           tk.Label(scrollable_frame, text="No recommendations found.", font=("Helvetica", 12)).pack(pady=20)
+           tk.Label(scrollable_frame, text="No recommendations found.", font=(TP_FONT_FAMILY, 12)).pack(pady=20)
            logger.info("No recommendations returned from AI module.")
  """
         logger.info("Course recommendations generated and displayed successfully.")
@@ -1683,7 +1724,7 @@ def show_course_details(frame, course=None):  # NEW: accept optional course dict
     text = "Course Details Page"
     if course is not None: 
         text = f"{course.get('Course Name', 'Course Details')} ({course.get('Course Code', 'N/A')})"
-    tk.Label(frame, text=text, font=("Helvetica", 14)).pack(pady=20)
+    tk.Label(frame, text=text, font=(TP_FONT_FAMILY, 14)).pack(pady=20)
 
 
 # Placeholder for profile page
@@ -1694,17 +1735,17 @@ def show_profile(frame):
     clear_content(frame)
     global current_user
 
-    profile_header = tk.Label(frame, text="User Profile", font=("Helvetica", 14))
+    profile_header = tk.Label(frame, text="User Profile", font=(TP_FONT_FAMILY, 14))
     profile_header.pack(pady=20)
 
     full_name = f"{current_user.get('first_name', 'N/A')} {current_user.get('last_name', '')}".strip()
     profile_name_label = tk.Label(
-        frame, text=f"Name: {full_name}", font=("Helvetica", 12)
+        frame, text=f"Name: {full_name}", font=(TP_FONT_FAMILY, 12)
     )
     profile_name_label.pack(pady=5)
 
     profile_email_label = tk.Label(
-        frame, text=f"Email: {current_user.get('email', 'N/A')}", font=("Helvetica", 12)
+        frame, text=f"Email: {current_user.get('email', 'N/A')}", font=(TP_FONT_FAMILY, 12)
     )
     profile_email_label.pack(pady=5)
 
@@ -1846,7 +1887,7 @@ def show_help(frame):
     set_active_button("Help")
     theme.style_main_frame(frame)  # NEW: TitanPark background for Help
 
-    header_label = ttk.Label(frame, text="Help & Support", font=("Helvetica", 20))
+    header_label = ttk.Label(frame, text="Help & Support", font=(TP_FONT_FAMILY, 20))
     header_label.configure(
         background=theme.CONTENT_BG, foreground=theme.TEXT_PRIMARY
     ) 
@@ -1865,7 +1906,7 @@ def show_help(frame):
     help_label = ttk.Label(
         help_frame,
         text=help_text,
-        font=("Helvetica", 14),
+        font=(TP_FONT_FAMILY, 14),
         wraplength=800,
         justify="left",
     )
@@ -1875,7 +1916,7 @@ def show_help(frame):
     help_label.pack(pady=10)
 
     search_label = ttk.Label(
-        help_frame, text="Search Help Topics:", font=("Helvetica", 12)
+        help_frame, text="Search Help Topics:", font=(TP_FONT_FAMILY, 12)
     )
     search_label.pack(pady=5, anchor="w")
     search_entry = ttk.Entry(help_frame, width=50)
