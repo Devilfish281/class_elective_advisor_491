@@ -25,7 +25,7 @@ from database.db_operations import get_colleges, get_departments, get_user_prefe
 
 # Import About dialog
 from ui.app_version import show_about_dialog  # Added Code
-from ui.gui_titanpark_integration import show_parking_helper
+from ui.gui_titanpark_integration import show_parking_helper, show_parking_history_helper
 
 logger = logging.getLogger(__name__)  # Reuse the global logger
 
@@ -121,6 +121,7 @@ def main_int_ui() -> None:
         ("Recommendations", "icons/recommendations.png", show_recommendations),
         ("Profile", "icons/profile.png", show_profile),
         ("Parking", "icons/parking.png", show_parking_helper),  # Added Code
+        ("Parking History", "icons/parking.png", show_parking_history_helper),
         ("Help", "icons/help.png", show_help),
     ]
 
