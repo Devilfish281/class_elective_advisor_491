@@ -68,9 +68,7 @@ def show_parking_history_helper(frame):
             history_df = pd.DataFrame(history)
             # Convert datetime to Pacific time
             history_df['datetime'] = pd.to_datetime(history_df['datetime'])
-            history_df['datetime'] = history_df['datetime'].dt.tz_localize('UTC')
-            history_df['datetime'] = history_df['datetime'].dt.tz_convert('US/Pacific')
-            history_df['date'] = history_df['datetime'].dt.date
+            history_df['datetime'] = history_df['datetime'].dt.tz_localize('US/Pacific')
 
             # Create graph
             fig = Figure(figsize=(10, 6), dpi=100)
