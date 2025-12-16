@@ -50,6 +50,8 @@ def show_parking_helper(frame):
 def show_parking_history_helper(frame):
     """Display the TitanPark parking history helper UI in the given frame."""
     _clear_frame(frame)
+    if hasattr(frame, 'set_active_button'):
+        frame.set_active_button("Parking History")
     parking_url = os.getenv('TITANPARK_API_BASE_URL')
 
     def _refresh():

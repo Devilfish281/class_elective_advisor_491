@@ -84,6 +84,7 @@ def main_int_ui() -> None:
     # Content Area
     content_frame = tk.Frame(root, bg="white", relief="groove", bd=2)
     content_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+    content_frame.set_active_button = set_active_button
 
     # Styles for sidebar buttons
     style = ttk.Style()
