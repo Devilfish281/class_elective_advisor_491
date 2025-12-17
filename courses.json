@@ -1,82 +1,82 @@
 [
     {
         "Number": 1,
-        "Course Code": "CPSC 454",
-        "Course Name": "Cloud Computing and Security",
+        "Course Code": "CPSC 486",
+        "Course Name": "Game Programming",
         "Rating": 100,
-        "Prerequisites": "",
-        "Explanation": "Cloud Computing and Security is an essential course for students focusing on cloud-related fields. It covers foundational concepts like distributed computing and virtual machines, which are core to understanding how cloud environments operate. Additionally, the course addresses critical security concerns, such as vulnerabilities, data privacy, and infrastructure protection, offering a comprehensive view of the challenges and solutions in cloud computing. With the increasing reliance on cloud services across industries, the knowledge gained from this course will be invaluable for designing secure, scalable, and efficient cloud architectures. Understanding these concepts will position you as a valuable asset in tech roles that emphasize cloud technologies."
+        "Prerequisites": "CPSC 223W, CPSC 240",
+        "Explanation": "Game Programming is paramount for students keen on entering the game development industry. It delves into the creation of interactive entertainment software, focusing on data structures and algorithms pertinent to real-time rendering and game mechanics. This course fundamentally empowers students with the capability to combine mathematics, graphics, and software design into cohesive, engaging experiences. By understanding the underlying principles, students are better equipped to tackle complexities in game structures, ensuring efficient and effective game engines. The programming knowledge gained here is invaluable, providing insights into how games function at their core, thus making students more adept contributors to game development teams and potentially leading to innovation within the industry."
     },
     {
         "Number": 2,
-        "Course Code": "CPSC 454",
-        "Course Name": "Parallel and Distributed Computing",
-        "Rating": 95,
-        "Prerequisites": "",
-        "Explanation": "This course focuses on the fundamentals of distributed computing, a pivotal aspect of cloud technology. It covers both shared and distributed memory architectures, which are essential for developing efficient cloud applications capable of handling large-scale data and processes. By mastering parallel programming techniques, you'll be equipped to create applications that can efficiently manage and distribute tasks across multiple servers or nodes, a critical component of any cloud-based service. Moreover, real-world project involvement provides a hands-on experience, enabling you to apply theoretical concepts to practical solutions. Such skills are indispensable for careers in cloud development and operations."
+        "Course Code": "CPSC 483",
+        "Course Name": "Introduction to Machine Learning",
+        "Rating": 99,
+        "Prerequisites": "None",
+        "Explanation": "Machine Learning is a cornerstone of AI development, including applications within game development. Understanding machine learning allows students to create adaptive and intelligent game elements, such as non-playable characters (NPCs) capable of learning from player interactions or environments. This course covers essential algorithms for both supervised and unsupervised learning, enabling students to imbue games with realistic decision-making processes and variability, elevating user engagement. As games increasingly integrate machine learning to enhance realism and player experience, proficiency in this domain is crucial. Furthermore, projects involving real-world data equip students with practical skills relevant to both gaming and broader tech industries."
     },
     {
         "Number": 3,
-        "Course Code": "CPSC 471",
-        "Course Name": "Computer Communications",
-        "Rating": 90,
-        "Prerequisites": "",
-        "Explanation": "Understanding the fundamentals of computer communications is critical in cloud computing, where seamless data transfer across networks is vital. This course delves into various communication protocols and networking principles that support cloud infrastructures, including data transmission, networking hardware, and software. As cloud environments rely heavily on efficient communication systems to connect users with data centers globally, expertise in this area ensures you can optimize and secure network performance. This knowledge is foundational for tasks like configuring cloud services, troubleshooting network issues, and enhancing user experiences, making it a must-have for any cloud computing professional."
+        "Course Code": "CPSC 484",
+        "Course Name": "Principles of Computer Graphics",
+        "Rating": 98,
+        "Prerequisites": "CPSC 335",
+        "Explanation": "Computer Graphics is a vital component of game development, focusing on the aesthetics and visual flow of games. This course offers a comprehensive overview of graphical software structures, input/output devices, and algorithmic techniques essential for creating and manipulating visuals in games. Understanding graphics at this level empowers developers to produce visually stunning and engaging environments that captivate players. By exploring techniques such as clipping, windowing, and character generation, students gain the skills necessary to optimize graphical performance and innovate new visual styles and effects. This knowledge is indispensable for students aspiring to specialize in visual effects or animation within the gaming industry."
     },
     {
         "Number": 4,
-        "Course Code": "CPSC 332",
-        "Course Name": "File Structures and Database Systems",
-        "Rating": 88,
-        "Prerequisites": "",
-        "Explanation": "This course focuses on the organization, storage, and retrieval of data, which are critical competencies for those entering the field of cloud computing. Proficiency in database systems is indispensable as cloud services often involve managing vast amounts of data across distributed systems. Understanding file structures and database manipulation enables you to efficiently design, implement, and optimize data storage solutions in a cloud environment. The practical skills gained here are directly applicable to building scalable and efficient database systems that support various cloud applications, making this course an essential stepping stone for those aiming to specialize in cloud-based services."
+        "Course Code": "CPSC 481",
+        "Course Name": "Artificial Intelligence",
+        "Rating": 97,
+        "Prerequisites": "CPSC 335",
+        "Explanation": "Artificial Intelligence is revolutionizing game design with complex, adaptive systems that enhance realism and player engagement. This course offers in-depth coverage of AI principles, providing a foundational understanding crucial for game developers. By learning about AI algorithms, students can design realistic NPCs, improve decision-making processes, and create dynamic game worlds that react to player input, making the gaming experience more immersive and engaging. Moreover, AI knowledge enables the creation of personalized gaming experiences through adaptive difficulty and learning mechanisms. As industries increasingly intertwine gaming and AI, mastery of this subject provides a competitive edge in developing next-generation game titles."
     },
     {
         "Number": 5,
-        "Course Code": "CPSC 362",
-        "Course Name": "Foundations of Software Engineering",
-        "Rating": 85,
-        "Prerequisites": "",
-        "Explanation": "Software engineering principles are vital in developing reliable and scalable software solutions, especially within the context of cloud computing. This course provides a comprehensive overview of software engineering methodologies, including requirements analysis, system design, implementation, and testing. Such methodologies are critical when creating cloud-based applications that require integration with a variety of services and systems. Mastery of software engineering best practices ensures that you can design robust applications while managing the complexities and demands of cloud environments, contributing substantially to the development and maintenance of high-quality cloud technologies."
+        "Course Code": "CPSC 486",
+        "Course Name": "Game Design and Production",
+        "Rating": 96,
+        "Prerequisites": "None",
+        "Explanation": "Understanding game design and production is crucial for a holistic view of game development. This course introduces students to both current and emerging technologies and market trends, focusing on the key building tools and processes integral to designing, developing, and producing games. It prepares students to navigate the complex game development lifecycle, from conceptualization to market release, ensuring they understand both creative and managerial aspects. By examining successful game design methodologies, students can develop the technical and strategic skills necessary to launch game projects. This insight is indispensable for those aspiring to lead game development teams or manage game production processes efficiently."
     },
     {
         "Number": 6,
-        "Course Code": "CPSC 335",
-        "Course Name": "Algorithm Engineering",
-        "Rating": 80,
-        "Prerequisites": "",
-        "Explanation": "Algorithms are at the heart of computing processes, and understanding how to design and implement efficient algorithms is critical for cloud computing. This course enhances your ability to solve complex problems through the development of optimized algorithms. In a cloud context, efficient algorithms ensure that resources are utilized effectively and services are delivered rapidly to users. Given the scale at which cloud-based systems operate, performance improvements gained from well-engineered algorithms can significantly reduce costs and improve user satisfaction. Thus, proficiency in algorithm engineering positions you to develop innovative solutions tailored for the dynamic and resource-intensive cloud environment."
+        "Course Code": "CPSC 484",
+        "Course Name": "Database and Applications",
+        "Rating": 94,
+        "Prerequisites": "None",
+        "Explanation": "Database management is integral to online and large-scale game applications, where efficient data storage and retrieval are paramount. This course provides essential knowledge in database design and application development, aligning well with game development due to its focus on system analysis, requirement specifications, and database interaction. For games requiring the management of player data, transactions, or inventory systems, understanding databases ensures developers can implement effective data models and seamless back-end functionalities. Additionally, this course's real-world project-based approach offers hands-on experience that is directly transferable to industry roles, facilitating the creation of robust, scalable, and maintainable game applications."
     },
     {
         "Number": 7,
-        "Course Code": "CPSC 352",
-        "Course Name": "Cryptography",
-        "Rating": 75,
-        "Prerequisites": "",
-        "Explanation": "Cryptography is an essential component of cloud computing, given the numerous security and data privacy concerns inherent in storing and processing data in cloud environments. This course introduces the concepts and techniques used to secure information, such as encryption, cryptographic hashing, and digital signatures. Understanding these techniques is crucial in developing applications that protect sensitive data and maintain user trust in digital services. As cloud computing involves significant data handling across various networks and platforms, expertise in cryptography will enable you to design and implement robust security measures, an essential skill set for safeguarding cloud infrastructures."
+        "Course Code": "CPSC 474",
+        "Course Name": "Parallel and Distributed Computing",
+        "Rating": 92,
+        "Prerequisites": "CPSC 351, CPSC 360",
+        "Explanation": "As games grow increasingly complex and resource-intensive, understanding parallel and distributed computing becomes crucial for optimizing performance. This course addresses distributed computing concepts, highlighting techniques such as parallel programming and inter-process communication. For game developers, such skills are invaluable in leveraging multi-core and GPU architectures to enhance game performance, ensuring smoother gameplay and more responsive environments. By mastering these concepts, students can design systems that efficiently process large volumes of data and operations concurrently, a skill pivotal for developing seamless, high-quality gaming experiences on modern hardware, equipping them for careers focused on performance optimization and computational efficiency."
     },
     {
         "Number": 8,
-        "Course Code": "CPSC 455",
-        "Course Name": "Web Security",
-        "Rating": 70,
-        "Prerequisites": "",
-        "Explanation": "Keeping web applications secure is crucial, and this course provides a deep dive into the security practices essential for cloud-hosted services. Given the proliferation of cloud-based web applications, understanding web security mechanisms\u2014including authentication, access control, and protection against common vulnerabilities such as SQL injection and cross-site scripting\u2014is indispensable. This course not only presents theoretical knowledge but also offers practical, hands-on security testing techniques. In a cloud computing context, the skills acquired will help you build more secure applications, ensuring compliance with industry standards and minimizing risks of data breaches and cyberattacks."
+        "Course Code": "CPSC 474",
+        "Course Name": "Web Front-End Engineering",
+        "Rating": 90,
+        "Prerequisites": "None",
+        "Explanation": "Web Front-End Engineering is essential for developing interactive web applications, including browser-based games. This course covers fundamental technologies like JavaScript, model-view design patterns, and client-side frameworks that are central to creating engaging web experiences. With the gaming industry increasingly embracing the web as a platform\u2014through HTML5 games and interactive browser content\u2014understanding front-end engineering is vital. Students learn to optimize user interfaces, manage asynchronous events, and integrate interactive elements that are crucial for responsive game design. Such skills are pivotal for creating immersive, well-performing game interfaces that capture user attention and provide seamless interaction across diverse platforms."
     },
     {
         "Number": 9,
-        "Course Code": "CPSC 439",
-        "Course Name": "Theory of Computation",
-        "Rating": 65,
-        "Prerequisites": "",
-        "Explanation": "While more theoretical, the Theory of Computation provides you with an understanding of fundamental computational principles and problem-solving techniques. This course explores automata theory, formal languages, and computational complexity, which are essential for grasping the limits of what can be processed by computers. In the field of cloud computing, where computing resources are both finite and shared, knowledge of computational theory helps in designing efficient algorithms and understanding the constraints of cloud architectures. The insights gained can lead to the innovative application of these principles in optimizing cloud-based solutions and improving system efficiencies."
+        "Course Code": "CPSC 474",
+        "Course Name": "Mathematical Model Building",
+        "Rating": 89,
+        "Prerequisites": "MATH 150B, MATH 250B",
+        "Explanation": "Games often rely on mathematical models for simulations, physics, and AI. This course introduces essential mathematical concepts for creating realistic game dynamics and enhancing predictive capabilities. Understanding dimensional analysis, dynamic systems, and equation derivation enables developers to model complex behaviors and environments within games, such as realistic physics engines or strategic planning algorithms. Mastery in mathematical modeling supports the creation of sophisticated game mechanics and AI systems, offering opportunities to innovate with unique gameplay elements. Students proficient in this area stand out in game development fields that demand analytical rigor and advanced problem-solving capabilities, positioning them for roles in technical design and algorithm optimization."
     },
     {
         "Number": 10,
-        "Course Code": "CPSC 375",
-        "Course Name": "Introduction to Data Science and Big Data",
-        "Rating": 60,
-        "Prerequisites": "",
-        "Explanation": "The interconnected nature of cloud computing and big data makes this course particularly valuable. Learning how to handle and analyze extensive datasets prepares you for identifying meaningful insights from data stored and processed within the cloud. The course covers data preparation, statistical modeling, machine learning, and visualization techniques, all within the context of big data platforms. This knowledge is crucial as cloud services are often used to store and analyze massive data sets. Proficiency in these areas allows you to support data-driven decision-making processes, optimize data storage solutions, and utilize cloud computing resources effectively for big data applications."
+        "Course Code": "CPSC 474",
+        "Course Name": "Numerical Analysis",
+        "Rating": 85,
+        "Prerequisites": "MATH 250A, MATH 250B",
+        "Explanation": "Numerical Analysis deals with computational techniques to solve complex mathematical problems, which is crucial in game development for physics simulations, graphics rendering, and real-time calculations. This course covers solutions for systems of equations, interpolation, and numerical differentiation\u2014skills that support efficient computation in games. By coding numerical methods, students learn to optimize performance and accuracy in simulations, a vital aspect for achieving realistic visual and interactive effects. Developers utilizing these techniques enhance the game's technical foundation, ensuring smoother, more stable gaming experiences. This proficiency is especially significant in roles focused on technical artistry, physics programming, and simulation engineering within the gaming sector."
     }
 ]
