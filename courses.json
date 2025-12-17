@@ -1,82 +1,82 @@
 [
     {
         "Number": 1,
-        "Course Code": "CPSC 349",
-        "Course Name": "Web Front-End Engineering",
+        "Course Code": "CPSC 454",
+        "Course Name": "Cloud Computing and Security",
         "Rating": 100,
-        "Prerequisites": "CPSC 131",
-        "Explanation": "This course focuses on the essential skills for developing interactive web applications, a fundamental aspect of any web developer's career. By studying CPSC 349, you will gain a comprehensive understanding of web architecture, focusing on the client-side aspects like markup, stylesheets, and JavaScript\u2014key technologies for web development. With hands-on experience in JavaScript's functional and object-oriented programming, you will delve into model-view design patterns, templates, and frameworks. The course also covers client-side technologies for real-time interaction and accessing back-end services. These skills are crucial for creating responsive and intuitive user interfaces, expanding your ability to deliver a complete web solution."
+        "Prerequisites": "",
+        "Explanation": "Cloud Computing and Security is an essential course for students focusing on cloud-related fields. It covers foundational concepts like distributed computing and virtual machines, which are core to understanding how cloud environments operate. Additionally, the course addresses critical security concerns, such as vulnerabilities, data privacy, and infrastructure protection, offering a comprehensive view of the challenges and solutions in cloud computing. With the increasing reliance on cloud services across industries, the knowledge gained from this course will be invaluable for designing secure, scalable, and efficient cloud architectures. Understanding these concepts will position you as a valuable asset in tech roles that emphasize cloud technologies."
     },
     {
         "Number": 2,
-        "Course Code": "CPSC 455",
-        "Course Name": "Web Security",
+        "Course Code": "CPSC 454",
+        "Course Name": "Parallel and Distributed Computing",
         "Rating": 95,
-        "Prerequisites": "CPSC 351 or CPSC 353",
-        "Explanation": "As a web developer, understanding web security is crucial for ensuring the protection of web applications against prevalent threats. CPSC 455 equips you with knowledge of various web security mechanisms, highlighting areas like authentication, access control, and data protection. Exploring common vulnerabilities, such as SQL injection and cross-site scripting, provides insight into real-world challenges web applications face. The course emphasizes hands-on projects to implement and test web application security, which is invaluable for developing secure and robust applications. This elective aligns closely with industry demands for developers proficient in identifying and mitigating security threats."
+        "Prerequisites": "",
+        "Explanation": "This course focuses on the fundamentals of distributed computing, a pivotal aspect of cloud technology. It covers both shared and distributed memory architectures, which are essential for developing efficient cloud applications capable of handling large-scale data and processes. By mastering parallel programming techniques, you'll be equipped to create applications that can efficiently manage and distribute tasks across multiple servers or nodes, a critical component of any cloud-based service. Moreover, real-world project involvement provides a hands-on experience, enabling you to apply theoretical concepts to practical solutions. Such skills are indispensable for careers in cloud development and operations."
     },
     {
         "Number": 3,
-        "Course Code": "CPSC 449",
-        "Course Name": "Web Back-End Engineering",
-        "Rating": 92,
-        "Prerequisites": "CPSC 332",
-        "Explanation": "Web developers must excel in both front-end and back-end technologies to build comprehensive web applications. CPSC 449 focuses on back-end engineering, ensuring that you understand the server-side components required for scalable and efficient web applications. Topics such as web services, session management, load balancing, and REST architecture are covered thoroughly. Practical knowledge of data models, caching, and database management in both relational and non-relational settings will prepare you to handle the complexities of back-end systems. This comprehensive knowledge enhances your ability to create reliable and high-performance applications, catering to sophisticated web demands."
+        "Course Code": "CPSC 471",
+        "Course Name": "Computer Communications",
+        "Rating": 90,
+        "Prerequisites": "",
+        "Explanation": "Understanding the fundamentals of computer communications is critical in cloud computing, where seamless data transfer across networks is vital. This course delves into various communication protocols and networking principles that support cloud infrastructures, including data transmission, networking hardware, and software. As cloud environments rely heavily on efficient communication systems to connect users with data centers globally, expertise in this area ensures you can optimize and secure network performance. This knowledge is foundational for tasks like configuring cloud services, troubleshooting network issues, and enhancing user experiences, making it a must-have for any cloud computing professional."
     },
     {
         "Number": 4,
-        "Course Code": "CPSC 431",
-        "Course Name": "Database and Applications",
-        "Rating": 90,
-        "Prerequisites": "CPSC 332",
-        "Explanation": "A deep understanding of database systems is a cornerstone for any web developer. CPSC 431 introduces you to crucial techniques in database design and application development. You'll learn to conduct system analysis, specify requirements, and engage in conceptual and logical design. Developing web interfaces with contemporary database management systems will feature prominently in this course. This elective facilitates an essential skill set for web developers who must manage vast amounts of data efficiently and meet various compliance and security standards. It empowers you to optimize database interactions essential for high-performance web applications."
+        "Course Code": "CPSC 332",
+        "Course Name": "File Structures and Database Systems",
+        "Rating": 88,
+        "Prerequisites": "",
+        "Explanation": "This course focuses on the organization, storage, and retrieval of data, which are critical competencies for those entering the field of cloud computing. Proficiency in database systems is indispensable as cloud services often involve managing vast amounts of data across distributed systems. Understanding file structures and database manipulation enables you to efficiently design, implement, and optimize data storage solutions in a cloud environment. The practical skills gained here are directly applicable to building scalable and efficient database systems that support various cloud applications, making this course an essential stepping stone for those aiming to specialize in cloud-based services."
     },
     {
         "Number": 5,
-        "Course Code": "CPSC 484",
-        "Course Name": "Principles of Computer Graphics",
+        "Course Code": "CPSC 362",
+        "Course Name": "Foundations of Software Engineering",
         "Rating": 85,
-        "Prerequisites": "CPSC 131 and MATH 150B or MATH 270B",
-        "Explanation": "For web developers keen on emphasizing visual and interactive design, CPSC 484 is invaluable. It covers key aspects of computer graphics, such as display processor organization and interaction techniques, essential for enhancing user experience. Hands-on learning in graphical input/output devices and algorithmic techniques improves your capability to produce visually appealing and technically sound web applications. This knowledge becomes increasingly relevant as web platforms move towards highly interactive and dynamic user interfaces, making you adept at integrating creative and technical aspects within web environments."
+        "Prerequisites": "",
+        "Explanation": "Software engineering principles are vital in developing reliable and scalable software solutions, especially within the context of cloud computing. This course provides a comprehensive overview of software engineering methodologies, including requirements analysis, system design, implementation, and testing. Such methodologies are critical when creating cloud-based applications that require integration with a variety of services and systems. Mastery of software engineering best practices ensures that you can design robust applications while managing the complexities and demands of cloud environments, contributing substantially to the development and maintenance of high-quality cloud technologies."
     },
     {
         "Number": 6,
-        "Course Code": "CPSC 483",
-        "Course Name": "Introduction to Machine Learning",
-        "Rating": 83,
-        "Prerequisites": "CPSC 335 or MATH 338",
-        "Explanation": "With the growing integration of AI into web applications, understanding machine learning can elevate your development projects significantly. CPSC 483 offers foundational knowledge in designing and implementing machine learning algorithms, applicable to creating smarter and more responsive web systems. By engaging with real-world data projects, you\u2019ll learn to address uncertainties and employ algorithms for both supervised and unsupervised learning. This confluence of web development and AI can be transformative, allowing you to build systems that personalize user experiences and provide advanced analytical functionalities."
+        "Course Code": "CPSC 335",
+        "Course Name": "Algorithm Engineering",
+        "Rating": 80,
+        "Prerequisites": "",
+        "Explanation": "Algorithms are at the heart of computing processes, and understanding how to design and implement efficient algorithms is critical for cloud computing. This course enhances your ability to solve complex problems through the development of optimized algorithms. In a cloud context, efficient algorithms ensure that resources are utilized effectively and services are delivered rapidly to users. Given the scale at which cloud-based systems operate, performance improvements gained from well-engineered algorithms can significantly reduce costs and improve user satisfaction. Thus, proficiency in algorithm engineering positions you to develop innovative solutions tailored for the dynamic and resource-intensive cloud environment."
     },
     {
         "Number": 7,
-        "Course Code": "CPSC 452",
+        "Course Code": "CPSC 352",
         "Course Name": "Cryptography",
-        "Rating": 80,
-        "Prerequisites": "MATH 270B or CPSC 131",
-        "Explanation": "For web developers, encryption skills are vital in safeguarding user data and ensuring secure communications. CPSC 452's curriculum introduces cryptography and steganography fundamentals, including encryption protocols, cryptographic hashing, and key ciphers. With an emphasis on hands-on programming projects, you\u2019ll develop encryption systems, understanding their application in protecting data integrity and confidentiality. This protects against cyber threats like man-in-the-middle and exhaustive search attacks. A sharply honed skill in cryptography enhances your web applications\u2019 security, providing value to both users and organizations."
+        "Rating": 75,
+        "Prerequisites": "",
+        "Explanation": "Cryptography is an essential component of cloud computing, given the numerous security and data privacy concerns inherent in storing and processing data in cloud environments. This course introduces the concepts and techniques used to secure information, such as encryption, cryptographic hashing, and digital signatures. Understanding these techniques is crucial in developing applications that protect sensitive data and maintain user trust in digital services. As cloud computing involves significant data handling across various networks and platforms, expertise in cryptography will enable you to design and implement robust security measures, an essential skill set for safeguarding cloud infrastructures."
     },
     {
         "Number": 8,
-        "Course Code": "CPSC 439",
-        "Course Name": "Theory of Computation",
-        "Rating": 78,
-        "Prerequisites": "CPSC 121 or MATH 320 or MATH 270B or MATH 280",
-        "Explanation": "While not directly applied to web development, CPSC 439 offers the theoretical underpinning crucial for advanced computer science topics. This course explores essential computational theories, such as automata theory and computability, enhancing your understanding of the theoretical limits of what can be computed. The coverage of topics like Turing machines, formal languages, and computational complexity provides foundational knowledge that might inform innovative development approaches or contribute to high-level problem-solving strategies. Understanding these theoretical concepts can refine your analytical skills and broaden your approach to tackling complex web development tasks."
+        "Course Code": "CPSC 455",
+        "Course Name": "Web Security",
+        "Rating": 70,
+        "Prerequisites": "",
+        "Explanation": "Keeping web applications secure is crucial, and this course provides a deep dive into the security practices essential for cloud-hosted services. Given the proliferation of cloud-based web applications, understanding web security mechanisms\u2014including authentication, access control, and protection against common vulnerabilities such as SQL injection and cross-site scripting\u2014is indispensable. This course not only presents theoretical knowledge but also offers practical, hands-on security testing techniques. In a cloud computing context, the skills acquired will help you build more secure applications, ensuring compliance with industry standards and minimizing risks of data breaches and cyberattacks."
     },
     {
         "Number": 9,
-        "Course Code": "CPSC 456",
-        "Course Name": "Network Security Fundamentals",
-        "Rating": 75,
-        "Prerequisites": "CPSC 351",
-        "Explanation": "As applications shift towards cloud and distributed systems, understanding network security ensures you can address vulnerabilities that span beyond single-system scopes. CPSC 456 explores the vulnerabilities associated with network protocols and the impact on data integrity across web environments. Hands-on exercises make this course relevant for web developers looking to secure connections and data transmissions across networked applications. Advanced insight into network security topics directly benefits developers who wish to build enhanced security mechanisms within their web structures, providing safer user interactions."
+        "Course Code": "CPSC 439",
+        "Course Name": "Theory of Computation",
+        "Rating": 65,
+        "Prerequisites": "",
+        "Explanation": "While more theoretical, the Theory of Computation provides you with an understanding of fundamental computational principles and problem-solving techniques. This course explores automata theory, formal languages, and computational complexity, which are essential for grasping the limits of what can be processed by computers. In the field of cloud computing, where computing resources are both finite and shared, knowledge of computational theory helps in designing efficient algorithms and understanding the constraints of cloud architectures. The insights gained can lead to the innovative application of these principles in optimizing cloud-based solutions and improving system efficiencies."
     },
     {
         "Number": 10,
-        "Course Code": "CPSC 474",
-        "Course Name": "Parallel and Distributed Computing",
-        "Rating": 70,
-        "Prerequisites": "CPSC 351",
-        "Explanation": "This course delves into distributed and parallel computing concepts, which are crucial for understanding how modern web applications are architected to handle large volumes and diverse types of data. As a web developer, learning how to optimize tasks across distributed networks can lead to more efficient application designs. The hands-on approach in developing distributed applications ensures you gain practical experience in synchronizing across different system memory architectures. This knowledge is particularly beneficial in real-world scenarios where high performance across multiple servers is needed, making your applications scalable and reliable."
+        "Course Code": "CPSC 375",
+        "Course Name": "Introduction to Data Science and Big Data",
+        "Rating": 60,
+        "Prerequisites": "",
+        "Explanation": "The interconnected nature of cloud computing and big data makes this course particularly valuable. Learning how to handle and analyze extensive datasets prepares you for identifying meaningful insights from data stored and processed within the cloud. The course covers data preparation, statistical modeling, machine learning, and visualization techniques, all within the context of big data platforms. This knowledge is crucial as cloud services are often used to store and analyze massive data sets. Proficiency in these areas allows you to support data-driven decision-making processes, optimize data storage solutions, and utilize cloud computing resources effectively for big data applications."
     }
 ]

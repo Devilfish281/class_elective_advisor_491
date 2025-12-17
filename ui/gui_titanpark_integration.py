@@ -11,22 +11,64 @@ import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
+from PIL import Image, ImageTk
+
 from titanpark_integration.client import TitanParkError
 from titanpark_integration.recommendation import recommend_parking_now
 
+from ui import theme
+
+
 def _clear_frame(frame) -> None:
-    """Destroy all child widgets in the given frame."""
     for widget in frame.winfo_children():
         widget.destroy()
 
 
 def show_parking_helper(frame):
-    """Display the TitanPark parking helper UI in the given frame."""
     _clear_frame(frame)
-    header = tk.Label(frame, text="Find Parking Fast", font=("Helvetica", 16))
-    header.pack(pady=10)
 
-    result_label = tk.Label(frame, text="", wraplength=600, justify="left")
+    try:
+        frame.configure(bg=theme.CONTENT_BG)
+    except Exception:
+        pass
+
+    # --- Logo (above header) ---
+    try:
+        here = os.path.dirname(__file__)  # .../ui
+        logo_path = os.path.join(here, "assets", "titanpark_logo.png")
+
+        img = Image.open(logo_path)
+        target_width = 180
+        w, h = img.size
+        scale = target_width / float(w)
+        img = img.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+
+        logo = ImageTk.PhotoImage(img, master=frame.winfo_toplevel())
+
+        logo_label = tk.Label(frame, image=logo, bg=theme.CONTENT_BG)
+        logo_label.image = logo  # keep reference
+        logo_label.pack(pady=(24, 10))
+    except Exception as e:
+        print(f"[TitanPark] Could not load logo: {e}")
+
+    header = tk.Label(
+        frame,
+        text="Find Parking Fast, with TitanPark",
+        font=theme.FONT_TITLE,
+        bg=theme.CONTENT_BG,
+        fg=theme.TEXT_PRIMARY,
+    )
+    header.pack(pady=(0, 12))
+
+    result_label = tk.Label(
+        frame,
+        text="",
+        wraplength=600,
+        justify="left",
+        font=theme.FONT_BODY,
+        bg=theme.CONTENT_BG,
+        fg=theme.TEXT_MUTED,
+    )
     result_label.pack(pady=10)
 
     def refresh():
@@ -40,6 +82,7 @@ def show_parking_helper(frame):
         except Exception as exc:
             messagebox.showerror("Unexpected error", str(exc))
             return
+
         if rec is None:
             result_label.config(text="No good parking options are available right now.")
         else:
@@ -122,3 +165,9 @@ def show_parking_history_helper(frame):
     data_btn.pack(pady = 10)
 
     _refresh()
+    btn = tk.Button(frame, text="Check Parking Now", command=refresh)
+    try:
+        theme.style_primary_button(btn)
+    except Exception:
+        pass
+    btn.pack(pady=10)

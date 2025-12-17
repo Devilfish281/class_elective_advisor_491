@@ -22,7 +22,8 @@ dependencies = [
     "pandas (>=2.3.3,<3.0.0)",
     "pytz (>=2025.2,<2026.0)",
     "tkcalendar (>=1.6.1,<2.0.0)",
-    "matplotlib (>=3.10.8,<4.0.0)"
+    "matplotlib (>=3.10.8,<4.0.0)",
+    "pillow (>=12.0.0,<13.0.0)"
 ]
 
 [tool.poetry]
