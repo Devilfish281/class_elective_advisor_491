@@ -25,6 +25,8 @@ from database.db_operations import save_user_preferences
 from database.db_operations import get_colleges, get_departments, get_user_preferences
 
 # Import About dialog
+from ui.app_version import show_about_dialog  # Added Code
+from ui.gui_titanpark_integration import show_parking_helper, show_parking_history_helper
 from ui.app_version import show_about_dialog
 from ui.gui_titanpark_integration import show_parking_helper
 from ui import theme  # NEW: TitanPark-themed colors and styles
@@ -118,6 +120,7 @@ def main_int_ui() -> None:
     )
 
     content_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+    content_frame.set_active_button = set_active_button
     theme.style_main_frame(content_frame)  # NEW: TitanPark content background
 
     # Styles for sidebar buttons (UPDATED FOR TITANPARK LOOK)
@@ -183,7 +186,8 @@ def main_int_ui() -> None:
         ("Preferences", "icons/preferences.png", show_preferences),
         ("Recommendations", "icons/recommendations.png", show_recommendations),
         ("Profile", "icons/profile.png", show_profile),
-        ("Parking", "icons/parking.png", show_parking_helper),  
+        ("Parking", "icons/parking.png", show_parking_helper),  # Added Code
+        ("Parking History", "icons/parking-area.png", show_parking_history_helper),
         ("Help", "icons/help.png", show_help),
     ]
 
