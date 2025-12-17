@@ -8,36 +8,32 @@ import threading
 import time
 import tkinter as tk
 from tkinter import PhotoImage, messagebox, ttk
-from PIL import Image, ImageTk
 from typing import Optional
 
 import bcrypt  # For password hashing (if needed in future)
+from PIL import Image, ImageTk
 
 from ai_integration.ai_module import (  # AI integration
-    _parse_degree_electives_csv,
-    get_recommendations_ai,
-)
+    _parse_degree_electives_csv, get_recommendations_ai)
 from database import db_add  # For database interactions
-from database.db_operations import get_degree_levels 
-from database.db_operations import get_degrees  
-from database.db_operations import get_jobs_by_degree  
-from database.db_operations import save_user_preferences 
-from database.db_operations import get_colleges, get_departments, get_user_preferences
-
-# Import About dialog
-from ui.app_version import show_about_dialog  # Added Code
-from ui.gui_titanpark_integration import show_parking_helper, show_parking_history_helper
-from ui.app_version import show_about_dialog
-from ui.gui_titanpark_integration import show_parking_helper
+from database import db_operations  # Importing db_operations for authenticatio
+from database.db_operations import (get_colleges, get_degree_levels,
+                                    get_degrees, get_departments,
+                                    get_jobs_by_degree, get_user_preferences,
+                                    save_user_preferences)
 from ui import theme  # NEW: TitanPark-themed colors and styles
+# Import About dialog
+from ui.app_version import show_about_dialog
+from ui.gui_titanpark_integration import (show_parking_helper,
+                                          show_parking_history_helper)
 
 logger = logging.getLogger(__name__)  # Reuse the global logger
 
 # --- TitanPark-inspired theme (NEW) ---
-TP_BG = "#020814"          # dark background
+TP_BG = "#020814"  # dark background
 TP_SIDEBAR_BG = "#050B18"  # sidebar background
-TP_CARD_BG = "#101827"     # card / panel background
-TP_ACCENT = "#FF7900"      # accent orange
+TP_CARD_BG = "#101827"  # card / panel background
+TP_ACCENT = "#FF7900"  # accent orange
 TP_TEXT_PRIMARY = "#F9FAFB"
 TP_TEXT_MUTED = "#9CA3AF"
 
@@ -86,7 +82,7 @@ def main_int_ui() -> None:
 
     logger.info("Initializing the Smart Elective Advisor GUI.")
 
-        # Minimal Tkinter window (UPDATED STYLING)
+    # Minimal Tkinter window (UPDATED STYLING)
     root = tk.Tk()
     theme.init_fonts(root)
     theme.apply_root_theme(root)
@@ -104,7 +100,7 @@ def main_int_ui() -> None:
         root,
         width=250,
         relief="flat",
-        bg=TP_SIDEBAR_BG, 
+        bg=TP_SIDEBAR_BG,
     )
     nav_frame.grid(row=0, column=0, sticky="ns")
     nav_frame.grid_propagate(False)
@@ -114,9 +110,9 @@ def main_int_ui() -> None:
     # Content Area (UPDATED COLORS)
     content_frame = tk.Frame(
         root,
-        bg=TP_BG,      
-        relief="flat", 
-        bd=0,  
+        bg=TP_BG,
+        relief="flat",
+        bd=0,
     )
 
     content_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
@@ -131,9 +127,9 @@ def main_int_ui() -> None:
         "TButton",
         padding=10,
         anchor="w",
-        font=BASE_FONT,  
-        background=TP_SIDEBAR_BG, 
-        foreground=TP_TEXT_MUTED, 
+        font=BASE_FONT,
+        background=TP_SIDEBAR_BG,
+        foreground=TP_TEXT_MUTED,
     )
     style.map(
         "TButton",
@@ -152,8 +148,8 @@ def main_int_ui() -> None:
         padding=10,
         anchor="w",
         font=(TP_FONT_FAMILY, 11, "bold"),
-        background=TP_ACCENT, 
-        foreground=TP_TEXT_PRIMARY, 
+        background=TP_ACCENT,
+        foreground=TP_TEXT_PRIMARY,
     )
 
     theme.init_sidebar_styles(style)  # NEW: TitanPark button styles
@@ -169,9 +165,9 @@ def main_int_ui() -> None:
         bd=0,
         relief="flat",
         anchor="w",
-        bg=TP_SIDEBAR_BG, 
-        fg=TP_TEXT_MUTED, 
-        font=BASE_FONT,  
+        bg=TP_SIDEBAR_BG,
+        fg=TP_TEXT_MUTED,
+        font=BASE_FONT,
     )
 
     status_bar.grid(row=1, column=0, columnspan=2, sticky="ew")
@@ -186,7 +182,7 @@ def main_int_ui() -> None:
         ("Preferences", "icons/preferences.png", show_preferences),
         ("Recommendations", "icons/recommendations.png", show_recommendations),
         ("Profile", "icons/profile.png", show_profile),
-        ("Parking", "icons/parking.png", show_parking_helper),  # Added Code
+        ("Parking", "icons/parking.png", show_parking_helper),  
         ("Parking History", "icons/parking-area.png", show_parking_history_helper),
         ("Help", "icons/help.png", show_help),
     ]
@@ -288,7 +284,7 @@ def show_home(frame):
         bg=theme.CARD_BG,
         bd=0,
         highlightthickness=1,
-        highlightbackground=theme.CARD_BORDER
+        highlightbackground=theme.CARD_BORDER,
     )
     card.pack(padx=40, pady=60, fill="x")
 
@@ -337,9 +333,6 @@ def show_home(frame):
         logger.warning(f"Could not load merge image: {e}")
 
 
-    
-
-
 # Login Page
 def show_login(frame):
     """Displays the Login Page."""
@@ -349,24 +342,24 @@ def show_login(frame):
     # Centered card container for the login form (NEW)
     card_frame = tk.Frame(
         frame,
-        bg=TP_CARD_BG,                 # dark card background
+        bg=TP_CARD_BG,  # dark card background
         bd=0,
-        highlightbackground="#1F2937", # subtle border
+        highlightbackground="#1F2937",  # subtle border
         highlightthickness=1,
-        padx=40, 
+        padx=40,
         pady=30,
     )
-    card_frame.pack(pady=80)           # center the card vertically
+    card_frame.pack(pady=80)  # center the card vertically
 
     header_label = tk.Label(
         card_frame,
         text="Login Page",
-        font=HEADER_FONT, 
-        bg=TP_CARD_BG, 
-        fg=TP_TEXT_PRIMARY, 
-        bd=0, 
+        font=HEADER_FONT,
+        bg=TP_CARD_BG,
+        fg=TP_TEXT_PRIMARY,
+        bd=0,
         highlightthickness=0,
-        relief="flat", 
+        relief="flat",
     )
     header_label.pack(pady=10)
 
@@ -374,20 +367,20 @@ def show_login(frame):
     email_label = tk.Label(
         card_frame,
         text="Email:",
-        bg=TP_CARD_BG, 
-        fg=TP_TEXT_PRIMARY, 
-        font=BASE_FONT, 
+        bg=TP_CARD_BG,
+        fg=TP_TEXT_PRIMARY,
+        font=BASE_FONT,
     )
     email_label.pack(pady=(10, 5))
     email_entry = tk.Entry(
         card_frame,
         width=30,
-        bg=TP_BG, # inner field background
-        fg=TP_TEXT_PRIMARY, 
+        bg=TP_BG,  # inner field background
+        fg=TP_TEXT_PRIMARY,
         insertbackground=TP_TEXT_PRIMARY,
         bd=0,
         highlightthickness=0,
-        font=BASE_FONT, 
+        font=BASE_FONT,
     )
     email_entry.pack(pady=(0, 10))
 
@@ -395,9 +388,9 @@ def show_login(frame):
     password_label = tk.Label(
         card_frame,
         text="Password:",
-        bg=TP_CARD_BG, 
+        bg=TP_CARD_BG,
         fg=TP_TEXT_PRIMARY,
-        font=BASE_FONT, 
+        font=BASE_FONT,
     )
     password_label.pack(pady=(10, 5))
     # Frame to hold password entry and eye icon
@@ -408,12 +401,12 @@ def show_login(frame):
         pw_frame,
         width=30,
         show="*",
-        bg=TP_BG,               # inner field bg
+        bg=TP_BG,  # inner field bg
         fg=TP_TEXT_PRIMARY,
         insertbackground=TP_TEXT_PRIMARY,
-        bd=0,  
+        bd=0,
         highlightthickness=0,
-        font=BASE_FONT, 
+        font=BASE_FONT,
     )
     password_entry.grid(row=0, column=0)
 
@@ -445,14 +438,13 @@ def show_login(frame):
         width=24,
         height=24,
         command=toggle_password,
-        bg="#1F2937",          # lighter navy so the dark eye stands out
+        bg="#1F2937",  # lighter navy so the dark eye stands out
         activebackground="#1F2937",
         relief="flat",
         bd=0,
     )
     eye_button.image = eye_icon  # Keep a reference to prevent garbage collection
     eye_button.grid(row=0, column=1, padx=5)
-
 
     def handle_login():
         """Handles login(need to connect to database)"""
@@ -505,11 +497,11 @@ def show_login(frame):
         width=15,
         command=handle_login,
         bg="#D9D9D9",
-        fg="#0A1931",   # <-- NEW: TitanPark dark blue text
-        activebackground=TP_ACCENT, 
-        activeforeground=TP_TEXT_PRIMARY, 
-        bd=0,  
-        font=BASE_FONT, 
+        fg="#0A1931",  # <-- NEW: TitanPark dark blue text
+        activebackground=TP_ACCENT,
+        activeforeground=TP_TEXT_PRIMARY,
+        bd=0,
+        font=BASE_FONT,
     )
     login_button.pack(pady=(20, 10))
 
@@ -517,10 +509,10 @@ def show_login(frame):
     forgot_password_label = tk.Label(
         card_frame,
         text="Forgot password?",
-        fg="#3B82F6",          # Titan-ish blue link
+        fg="#3B82F6",  # Titan-ish blue link
         cursor="hand2",
-        bg=TP_CARD_BG, 
-        font=BASE_FONT, 
+        bg=TP_CARD_BG,
+        font=BASE_FONT,
     )
     forgot_password_label.pack(pady=(5, 2))
     forgot_password_label.bind("<Button-1>", lambda e: show_forgot_password(frame))
@@ -529,14 +521,13 @@ def show_login(frame):
     reg_label = tk.Label(
         card_frame,
         text="Don't have an account? Register",
-        fg="#3B82F6",  
+        fg="#3B82F6",
         cursor="hand2",
-        bg=TP_CARD_BG, 
+        bg=TP_CARD_BG,
         font=BASE_FONT,
     )
     reg_label.pack(pady=(2, 10))
     reg_label.bind("<Button-1>", lambda e: show_registration(frame))
-
 
 
 def show_forgot_password(frame):
@@ -618,8 +609,10 @@ def show_registration(frame):
     logger.info("Displaying User Registration Form")
     clear_content(frame)
     theme.style_main_frame(frame)  # NEW: TitanPark background for registration
-    header_label = tk.Label(frame, text="User Registration", font=(TP_FONT_FAMILY, 20, "bold"))
-    header_label.configure(bg=theme.CONTENT_BG, fg=theme.TEXT_PRIMARY) 
+    header_label = tk.Label(
+        frame, text="User Registration", font=(TP_FONT_FAMILY, 20, "bold")
+    )
+    header_label.configure(bg=theme.CONTENT_BG, fg=theme.TEXT_PRIMARY)
     header_label.pack(pady=20)
 
     # Registration Form Frame
@@ -729,8 +722,6 @@ def show_registration(frame):
     eye_button.image = eye_icon  # Keep a reference to prevent garbage collection
     eye_button.grid(row=3, column=2, padx=5)
 
-
-
     def handle_registration():
         """Handles User Registration"""
         first_name = first_name_entry.get().strip()
@@ -772,15 +763,13 @@ def show_registration(frame):
         # check if email already exists in DB
         conn = get_db_connection()
 
-        if not conn:  
-            messagebox.showerror(  
-                "Database Error",  
-                "Could not connect to the database. Please try again later.",  
-            )  
-            logger.error(
-                "Registration failed: Database connection error."
-            )  
-            return  
+        if not conn:
+            messagebox.showerror(
+                "Database Error",
+                "Could not connect to the database. Please try again later.",
+            )
+            logger.error("Registration failed: Database connection error.")
+            return
 
         cursor = conn.cursor()
         cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
@@ -838,7 +827,7 @@ def show_registration(frame):
         text="Register",
         command=handle_registration,
     )
-    reg_button.configure( 
+    reg_button.configure(
         bg=theme.ACCENT_BLUE,
         fg="white",
         activebackground="#1E40AF",
@@ -972,344 +961,330 @@ def show_preferences(frame):
         else:
             department_combo["values"] = []
 
-        # Pre-populate degree levels, degrees, and jobs based on stored preferences  
-        pref_degree_level_id = db_prefs.get("degree_level_id")  
-        pref_degree_id = db_prefs.get("degree_id")  
-        pref_job_id = db_prefs.get("job_id")  
+        # Pre-populate degree levels, degrees, and jobs based on stored preferences
+        pref_degree_level_id = db_prefs.get("degree_level_id")
+        pref_degree_id = db_prefs.get("degree_id")
+        pref_job_id = db_prefs.get("job_id")
 
-        if pref_department_id is not None:  
-            try:  
-                levels = get_degree_levels(pref_department_id)  
-                level_names = [row["name"] for row in levels]  
-                degree_level_combo["values"] = level_names  
+        if pref_department_id is not None:
+            try:
+                levels = get_degree_levels(pref_department_id)
+                level_names = [row["name"] for row in levels]
+                degree_level_combo["values"] = level_names
 
-                selected_level_name = None  
-                if pref_degree_level_id is not None:  
-                    for row in levels:  
-                        if row["degree_level_id"] == pref_degree_level_id:  
-                            selected_level_name = row["name"]  
-                            break  
-                if (
-                    selected_level_name and selected_level_name in level_names
-                ):  
-                    degree_level_var.set(selected_level_name)  
+                selected_level_name = None
+                if pref_degree_level_id is not None:
+                    for row in levels:
+                        if row["degree_level_id"] == pref_degree_level_id:
+                            selected_level_name = row["name"]
+                            break
+                if selected_level_name and selected_level_name in level_names:
+                    degree_level_var.set(selected_level_name)
 
-                    degrees = get_degrees(pref_degree_level_id)  
-                    degree_names = [row["name"] for row in degrees]  
-                    degree_combo["values"] = degree_names  
+                    degrees = get_degrees(pref_degree_level_id)
+                    degree_names = [row["name"] for row in degrees]
+                    degree_combo["values"] = degree_names
 
-                    selected_degree_name = None  
-                    if pref_degree_id is not None:  
-                        for row in degrees:  
-                            if row["degree_id"] == pref_degree_id:  
-                                selected_degree_name = row["name"]  
-                                break  
-                    if (
-                        selected_degree_name and selected_degree_name in degree_names
-                    ):  
-                        degree_var.set(selected_degree_name)  
+                    selected_degree_name = None
+                    if pref_degree_id is not None:
+                        for row in degrees:
+                            if row["degree_id"] == pref_degree_id:
+                                selected_degree_name = row["name"]
+                                break
+                    if selected_degree_name and selected_degree_name in degree_names:
+                        degree_var.set(selected_degree_name)
 
-                        jobs = get_jobs_by_degree(pref_degree_id)  
-                        job_names = [job["name"] for job in jobs]  
-                        job_combo["values"] = job_names  
+                        jobs = get_jobs_by_degree(pref_degree_id)
+                        job_names = [job["name"] for job in jobs]
+                        job_combo["values"] = job_names
 
-                        selected_job_name = None  
-                        if pref_job_id is not None:  
-                            for job in jobs:  
-                                if job["job_id"] == pref_job_id:  
-                                    selected_job_name = job["name"]  
-                                    job_desc_text.delete("1.0", "end")  
+                        selected_job_name = None
+                        if pref_job_id is not None:
+                            for job in jobs:
+                                if job["job_id"] == pref_job_id:
+                                    selected_job_name = job["name"]
+                                    job_desc_text.delete("1.0", "end")
                                     job_desc_text.insert(
                                         "1.0", job.get("description", "")
-                                    )  
-                                    break  
-                        if (
-                            selected_job_name and selected_job_name in job_names
-                        ):  
-                            job_var.set(selected_job_name)  
-            except Exception as pref_exc:  
-                logger.error(
-                    "Failed to pre-populate degree/job data: %s", pref_exc
-                )  
-        else:  
-            degree_level_combo["values"] = []  
-            degree_combo["values"] = []  
-            job_combo["values"] = []  
+                                    )
+                                    break
+                        if selected_job_name and selected_job_name in job_names:
+                            job_var.set(selected_job_name)
+            except Exception as pref_exc:
+                logger.error("Failed to pre-populate degree/job data: %s", pref_exc)
+        else:
+            degree_level_combo["values"] = []
+            degree_combo["values"] = []
+            job_combo["values"] = []
 
     except Exception as e:
         logger.error("Failed to load colleges/departments for preferences: %s", e)
         college_var.set("Select your college")
         department_combo["values"] = []
 
-    def on_college_selected(event=None):  
-        """Update departments when a college is selected."""  
-        selected_name = college_var.get()  
-        college_id = college_name_to_id.get(selected_name)  
+    def on_college_selected(event=None):
+        """Update departments when a college is selected."""
+        selected_name = college_var.get()
+        college_id = college_name_to_id.get(selected_name)
 
-        # Clear downstream combos when college changes  
-        department_combo["values"] = []  
-        department_var.set("")  
-        degree_level_combo["values"] = []  
-        degree_level_var.set("")  
-        degree_combo["values"] = []  
-        degree_var.set("")  
-        job_combo["values"] = []  
-        job_var.set("")  
-        job_desc_text.delete("1.0", "end")  
+        # Clear downstream combos when college changes
+        department_combo["values"] = []
+        department_var.set("")
+        degree_level_combo["values"] = []
+        degree_level_var.set("")
+        degree_combo["values"] = []
+        degree_var.set("")
+        job_combo["values"] = []
+        job_var.set("")
+        job_desc_text.delete("1.0", "end")
 
-        if college_id is None:  
-            return  
-        try:  
-            departments = get_departments(college_id)  
-            dept_names = [row["name"] for row in departments]  
-            department_combo["values"] = dept_names  
-        except Exception as exc:  
+        if college_id is None:
+            return
+        try:
+            departments = get_departments(college_id)
+            dept_names = [row["name"] for row in departments]
+            department_combo["values"] = dept_names
+        except Exception as exc:
             logger.error(
                 "Failed to refresh departments for college '%s': %s", selected_name, exc
-            )  
-            department_combo["values"] = []  
+            )
+            department_combo["values"] = []
 
-    def on_department_selected(event=None):  
-        """Update degree levels when a department is selected."""  
-        selected_college_name = college_var.get()  
-        selected_dept_name = department_var.get()  
-        college_id = college_name_to_id.get(selected_college_name)  
+    def on_department_selected(event=None):
+        """Update degree levels when a department is selected."""
+        selected_college_name = college_var.get()
+        selected_dept_name = department_var.get()
+        college_id = college_name_to_id.get(selected_college_name)
 
-        degree_level_combo["values"] = []  
-        degree_level_var.set("")  
-        degree_combo["values"] = []  
-        degree_var.set("")  
-        job_combo["values"] = []  
-        job_var.set("")  
-        job_desc_text.delete("1.0", "end")  
+        degree_level_combo["values"] = []
+        degree_level_var.set("")
+        degree_combo["values"] = []
+        degree_var.set("")
+        job_combo["values"] = []
+        job_var.set("")
+        job_desc_text.delete("1.0", "end")
 
-        if college_id is None or not selected_dept_name:  
-            return  
+        if college_id is None or not selected_dept_name:
+            return
 
-        try:  
-            departments = get_departments(college_id)  
-            department_id = None  
-            for row in departments:  
-                if row["name"] == selected_dept_name:  
-                    department_id = row["department_id"]  
-                    break  
-            if department_id is None:  
+        try:
+            departments = get_departments(college_id)
+            department_id = None
+            for row in departments:
+                if row["name"] == selected_dept_name:
+                    department_id = row["department_id"]
+                    break
+            if department_id is None:
                 logger.warning(
                     "Department '%s' not found for college_id %s",
                     selected_dept_name,
                     college_id,
-                )  
-                return  
-            levels = get_degree_levels(department_id)  
-            names = [row["name"] for row in levels]  
-            degree_level_combo["values"] = names  
-        except Exception as exc:  
+                )
+                return
+            levels = get_degree_levels(department_id)
+            names = [row["name"] for row in levels]
+            degree_level_combo["values"] = names
+        except Exception as exc:
             logger.error(
                 "Failed to refresh degree levels for department '%s': %s",
                 selected_dept_name,
                 exc,
-            )  
+            )
 
-    def on_degree_level_selected(event=None):  
-        """Update degrees when a degree level is selected."""  
-        selected_college_name = college_var.get()  
-        selected_dept_name = department_var.get()  
-        selected_level_name = degree_level_var.get()  
-        college_id = college_name_to_id.get(selected_college_name)  
+    def on_degree_level_selected(event=None):
+        """Update degrees when a degree level is selected."""
+        selected_college_name = college_var.get()
+        selected_dept_name = department_var.get()
+        selected_level_name = degree_level_var.get()
+        college_id = college_name_to_id.get(selected_college_name)
 
-        degree_combo["values"] = []  
-        degree_var.set("")  
-        job_combo["values"] = []  
-        job_var.set("")  
-        job_desc_text.delete("1.0", "end")  
+        degree_combo["values"] = []
+        degree_var.set("")
+        job_combo["values"] = []
+        job_var.set("")
+        job_desc_text.delete("1.0", "end")
 
-        if (
-            college_id is None or not selected_dept_name or not selected_level_name
-        ):  
-            return  
+        if college_id is None or not selected_dept_name or not selected_level_name:
+            return
 
-        try:  
-            departments = get_departments(college_id)  
-            department_id = None  
-            for row in departments:  
-                if row["name"] == selected_dept_name:  
-                    department_id = row["department_id"]  
-                    break  
-            if department_id is None:  
+        try:
+            departments = get_departments(college_id)
+            department_id = None
+            for row in departments:
+                if row["name"] == selected_dept_name:
+                    department_id = row["department_id"]
+                    break
+            if department_id is None:
                 logger.warning(
                     "Department '%s' not found while resolving degree levels.",
                     selected_dept_name,
-                )  
-                return  
+                )
+                return
 
-            levels = get_degree_levels(department_id)  
-            degree_level_id = None  
-            for row in levels:  
-                if row["name"] == selected_level_name:  
-                    degree_level_id = row["degree_level_id"]  
-                    break  
-            if degree_level_id is None:  
+            levels = get_degree_levels(department_id)
+            degree_level_id = None
+            for row in levels:
+                if row["name"] == selected_level_name:
+                    degree_level_id = row["degree_level_id"]
+                    break
+            if degree_level_id is None:
                 logger.warning(
                     "Degree level '%s' not found for department_id %s",
                     selected_level_name,
                     department_id,
-                )  
-                return  
+                )
+                return
 
-            degrees = get_degrees(degree_level_id)  
-            names = [row["name"] for row in degrees]  
-            degree_combo["values"] = names  
-        except Exception as exc:  
+            degrees = get_degrees(degree_level_id)
+            names = [row["name"] for row in degrees]
+            degree_combo["values"] = names
+        except Exception as exc:
             logger.error(
                 "Failed to refresh degrees for degree level '%s': %s",
                 selected_level_name,
                 exc,
-            )  
+            )
 
-    def on_degree_selected(event=None):  
-        """Update jobs when a degree is selected."""  
-        selected_college_name = college_var.get()  
-        selected_dept_name = department_var.get()  
-        selected_level_name = degree_level_var.get()  
-        selected_degree_name = degree_var.get()  
-        college_id = college_name_to_id.get(selected_college_name)  
+    def on_degree_selected(event=None):
+        """Update jobs when a degree is selected."""
+        selected_college_name = college_var.get()
+        selected_dept_name = department_var.get()
+        selected_level_name = degree_level_var.get()
+        selected_degree_name = degree_var.get()
+        college_id = college_name_to_id.get(selected_college_name)
 
-        job_combo["values"] = []  
-        job_var.set("")  
-        job_desc_text.delete("1.0", "end")  
+        job_combo["values"] = []
+        job_var.set("")
+        job_desc_text.delete("1.0", "end")
 
         if (
             college_id is None
             or not selected_dept_name
             or not selected_level_name
             or not selected_degree_name
-        ):  
-            return  
+        ):
+            return
 
-        try:  
-            departments = get_departments(college_id)  
-            department_id = None  
-            for row in departments:  
-                if row["name"] == selected_dept_name:  
-                    department_id = row["department_id"]  
-                    break  
-            if department_id is None:  
+        try:
+            departments = get_departments(college_id)
+            department_id = None
+            for row in departments:
+                if row["name"] == selected_dept_name:
+                    department_id = row["department_id"]
+                    break
+            if department_id is None:
                 logger.warning(
                     "Department '%s' not found while resolving degrees.",
                     selected_dept_name,
-                )  
-                return  
+                )
+                return
 
-            levels = get_degree_levels(department_id)  
-            degree_level_id = None  
-            for row in levels:  
-                if row["name"] == selected_level_name:  
-                    degree_level_id = row["degree_level_id"]  
-                    break  
-            if degree_level_id is None:  
+            levels = get_degree_levels(department_id)
+            degree_level_id = None
+            for row in levels:
+                if row["name"] == selected_level_name:
+                    degree_level_id = row["degree_level_id"]
+                    break
+            if degree_level_id is None:
                 logger.warning(
                     "Degree level '%s' not found while resolving degrees.",
                     selected_level_name,
-                )  
-                return  
+                )
+                return
 
-            degrees = get_degrees(degree_level_id)  
-            degree_id = None  
-            for row in degrees:  
-                if row["name"] == selected_degree_name:  
-                    degree_id = row["degree_id"]  
-                    break  
-            if degree_id is None:  
+            degrees = get_degrees(degree_level_id)
+            degree_id = None
+            for row in degrees:
+                if row["name"] == selected_degree_name:
+                    degree_id = row["degree_id"]
+                    break
+            if degree_id is None:
                 logger.warning(
                     "Degree '%s' not found for degree_level_id %s",
                     selected_degree_name,
                     degree_level_id,
-                )  
-                return  
+                )
+                return
 
-            jobs = get_jobs_by_degree(degree_id)  
-            names = [job["name"] for job in jobs]  
-            job_combo["values"] = names  
-        except Exception as exc:  
+            jobs = get_jobs_by_degree(degree_id)
+            names = [job["name"] for job in jobs]
+            job_combo["values"] = names
+        except Exception as exc:
             logger.error(
                 "Failed to refresh jobs for degree '%s': %s",
                 selected_degree_name,
                 exc,
-            )  
+            )
 
-    def on_job_selected(event=None):  
-        """Update job description when a job is selected."""  
-        selected_job_name = job_var.get()  
-        selected_degree_name = degree_var.get()  
-        selected_level_name = degree_level_var.get()  
-        selected_dept_name = department_var.get()  
-        selected_college_name = college_var.get()  
+    def on_job_selected(event=None):
+        """Update job description when a job is selected."""
+        selected_job_name = job_var.get()
+        selected_degree_name = degree_var.get()
+        selected_level_name = degree_level_var.get()
+        selected_dept_name = department_var.get()
+        selected_college_name = college_var.get()
 
-        job_desc_text.delete("1.0", "end")  
+        job_desc_text.delete("1.0", "end")
 
         if (
             not selected_job_name
             or not selected_degree_name
             or not selected_level_name
             or not selected_dept_name
-        ):  
-            return  
+        ):
+            return
 
-        college_id = college_name_to_id.get(selected_college_name)  
-        if college_id is None:  
-            return  
+        college_id = college_name_to_id.get(selected_college_name)
+        if college_id is None:
+            return
 
-        try:  
-            departments = get_departments(college_id)  
-            department_id = None  
-            for row in departments:  
-                if row["name"] == selected_dept_name:  
-                    department_id = row["department_id"]  
-                    break  
-            if department_id is None:  
-                return  
+        try:
+            departments = get_departments(college_id)
+            department_id = None
+            for row in departments:
+                if row["name"] == selected_dept_name:
+                    department_id = row["department_id"]
+                    break
+            if department_id is None:
+                return
 
-            levels = get_degree_levels(department_id)  
-            degree_level_id = None  
-            for row in levels:  
-                if row["name"] == selected_level_name:  
-                    degree_level_id = row["degree_level_id"]  
-                    break  
-            if degree_level_id is None:  
-                return  
+            levels = get_degree_levels(department_id)
+            degree_level_id = None
+            for row in levels:
+                if row["name"] == selected_level_name:
+                    degree_level_id = row["degree_level_id"]
+                    break
+            if degree_level_id is None:
+                return
 
-            degrees = get_degrees(degree_level_id)  
-            degree_id = None  
-            for row in degrees:  
-                if row["name"] == selected_degree_name:  
-                    degree_id = row["degree_id"]  
-                    break  
-            if degree_id is None:  
-                return  
+            degrees = get_degrees(degree_level_id)
+            degree_id = None
+            for row in degrees:
+                if row["name"] == selected_degree_name:
+                    degree_id = row["degree_id"]
+                    break
+            if degree_id is None:
+                return
 
-            jobs = get_jobs_by_degree(degree_id)  
-            for job in jobs:  
-                if job["name"] == selected_job_name:  
-                    job_desc_text.insert(
-                        "1.0", job.get("description", "")
-                    )  
-                    break  
-        except Exception as exc:  
+            jobs = get_jobs_by_degree(degree_id)
+            for job in jobs:
+                if job["name"] == selected_job_name:
+                    job_desc_text.insert("1.0", job.get("description", ""))
+                    break
+        except Exception as exc:
             logger.error(
                 "Failed to update job description for job '%s': %s",
                 selected_job_name,
                 exc,
-            )  
+            )
 
-    college_combo.bind("<<ComboboxSelected>>", on_college_selected)  
-    department_combo.bind("<<ComboboxSelected>>", on_department_selected)  
-    degree_level_combo.bind(
-        "<<ComboboxSelected>>", on_degree_level_selected
-    )  
-    degree_combo.bind("<<ComboboxSelected>>", on_degree_selected)  
-    job_combo.bind("<<ComboboxSelected>>", on_job_selected)  
+    college_combo.bind("<<ComboboxSelected>>", on_college_selected)
+    department_combo.bind("<<ComboboxSelected>>", on_department_selected)
+    degree_level_combo.bind("<<ComboboxSelected>>", on_degree_level_selected)
+    degree_combo.bind("<<ComboboxSelected>>", on_degree_selected)
+    job_combo.bind("<<ComboboxSelected>>", on_job_selected)
 
-    # Start with empty, DB-driven values; handlers fill these in.  
+    # Start with empty, DB-driven values; handlers fill these in.
     degree_level_combo["values"] = []  #  Changed Code
     degree_combo["values"] = []  #  Changed Code
     job_combo["values"] = []  #  Changed Code
@@ -1327,68 +1302,62 @@ def show_preferences(frame):
         current_user.update(prefs)
         logger.info(f"User preferences saved (in-memory): {prefs}")
 
-        # Persist ID-based preferences to User_Preferences  
-        try:  
-            college_id = None  
-            department_id = None  
-            degree_level_id = None  
-            degree_id = None  
-            job_id = None  
+        # Persist ID-based preferences to User_Preferences
+        try:
+            college_id = None
+            department_id = None
+            degree_level_id = None
+            degree_id = None
+            job_id = None
 
-            selected_college_name = college_var.get()  
-            if (
-                selected_college_name and selected_college_name in college_name_to_id
-            ):  
-                college_id = college_name_to_id[selected_college_name]  
+            selected_college_name = college_var.get()
+            if selected_college_name and selected_college_name in college_name_to_id:
+                college_id = college_name_to_id[selected_college_name]
 
-            if college_id is not None and department_var.get():  
-                departments = get_departments(college_id)  
-                for row in departments:  
-                    if row["name"] == department_var.get():  
-                        department_id = row["department_id"]  
-                        break  
+            if college_id is not None and department_var.get():
+                departments = get_departments(college_id)
+                for row in departments:
+                    if row["name"] == department_var.get():
+                        department_id = row["department_id"]
+                        break
 
-            if department_id is not None and degree_level_var.get():  
-                levels = get_degree_levels(department_id)  
-                for row in levels:  
-                    if row["name"] == degree_level_var.get():  
-                        degree_level_id = row["degree_level_id"]  
-                        break  
+            if department_id is not None and degree_level_var.get():
+                levels = get_degree_levels(department_id)
+                for row in levels:
+                    if row["name"] == degree_level_var.get():
+                        degree_level_id = row["degree_level_id"]
+                        break
 
-            if degree_level_id is not None and degree_var.get():  
-                degrees = get_degrees(degree_level_id)  
-                for row in degrees:  
-                    if row["name"] == degree_var.get():  
-                        degree_id = row["degree_id"]  
-                        break  
+            if degree_level_id is not None and degree_var.get():
+                degrees = get_degrees(degree_level_id)
+                for row in degrees:
+                    if row["name"] == degree_var.get():
+                        degree_id = row["degree_id"]
+                        break
 
-            if degree_id is not None and job_var.get():  
-                jobs = get_jobs_by_degree(degree_id)  
-                for job in jobs:  
-                    if job["name"] == job_var.get():  
-                        job_id = job["job_id"]  
-                        break  
+            if degree_id is not None and job_var.get():
+                jobs = get_jobs_by_degree(degree_id)
+                for job in jobs:
+                    if job["name"] == job_var.get():
+                        job_id = job["job_id"]
+                        break
 
-            db_pref_payload = {  
-                "college_id": college_id,  
-                "department_id": department_id,  
-                "degree_level_id": degree_level_id,  
-                "degree_id": degree_id,  
-                "job_id": job_id,  
-            }  
-            if current_user and "id" in current_user:  
-                ok = save_user_preferences(
-                    current_user["id"], db_pref_payload
-                )  
-                if not ok:  
+            db_pref_payload = {
+                "college_id": college_id,
+                "department_id": department_id,
+                "degree_level_id": degree_level_id,
+                "degree_id": degree_id,
+                "job_id": job_id,
+            }
+            if current_user and "id" in current_user:
+                ok = save_user_preferences(current_user["id"], db_pref_payload)
+                if not ok:
                     logger.error(
                         "save_user_preferences returned False for user_id %s",
                         current_user["id"],
-                    )  
-        except Exception as exc:  
-            logger.error(
-                "Failed to persist preferences to database: %s", exc
-            )  
+                    )
+        except Exception as exc:
+            logger.error("Failed to persist preferences to database: %s", exc)
 
         messagebox.showinfo("Preferences Saved", "Your preferences have been saved.")
 
@@ -1442,9 +1411,14 @@ def show_recommendations(frame):
     set_active_button("Recommendations")
     logger.info("Displaying Recommendations Page")
     clear_content(frame)
-    header_label = tk.Label(
-        frame, text="Course Recommendations", font=(TP_FONT_FAMILY, 14)
-    )
+
+    # header_label = tk.Label(
+    #     frame, text="Course Recommendations", font=(TP_FONT_FAMILY, 14)
+    # )
+    # header_label.pack(pady=20)
+    # added for dynamic text update
+    header_text_var = tk.StringVar(value="Course Recommendations")
+    header_label = tk.Label(frame, textvariable=header_text_var, font=("Helvetica", 14))
     header_label.pack(pady=20)
 
     # Generate Recommendations Button (need to add function to generate recommendations)
@@ -1459,6 +1433,12 @@ def show_recommendations(frame):
     # Recommendations Display Frame
     rec_frame = ttk.Frame(frame)
     rec_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+    # Store refs on the frame so generate_recommendations_ui can reuse them
+    frame._rec_header_text_var = header_text_var
+    frame._rec_header_default_text = "Course Recommendations"  
+    frame._rec_generate_button = generate_button
+    frame._rec_frame = rec_frame
 
 
 #  Parse recommednations function
@@ -1543,7 +1523,8 @@ def display_recommendations_ui(rec_frame, recommendations):
         course_label.pack(anchor="w", padx=5, pady=5)
 
         # Units
-        units = rec.get("Units", "N/A")
+        # BUG units = rec.get("Units", "N/A")
+        units = rec.get("Units", "3")  # FIXED: Default to 3 units if missing
         units_label = ttk.Label(
             rec_container, text=f"Units: {units}", background="#ffffff"
         )
@@ -1595,130 +1576,371 @@ def display_recommendations_ui(rec_frame, recommendations):
         details_btn = ttk.Button(
             rec_container,
             text="View Details",
-            command=lambda c=rec: show_course_details(rec_container, c),  # NEW: pass course data
+            command=lambda c=rec: show_course_details(
+                rec_container, c
+            ),  # NEW: pass course data
         )
         details_btn.pack(anchor="e", padx=5, pady=5)
 
 
-# Function to generate and display recommendations (Need to add live AI functionality and database)
+# # Function to generate and display recommendations (Need to add live AI functionality and database)
+# def generate_recommendations_ui(frame):
+#     """Generates and displays course recommednations (Placeholder need to add functionality with AI and database)"""
+#     global current_user
+
+#     clear_content(frame)
+#     set_active_button("Recommendations")
+#     header_label = tk.Label(
+#         frame, text="Course Recommendations", font=(TP_FONT_FAMILY, 14)
+#     )
+#     header_label.pack(pady=20)
+
+#     # Loading label
+#     loading_label = tk.Label(
+#         frame, text="Generating recommendations, please wait...", font=(TP_FONT_FAMILY, 12)
+#     )
+#     loading_label.pack(pady=10)
+#     frame.update()
+
+#     try:
+#         required_fields = ["college", "department", "degree_level", "degree", "job"]
+#         missing_fields = [
+#             field
+#             for field in required_fields
+#             if field not in current_user or not current_user[field]
+#         ]
+#         if missing_fields:
+#             messagebox.showwarning(
+#                 "Incomplete Preferences",
+#                 f"Please complete your preferences before generating recommendations. Missing: {', '.join(missing_fields)}",
+#             )
+#             logger.warning(
+#                 f"Cannot generate recommendations, missing preferences: {missing_fields}"
+#             )
+#             show_preferences(frame)
+#             return
+
+#         # Parse electives from CSV
+#         csv_path = os.path.join("database", "courses.csv")
+#         if not os.path.exists(csv_path):
+#             raise FileNotFoundError(f"Electives CSV file not found at {csv_path}")
+
+#         with open(csv_path, "r", encoding="utf-8") as f:
+#             csv_text = f.read()
+#         degree_electives = _parse_degree_electives_csv(csv_text)
+
+#         # Get recommendations from AI module
+#         job_name = current_user["job"]
+#         degree_name = current_user["degree"]
+#         job_id = 1  # Placeholder job ID
+
+#         response = get_recommendations_ai(
+#             job_id=job_id,
+#             job_name=job_name,
+#             degree_name=degree_name,
+#             degree_electives=degree_electives,
+#         )
+#         recommendations = parse_recommendations(response)
+#         if not recommendations:
+#             messagebox.showerror(
+#                 "AI Error", "Failed to parse recommendations. Please try again."
+#             )
+#             logger.error("No recommednations parsed from AI response.")
+#             return
+#         rec_frame = frame.winfo_children()[-1]  # Get the last child, which is rec_frame
+#         clear_content(rec_frame)
+#         display_recommendations_ui(rec_frame, recommendations)
+
+#         # Old Logic
+#         """
+#         # Parse JSON response
+#         rec_data = json.loads(response)
+#         loading_label.destroy()  # Remove loading label
+
+#         # Display recommendations
+#         results_frame = ttk.Frame(frame)
+#         results_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+#         canvas = tk.Canvas(results_frame)
+#         scrollbar = ttk.Scrollbar(results_frame, orient="vertical", command=canvas.yview)
+#         scrollable_frame = ttk.Frame(canvas)
+
+#         scrollable_frame.bind(
+#             "<Configure>",
+#             lambda e: canvas.configure(
+#                 scrollregion=canvas.bbox("all")
+#             ))
+#         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+#         canvas.configure(yscrollcommand=scrollbar.set)
+#         canvas.pack(side="left", fill="both", expand=True)
+#         scrollbar.pack(side="right", fill="y")
+
+#         # Show each recommended course
+#         if isinstance(rec_data, list) and rec_data:
+#             for course in rec_data:
+#                 title = course.get("Course Name", "N/A")
+#                 desc = course.get("Description", "No description available.")
+#                 units = course.get("Units", "N/A")
+#                 prereqs = ", ".join([course.get(f"Prereq{i}", "") for i in range(1, 4) if course.get(f"Prereq{i}")])
+#                 card = ttk.LabelFrame(scrollable_frame, text=title)
+#                 card.pack(fill="x", pady=5, padx=5)
+
+#                 info = f"Units: {units}\nPrerequisites: {prereqs}\n\n{desc}"
+#                 tk.Label(card, text=info, justify = "left", wraplength=800, font=(TP_FONT_FAMILY, 10, "bold")).pack(anchor="w", padx=10, pady=5)
+
+#         else:
+#            tk.Label(scrollable_frame, text="No recommendations found.", font=(TP_FONT_FAMILY, 12)).pack(pady=20)
+#            logger.info("No recommendations returned from AI module.")
+#  """
+#         logger.info("Course recommendations generated and displayed successfully.")
+#     except Exception as e:
+#         messagebox.showerror("Error", f"An error occurred: {e}")
+#         logger.error(f"Error checking user preferences: {e}")
+#         return
+
+
+def get_current_user_preferences():
+    """Fetches the current user's preferences from the database."""
+    if not current_user:
+        logger.error("No user is currently logged in.")
+        messagebox.showerror("Error", "No user is currently logged in.")
+        return None
+
+    user_id = current_user.get("id")
+    preferences = db_operations.get_user_preferences(user_id)
+    if not preferences:
+        logger.warning(f"No preferences found for user_id {user_id}.")
+        messagebox.showwarning(
+            "No Preferences", "You have not set any preferences yet."
+        )
+    return preferences
+
 def generate_recommendations_ui(frame):
-    """Generates and displays course recommednations (Placeholder need to add functionality with AI and database)"""
-    global current_user
+    """Generates and displays AI-driven course recommendations."""
+    logger.info("Generating course recommendations.")
 
-    clear_content(frame)
-    set_active_button("Recommendations")
-    header_label = tk.Label(
-        frame, text="Course Recommendations", font=(TP_FONT_FAMILY, 14)
-    )
-    header_label.pack(pady=20)
+    header_text_var = getattr(frame, "_rec_header_text_var", None)
+    default_header_text = getattr(frame, "_rec_header_default_text", "Course Recommendations")
+    generate_button = getattr(frame, "_rec_generate_button", None)  # Added Code
+    toplevel = frame.winfo_toplevel()
 
-    # Loading label
-    loading_label = tk.Label(
-        frame, text="Generating recommendations, please wait...", font=(TP_FONT_FAMILY, 12)
-    )
-    loading_label.pack(pady=10)
-    frame.update()
+    # Disable the Generate button immediately on entry  # Added Code
+    if generate_button is not None:  # Added Code
+        generate_button.config(state="disabled")  # Added Code
+        toplevel.update_idletasks()  # Added Code
+
+    # Update header text while generating
+    if header_text_var is not None:
+        header_text_var.set("Generating recommendations, please wait...")
+        toplevel.update_idletasks()
 
     try:
-        required_fields = ["college", "department", "degree_level", "degree", "job"]
-        missing_fields = [
-            field
-            for field in required_fields
-            if field not in current_user or not current_user[field]
-        ]
-        if missing_fields:
-            messagebox.showwarning(
-                "Incomplete Preferences",
-                f"Please complete your preferences before generating recommendations. Missing: {', '.join(missing_fields)}",
+        rec_frame = getattr(frame, "_rec_frame", None)  # Added Code
+        if rec_frame is None:  # Added Code
+            rec_frame = frame.winfo_children()[-1]  # fallback  # Added Code
+
+        clear_content(rec_frame)
+
+        # Fetch user preferences
+        user_prefs = get_current_user_preferences()
+        if not user_prefs:
+            logger.error("Cannot generate recommendations without user preferences.")
+            messagebox.showerror(
+                "Error", "Cannot generate recommendations without user preferences."
             )
-            logger.warning(
-                f"Cannot generate recommendations, missing preferences: {missing_fields}"
-            )
-            show_preferences(frame)
             return
 
-        # Parse electives from CSV
-        csv_path = os.path.join("database", "courses.csv")
-        if not os.path.exists(csv_path):
-            raise FileNotFoundError(f"Electives CSV file not found at {csv_path}")
+        # Extract job_id, degree_id from user_prefs
+        job_id = user_prefs.get("job_id")
+        degree_id = user_prefs.get("degree_id")
 
-        with open(csv_path, "r", encoding="utf-8") as f:
-            csv_text = f.read()
-        degree_electives = _parse_degree_electives_csv(csv_text)
+        if not job_id:
+            logger.error("User preferences do not include a job_id.")
+            messagebox.showerror("Error", "Please set your job preference in Preferences.")
+            return
 
-        # Get recommendations from AI module
-        job_name = current_user["job"]
-        degree_name = current_user["degree"]
-        job_id = 1  # Placeholder job ID
+        if not degree_id:
+            logger.error("User preferences do not include a degree_id.")
+            messagebox.showerror("Error", "Please set your degree preference in Preferences.")
+            return
 
-        response = get_recommendations_ai(
-            job_id=job_id,
-            job_name=job_name,
-            degree_name=degree_name,
-            degree_electives=degree_electives,
-        )
-        recommendations = parse_recommendations(response)
+        # Retrieve job_name from job_id
+        try:
+            job = db_operations.get_job_by_id(job_id)
+            if job:
+                job_name = job["name"]
+            else:
+                logger.error(f"No job found with job_id {job_id}.")
+                messagebox.showerror("Error", "Invalid job preference.")
+                return
+        except Exception as e:
+            logger.error(f"Error retrieving job name for job_id {job_id}: {e}")
+            messagebox.showerror("Error", "Failed to retrieve job information.")
+            return
+
+        # Retrieve degree_name from degree_id
+        try:
+            degree = db_operations.get_degree_by_id(degree_id)
+            if degree:
+                degree_name = degree["name"]
+            else:
+                logger.error(f"No degree found with degree_id {degree_id}.")
+                messagebox.showerror("Error", "Invalid degree preference.")
+                return
+        except Exception as e:
+            logger.error(f"Error retrieving degree name for degree_id {degree_id}: {e}")
+            messagebox.showerror("Error", "Failed to retrieve degree information.")
+            return
+
+        # Fetch degree electives
+        try:
+            degree_electives = db_operations.get_degree_electives(degree_id)
+            logger.debug(f"Fetched {len(degree_electives)} degree electives.")
+        except Exception as e:
+            logger.error(f"Error fetching degree electives: {e}")
+            messagebox.showerror("Error", "Failed to fetch degree electives.")
+            return
+
+        # Invoke AI to get recommendations
+        try:
+            recommendations_raw = get_recommendations_ai(
+                job_id, job_name, degree_name, degree_electives
+            )
+            logger.debug("AI Recommendations Raw Response:")
+            logger.debug(recommendations_raw)
+        except Exception as e:
+            messagebox.showerror(
+                "AI Error",
+                "Failed to generate recommendations. Please try again later.",
+            )
+            logger.error(f"Failed to generate recommendations: {e}")
+            return
+
+        # Parse the AI response
+        recommendations = parse_recommendations(recommendations_raw)
         if not recommendations:
             messagebox.showerror(
                 "AI Error", "Failed to parse recommendations. Please try again."
             )
-            logger.error("No recommednations parsed from AI response.")
+            logger.error("No recommendations parsed from AI response.")
             return
-        rec_frame = frame.winfo_children()[-1]  # Get the last child, which is rec_frame
-        clear_content(rec_frame)
+
+        # Display the recommendations
         display_recommendations_ui(rec_frame, recommendations)
 
-        # Old Logic
-        """
-        # Parse JSON response
-        rec_data = json.loads(response)
-        loading_label.destroy()  # Remove loading label
+        # Save recommendations to the database
+        try:
+            user_id = current_user["id"]
+            db_operations.clear_recommendations(user_id, job_id)
+            save_recommendations_to_db(user_id, job_id, recommendations)
+            logger.info("Recommendations generated and saved successfully.")
+        except KeyError as ke:
+            logger.error(f"Error saving recommendations to database: {ke}")
+            messagebox.showerror("Error", f"Error saving recommendations to database: {ke}")
+        except Exception as e:
+            logger.error(f"Error saving recommendations to database: {e}")
+            messagebox.showerror("Error", "Failed to save recommendations to database.")
 
-        # Display recommendations
-        results_frame = ttk.Frame(frame)
-        results_frame.pack(pady=10, padx=20, fill="both", expand=True)
+    finally:
+        # Restore header text
+        if header_text_var is not None:
+            header_text_var.set(default_header_text)
 
-        canvas = tk.Canvas(results_frame)
-        scrollbar = ttk.Scrollbar(results_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
+        # Re-enable the Generate button on exit (even on errors/returns)  # Added Code
+        if generate_button is not None:  # Added Code
+            generate_button.config(state="normal")  # Added Code
 
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
-            ))
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-
-        # Show each recommended course
-        if isinstance(rec_data, list) and rec_data:
-            for course in rec_data:
-                title = course.get("Course Name", "N/A")
-                desc = course.get("Description", "No description available.")
-                units = course.get("Units", "N/A")
-                prereqs = ", ".join([course.get(f"Prereq{i}", "") for i in range(1, 4) if course.get(f"Prereq{i}")])
-                card = ttk.LabelFrame(scrollable_frame, text=title)
-                card.pack(fill="x", pady=5, padx=5)
-
-                info = f"Units: {units}\nPrerequisites: {prereqs}\n\n{desc}"
-                tk.Label(card, text=info, justify = "left", wraplength=800, font=(TP_FONT_FAMILY, 10, "bold")).pack(anchor="w", padx=10, pady=5)
-
-        else:
-           tk.Label(scrollable_frame, text="No recommendations found.", font=(TP_FONT_FAMILY, 12)).pack(pady=20)
-           logger.info("No recommendations returned from AI module.")
- """
-        logger.info("Course recommendations generated and displayed successfully.")
-    except Exception as e:
-        messagebox.showerror("Error", f"An error occurred: {e}")
-        logger.error(f"Error checking user preferences: {e}")
-        return
+        toplevel.update_idletasks()
 
 
-def save_recommendations_to_db(recommendations):
-    """Saves Recommendations to the database (Placeholder function)"""
-    saved_count = 0
+
+
+
+# def save_recommendations_to_db(recommendations):
+#     """Saves Recommendations to the database (Placeholder function)"""
+#     saved_count = 0
+def save_recommendations_to_db(user_id, job_id, recommendations):
+    """
+    Saves the list of course recommendations to the Recommendations table.
+
+    :param user_id: int, The ID of the user.
+    :param job_id: int, The ID of the job associated with the recommendations.
+    :param recommendations: list of dicts, The course recommendations.
+    """
+
+    """
+    Process:
+        Iterate through each recommendation.
+        Extract course_code, rating, explanation, and rank.
+        Fetch course_id using db_operations.get_course_by_code(course_code).
+        Save the recommendation using db_operations.save_recommendation.
+    """
+
+    saved_count = 0  # Counter for successfully saved recommendations
+
+    for rec in recommendations:
+        # Access fields using indexing instead of .get()
+        course_code = rec["Course Code"] if "Course Code" in rec else None
+        rating = rec["Rating"] if "Rating" in rec else None
+        explanation = (
+            rec["Explanation"] if "Explanation" in rec else "No explanation provided."
+        )
+        rank = rec["Number"] if "Number" in rec else 0  # Assign default rank if missing
+
+        # Validate required fields
+        if not course_code:
+            logger.warning("Recommendation missing 'Course Code'. Skipping.")
+            continue
+        if rating is None:
+            logger.warning(
+                f"Recommendation for {course_code} missing 'Rating'. Skipping."
+            )
+            continue
+
+        # Fetch course_id from course_code
+        course = db_operations.get_course_by_code(course_code)
+        if not course:
+            logger.warning(f"Course with code {course_code} not found in database.")
+            continue  # Skip if course not found
+
+        # Access course_id using indexing
+
+        # Access course_id more reliably
+        course_id = course["course_id"]
+        if course_id is None:
+            logger.warning(f"Course ID for course code {course_code} is missing.")
+            continue  # Skip if course_id is missing
+
+        # Handle rank if 'Number' is missing or invalid
+        if not isinstance(rank, int):
+            logger.warning(
+                f"Recommendation for course {course_code} has invalid 'Number': {rank}. Assigning default rank."
+            )
+            rank = 0  # Assign default rank
+
+        # Save the recommendation
+        try:
+            success = db_operations.save_recommendation(
+                user_id=user_id,
+                job_id=job_id,
+                course_id=course_id,
+                rating=rating,
+                explanation=explanation,
+                rank=rank,
+            )
+            if success:
+                saved_count += 1
+                logger.info(
+                    f"Recommendation for course {course_code} saved successfully."
+                )
+            else:
+                logger.error(f"Failed to save recommendation for course {course_code}.")
+        except Exception as e:
+            logger.error(f"Error saving recommendation for course {course_code}: {e}")
+
+    logger.info(
+        f"Total Recommendations Saved: {saved_count} out of {len(recommendations)}"
+    )
 
 
 # Placeholder for course details page
@@ -1726,7 +1948,7 @@ def show_course_details(frame, course=None):  # NEW: accept optional course dict
     """Display for course details"""
     clear_content(frame)
     text = "Course Details Page"
-    if course is not None: 
+    if course is not None:
         text = f"{course.get('Course Name', 'Course Details')} ({course.get('Course Code', 'N/A')})"
     tk.Label(frame, text=text, font=(TP_FONT_FAMILY, 14)).pack(pady=20)
 
@@ -1749,7 +1971,9 @@ def show_profile(frame):
     profile_name_label.pack(pady=5)
 
     profile_email_label = tk.Label(
-        frame, text=f"Email: {current_user.get('email', 'N/A')}", font=(TP_FONT_FAMILY, 12)
+        frame,
+        text=f"Email: {current_user.get('email', 'N/A')}",
+        font=(TP_FONT_FAMILY, 12),
     )
     profile_email_label.pack(pady=5)
 
@@ -1760,16 +1984,15 @@ def show_profile(frame):
         font=SUBHEADER_FONT,
         bg=TP_BG,
         fg=TP_TEXT_PRIMARY,
-        bd=0, 
+        bd=0,
         highlightthickness=0,
         relief="flat",
-        anchor="w", 
+        anchor="w",
     )
     settings_title.pack(pady=(20, 5), fill="x", padx=20)
 
     settings_frame = ttk.Frame(frame)  # (CHANGED from LabelFrame)
     settings_frame.pack(pady=(0, 20), fill="x", padx=20)
-
 
     def change_password():
         """Changes Password"""
@@ -1869,16 +2092,16 @@ def show_profile(frame):
         )
         save_password_button.pack(pady=20)
 
-    change_password_button = tk.Button(   # (CHANGED to tk.Button for custom colors)
+    change_password_button = tk.Button(  # (CHANGED to tk.Button for custom colors)
         settings_frame,
         text="Change Password",
         command=change_password,
-        bg=TP_ACCENT,  
-        fg=TP_TEXT_PRIMARY, 
+        bg=TP_ACCENT,
+        fg=TP_TEXT_PRIMARY,
         activebackground=TP_ACCENT,
-        activeforeground=TP_TEXT_PRIMARY, 
+        activeforeground=TP_TEXT_PRIMARY,
         bd=0,
-        font=BASE_FONT,     
+        font=BASE_FONT,
     )
     change_password_button.pack(pady=10, padx=10, fill="x")
 
@@ -1892,9 +2115,7 @@ def show_help(frame):
     theme.style_main_frame(frame)  # NEW: TitanPark background for Help
 
     header_label = ttk.Label(frame, text="Help & Support", font=(TP_FONT_FAMILY, 20))
-    header_label.configure(
-        background=theme.CONTENT_BG, foreground=theme.TEXT_PRIMARY
-    ) 
+    header_label.configure(background=theme.CONTENT_BG, foreground=theme.TEXT_PRIMARY)
     header_label.pack(pady=20)
 
     help_frame = ttk.Frame(frame)
@@ -1914,9 +2135,7 @@ def show_help(frame):
         wraplength=800,
         justify="left",
     )
-    help_label.configure(
-        background=theme.CARD_BG, foreground=theme.TEXT_MUTED
-    )
+    help_label.configure(background=theme.CARD_BG, foreground=theme.TEXT_MUTED)
     help_label.pack(pady=10)
 
     search_label = ttk.Label(
@@ -1933,16 +2152,16 @@ def show_help(frame):
     search_button = ttk.Button(help_frame, text="Search", command=search_help)
     search_button.pack(pady=5, anchor="w")
 
-    # Push the About button to the bottom-right  
-    help_frame.pack_propagate(False)  
-    spacer = ttk.Frame(help_frame)  
-    spacer.pack(fill="both", expand=True)  
-    about_button = ttk.Button(  
+    # Push the About button to the bottom-right
+    help_frame.pack_propagate(False)
+    spacer = ttk.Frame(help_frame)
+    spacer.pack(fill="both", expand=True)
+    about_button = ttk.Button(
         help_frame,
         text="About",
         command=lambda: show_about_dialog(frame),
-    )  
-    about_button.pack(pady=10, anchor="e")  
+    )
+    about_button.pack(pady=10, anchor="e")
 
 
 def main_test_ui(option: int) -> bool:

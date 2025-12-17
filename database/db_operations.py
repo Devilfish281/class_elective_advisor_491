@@ -458,6 +458,31 @@ def save_recommendation(user_id, job_id, course_id, rating, explanation, rank):
         return False
 
 
+# def save_recommendation(
+#     user_id, course_code, course_title, rating, prerequisites, explanation
+# ):
+#     try:
+#         conn = connect_db()
+#         cursor = conn.cursor()
+#         cursor.execute(
+#             """
+#             INSERT INTO recommendations (user_id, course_code, course_title, rating, prerequisites, explanation)
+#             VALUES (?, ?, ?, ?, ?, ?)
+#             """,
+#             (user_id, course_code, course_title, rating, prerequisites, explanation),
+#         )
+#         conn.commit()
+#         return True
+#     except Exception as e:
+#         logger.error(f"Error saving recommendation: {e}")
+#         return False
+#     finally:
+#         try:
+#             conn.close()
+#         except Exception:
+#             pass
+
+
 def get_recommendations(user_id, job_id):
     """
     Retrieves all course recommendations for a specific user and job from the Recommendations table,

@@ -1,82 +1,82 @@
 [
     {
         "Number": 1,
-        "Course Code": "CPSC 486",
-        "Course Name": "Game Programming",
+        "Course Code": "CPSC 483",
+        "Course Name": "Introduction to Machine Learning",
         "Rating": 100,
-        "Prerequisites": "CPSC 223W, CPSC 240",
-        "Explanation": "Game Programming is paramount for students keen on entering the game development industry. It delves into the creation of interactive entertainment software, focusing on data structures and algorithms pertinent to real-time rendering and game mechanics. This course fundamentally empowers students with the capability to combine mathematics, graphics, and software design into cohesive, engaging experiences. By understanding the underlying principles, students are better equipped to tackle complexities in game structures, ensuring efficient and effective game engines. The programming knowledge gained here is invaluable, providing insights into how games function at their core, thus making students more adept contributors to game development teams and potentially leading to innovation within the industry."
+        "Prerequisites": "CPSC 335, MATH 338",
+        "Explanation": "Machine Learning (ML) is a cornerstone of AI development, making this course essential for anyone pursuing specialization in AI. The course covers both supervised and unsupervised learning algorithms, enabling students to recognize patterns in data and make predictive models. Practical projects with real-world data ensure students gain hands-on experience in implementing complex algorithms, a skill highly demanded in AI careers. With AI and ML shaping industries from healthcare to finance, understanding the design and analysis of ML algorithms is crucial. Mastery of these concepts places students at the forefront of technological advancement, where the ability to innovate and apply these techniques to new problems can lead to significant breakthroughs."
     },
     {
         "Number": 2,
-        "Course Code": "CPSC 483",
-        "Course Name": "Introduction to Machine Learning",
-        "Rating": 99,
-        "Prerequisites": "None",
-        "Explanation": "Machine Learning is a cornerstone of AI development, including applications within game development. Understanding machine learning allows students to create adaptive and intelligent game elements, such as non-playable characters (NPCs) capable of learning from player interactions or environments. This course covers essential algorithms for both supervised and unsupervised learning, enabling students to imbue games with realistic decision-making processes and variability, elevating user engagement. As games increasingly integrate machine learning to enhance realism and player experience, proficiency in this domain is crucial. Furthermore, projects involving real-world data equip students with practical skills relevant to both gaming and broader tech industries."
+        "Course Code": "CPSC 375",
+        "Course Name": "Introduction to Data Science and Big Data",
+        "Rating": 95,
+        "Prerequisites": "CPSC 131, MATH 338",
+        "Explanation": "Data science is a foundational element of AI and ML, focusing on extracting valuable insights from large datasets. This course introduces the principles and practices of data preparation, statistical modeling, machine learning, and visualization. By working with real-world data, students learn to handle data in various forms such as text and time-series. Knowledge of big data platforms is included, preparing students to work with the technology that powers modern machine learning projects. Understanding how to process and visualize data is crucial in artificial intelligence applications, making this course a vital component of any AI-focused academic plan."
     },
     {
         "Number": 3,
-        "Course Code": "CPSC 484",
-        "Course Name": "Principles of Computer Graphics",
-        "Rating": 98,
-        "Prerequisites": "CPSC 335",
-        "Explanation": "Computer Graphics is a vital component of game development, focusing on the aesthetics and visual flow of games. This course offers a comprehensive overview of graphical software structures, input/output devices, and algorithmic techniques essential for creating and manipulating visuals in games. Understanding graphics at this level empowers developers to produce visually stunning and engaging environments that captivate players. By exploring techniques such as clipping, windowing, and character generation, students gain the skills necessary to optimize graphical performance and innovate new visual styles and effects. This knowledge is indispensable for students aspiring to specialize in visual effects or animation within the gaming industry."
+        "Course Code": "CPSC 479",
+        "Course Name": "Introduction to High Performance Computing",
+        "Rating": 90,
+        "Prerequisites": "CPSC 351",
+        "Explanation": "High-performance computing (HPC) is integral to artificial intelligence, especially when dealing with large datasets and complex computations. This course provides an introduction to parallel programming paradigms, enabling students to optimize algorithms for distributed memory systems. Understanding the architecture and performance tuning of HPC systems allows AI professionals to design efficient algorithms. The skills gained here are applicable in industries from research to manufacturing, where massive data processing is routine. Mastery of these topics is key to supporting the intensive computational demands of AI systems, making this elective an excellent choice for anyone entering the AI field."
     },
     {
         "Number": 4,
-        "Course Code": "CPSC 481",
-        "Course Name": "Artificial Intelligence",
-        "Rating": 97,
-        "Prerequisites": "CPSC 335",
-        "Explanation": "Artificial Intelligence is revolutionizing game design with complex, adaptive systems that enhance realism and player engagement. This course offers in-depth coverage of AI principles, providing a foundational understanding crucial for game developers. By learning about AI algorithms, students can design realistic NPCs, improve decision-making processes, and create dynamic game worlds that react to player input, making the gaming experience more immersive and engaging. Moreover, AI knowledge enables the creation of personalized gaming experiences through adaptive difficulty and learning mechanisms. As industries increasingly intertwine gaming and AI, mastery of this subject provides a competitive edge in developing next-generation game titles."
+        "Course Code": "CPSC 375",
+        "Course Name": "Cloud Computing and Security",
+        "Rating": 88,
+        "Prerequisites": "CPSC 351, CPSC 253",
+        "Explanation": "Cloud computing has become an essential infrastructure for deploying and managing AI applications. This course covers distributed computing concepts and emphasizes cloud security, a critical aspect when handling sensitive data. Students explore various cloud platforms and learn to develop secure and efficient applications in a cloud environment. With businesses transitioning to cloud services, knowledge in cloud security and infrastructure is critical. For AI practitioners, understanding cloud computing supports the development and deployment of scalable AI solutions, enabling broader access to advanced computational resources. Completing this elective prepares students to leverage cloud technology in AI systems effectively."
     },
     {
         "Number": 5,
-        "Course Code": "CPSC 486",
-        "Course Name": "Game Design and Production",
-        "Rating": 96,
-        "Prerequisites": "None",
-        "Explanation": "Understanding game design and production is crucial for a holistic view of game development. This course introduces students to both current and emerging technologies and market trends, focusing on the key building tools and processes integral to designing, developing, and producing games. It prepares students to navigate the complex game development lifecycle, from conceptualization to market release, ensuring they understand both creative and managerial aspects. By examining successful game design methodologies, students can develop the technical and strategic skills necessary to launch game projects. This insight is indispensable for those aspiring to lead game development teams or manage game production processes efficiently."
+        "Course Code": "CPSC 454",
+        "Course Name": "Cryptography",
+        "Rating": 85,
+        "Prerequisites": "MATH 170B, CPSC 131, CPSC 253",
+        "Explanation": "Cryptography plays an essential role in securing AI systems. As AI applications increasingly handle sensitive data, understanding encryption techniques ensures data integrity and confidentiality. This course introduces students to various cryptographic methods, including symmetric and asymmetric encryption, cryptographic hashing, and digital signatures. Students learn to implement cryptographic systems, which are vital in protecting AI models from adversarial attacks. Mastery of cryptographic principles enables the development of AI systems that are both secure and trustworthy, aligning with increasing regulatory demands for data privacy. This knowledge is invaluable for AI professionals tasked with ensuring the safety and security of intelligent systems."
     },
     {
         "Number": 6,
-        "Course Code": "CPSC 484",
-        "Course Name": "Database and Applications",
-        "Rating": 94,
-        "Prerequisites": "None",
-        "Explanation": "Database management is integral to online and large-scale game applications, where efficient data storage and retrieval are paramount. This course provides essential knowledge in database design and application development, aligning well with game development due to its focus on system analysis, requirement specifications, and database interaction. For games requiring the management of player data, transactions, or inventory systems, understanding databases ensures developers can implement effective data models and seamless back-end functionalities. Additionally, this course's real-world project-based approach offers hands-on experience that is directly transferable to industry roles, facilitating the creation of robust, scalable, and maintainable game applications."
+        "Course Code": "MATH 335",
+        "Course Name": "Mathematical Probability",
+        "Rating": 82,
+        "Prerequisites": "MATH 250A",
+        "Explanation": "Understanding probability is fundamental to AI and ML, as many algorithms rely on probabilistic models to make predictions. This course covers probability theory, including discrete and continuous distributions, independence, conditional probability, and more. Such knowledge is crucial for developing probabilistic models that underpin machine learning algorithms, which are applied in everything from recommendation systems to anomaly detection. Grasping these concepts allows AI specialists to create models that better understand and interpret uncertain data, resulting in more robust and reliable AI systems. A strong foundation in probability enhances problem-solving skills essential for an AI career."
     },
     {
         "Number": 7,
         "Course Code": "CPSC 474",
         "Course Name": "Parallel and Distributed Computing",
-        "Rating": 92,
-        "Prerequisites": "CPSC 351, CPSC 360",
-        "Explanation": "As games grow increasingly complex and resource-intensive, understanding parallel and distributed computing becomes crucial for optimizing performance. This course addresses distributed computing concepts, highlighting techniques such as parallel programming and inter-process communication. For game developers, such skills are invaluable in leveraging multi-core and GPU architectures to enhance game performance, ensuring smoother gameplay and more responsive environments. By mastering these concepts, students can design systems that efficiently process large volumes of data and operations concurrently, a skill pivotal for developing seamless, high-quality gaming experiences on modern hardware, equipping them for careers focused on performance optimization and computational efficiency."
+        "Rating": 80,
+        "Prerequisites": "CPSC 351",
+        "Explanation": "As AI applications become more data-intensive, understanding parallel and distributed computing systems is critical for efficient AI model training and deployment. This course explores parallel programming techniques, memory architectures, and inter-process communication, equipping students with the skills to optimize algorithms for high-performance environments. Such expertise enables AI developers to manage large datasets and complex computations effectively. Real-world applications, such as autonomous vehicles and real-time data processing, require proficiency in these areas. This elective is instrumental in preparing students to meet the computational challenges encountered in progressive AI and ML projects."
     },
     {
         "Number": 8,
-        "Course Code": "CPSC 474",
-        "Course Name": "Web Front-End Engineering",
-        "Rating": 90,
-        "Prerequisites": "None",
-        "Explanation": "Web Front-End Engineering is essential for developing interactive web applications, including browser-based games. This course covers fundamental technologies like JavaScript, model-view design patterns, and client-side frameworks that are central to creating engaging web experiences. With the gaming industry increasingly embracing the web as a platform\u2014through HTML5 games and interactive browser content\u2014understanding front-end engineering is vital. Students learn to optimize user interfaces, manage asynchronous events, and integrate interactive elements that are crucial for responsive game design. Such skills are pivotal for creating immersive, well-performing game interfaces that capture user attention and provide seamless interaction across diverse platforms."
+        "Course Code": "CPSC 375",
+        "Course Name": "Introduction to Data Science and Big Data",
+        "Rating": 78,
+        "Prerequisites": "CPSC 131",
+        "Explanation": "Data science underpins AI and ML, focusing on analyzing and deriving insights from data. The course covers data preparation, statistical modeling, machine learning, and visualization. By engaging with practical projects involving real-world datasets, students develop skills crucial to implementing and evaluating machine learning algorithms. Mastery of data science techniques is important in various applications, from recommendation engines to health diagnostics. This course aids in understanding data's role and potential in driving AI advancements, equipping students with tools for structuring and interpreting data in practical AI contexts."
     },
     {
         "Number": 9,
-        "Course Code": "CPSC 474",
-        "Course Name": "Mathematical Model Building",
-        "Rating": 89,
-        "Prerequisites": "MATH 150B, MATH 250B",
-        "Explanation": "Games often rely on mathematical models for simulations, physics, and AI. This course introduces essential mathematical concepts for creating realistic game dynamics and enhancing predictive capabilities. Understanding dimensional analysis, dynamic systems, and equation derivation enables developers to model complex behaviors and environments within games, such as realistic physics engines or strategic planning algorithms. Mastery in mathematical modeling supports the creation of sophisticated game mechanics and AI systems, offering opportunities to innovate with unique gameplay elements. Students proficient in this area stand out in game development fields that demand analytical rigor and advanced problem-solving capabilities, positioning them for roles in technical design and algorithm optimization."
+        "Course Code": "CPSC 431",
+        "Course Name": "Database and Applications",
+        "Rating": 75,
+        "Prerequisites": "CPSC 332",
+        "Explanation": "Databases are the backbone of many AI systems, housing the data used to train machine learning models. This course provides insight into database design, development, and management, crucial skills for AI specialists. Practical experience with contemporary database systems enables students to work efficiently with structured data, ensuring AI models are trained on reliable datasets. Understanding data storage, retrieval, and security enhances the capacity to build AI applications that rely on fast and accurate data access. Proficiency in database applications supports the development of intelligent systems with high availability and fault tolerance."
     },
     {
         "Number": 10,
-        "Course Code": "CPSC 474",
-        "Course Name": "Numerical Analysis",
-        "Rating": 85,
-        "Prerequisites": "MATH 250A, MATH 250B",
-        "Explanation": "Numerical Analysis deals with computational techniques to solve complex mathematical problems, which is crucial in game development for physics simulations, graphics rendering, and real-time calculations. This course covers solutions for systems of equations, interpolation, and numerical differentiation\u2014skills that support efficient computation in games. By coding numerical methods, students learn to optimize performance and accuracy in simulations, a vital aspect for achieving realistic visual and interactive effects. Developers utilizing these techniques enhance the game's technical foundation, ensuring smoother, more stable gaming experiences. This proficiency is especially significant in roles focused on technical artistry, physics programming, and simulation engineering within the gaming sector."
+        "Course Code": "CPSC 459",
+        "Course Name": "Blockchain Technologies",
+        "Rating": 72,
+        "Prerequisites": "CPSC 351, CPSC 352 or CPSC 253",
+        "Explanation": "Blockchain technologies are gaining popularity in AI for their role in enhancing data transparency, security, and traceability. This course covers decentralized ledgers, smart contracts, and cryptocurrency mechanics, all relevant to integrating blockchain with AI systems. A strong understanding of blockchain can pioneer innovative solutions in data security and integrity, essential in AI applications that require tamper-proof records. With the rise of AI applications in industries like finance and supply chain, blockchain expertise offers a competitive advantage. The combination of AI and blockchain provides new paradigms for secure and trustworthy systems, critical in evolving technological landscapes."
     }
 ]
