@@ -100,6 +100,7 @@ def show_parking_history_helper(frame):
     def _refresh():
         graph_frame.pack_forget()
         result_label.pack_forget()
+        _clear_frame(graph_frame)
         m,d,y = cal.get_date().split('/')
         selected_date = f'20{y}-{m.zfill(2)}-{d.zfill(2)}'
         res = requests.get(f"{parking_url}/history/parking_data/{selected_date}")
@@ -165,9 +166,3 @@ def show_parking_history_helper(frame):
     data_btn.pack(pady = 10)
 
     _refresh()
-    btn = tk.Button(frame, text="Check Parking Now", command=refresh)
-    try:
-        theme.style_primary_button(btn)
-    except Exception:
-        pass
-    btn.pack(pady=10)
