@@ -173,6 +173,11 @@ def main_int_ui() -> None:
     status_bar.grid(row=1, column=0, columnspan=2, sticky="ew")
     theme.style_status_bar(status_bar)  # NEW: Titan-style status bar
 
+    # Helps show orange highlight on active button
+    def show_parking(frame):
+        set_active_button("Parking")
+        show_parking_helper(frame)
+
     # Menu Items
     menu_items = [
         ("Home", "icons/home.png", show_home),
@@ -182,7 +187,7 @@ def main_int_ui() -> None:
         ("Preferences", "icons/preferences.png", show_preferences),
         ("Recommendations", "icons/recommendations.png", show_recommendations),
         ("Profile", "icons/profile.png", show_profile),
-        ("Parking", "icons/parking.png", show_parking_helper),  
+        ("Parking", "icons/parking.png", show_parking),  
         ("Parking History", "icons/parking-area.png", show_parking_history_helper),
         ("Help", "icons/help.png", show_help),
     ]
@@ -1993,6 +1998,88 @@ def show_profile(frame):
 
     settings_frame = ttk.Frame(frame)  # (CHANGED from LabelFrame)
     settings_frame.pack(pady=(0, 20), fill="x", padx=20)
+    def change_email():
+        """Changes Email"""
+        logger.info("User initiated email change.")
+        email_window = tk.Toplevel(frame)
+        email_window.title("Change Email")
+
+        ttk.Label(email_window, text="New Email:").pack(pady=10, padx=10, anchor="w")
+        new_email_entry = ttk.Entry(email_window, width=30)
+        new_email_entry.pack(pady=5, padx=10, anchor="w")
+
+        ttk.Label(email_window, text="Confirm New Email:").pack(pady=10, padx=10, anchor="w")
+        confirm_email_entry = ttk.Entry(email_window, width=30)
+        confirm_email_entry.pack(pady=5, padx=10, anchor="w")
+
+        def perform_email_change():
+            new_email = new_email_entry.get().strip().lower()
+            confirm_email = confirm_email_entry.get().strip().lower()
+
+            if (not new_email) or ("@" not in new_email):
+                messagebox.showerror(
+                    "Error", "Please enter a valid email address.", parent=email_window
+                )
+                return
+            if new_email != confirm_email:
+                messagebox.showerror(
+                    "Error", "Email addresses do not match.", parent=email_window
+                )
+                return
+            # open db connection
+            conn = get_db_connection()
+            if not conn:
+                messagebox.showerror(
+                    "Error",
+                    "Database connection error. Please try again later.",
+                    parent=email_window,
+                )
+                return
+            try: 
+                cursor = conn.cursor()
+                # check if email already exists
+                cursor.execute("SELECT id FROM users WHERE email = ?", (new_email,))
+                if cursor.fetchone():
+                    messagebox.showerror(
+                        "Error", "Email is already in use.", parent=email_window
+                   )
+                    return
+                # update email in DB
+                cursor.execute(
+                    "UPDATE users SET email = ? WHERE id = ?",
+                    (new_email, current_user["id"]),
+                )
+                conn.commit()
+
+                # update in-memory user
+                current_user["email"] = new_email
+                status_var.set(f"Logged in as: {current_user['first_name']} {current_user['last_name']}")
+                messagebox.showinfo("Success", "Email updated successfully!", parent=email_window)
+
+                # Refresh profile page
+                show_profile(frame)
+                email_window.destroy()
+            except sqlite3.IntegrityError:
+                messagebox.showerror(
+                    "Error", "Email is already in use.", parent=email_window
+                )
+            except Exception as e:
+                messagebox.showerror(
+                    "Error",
+                    f"An error occurred while updating email: {e}",
+                    parent=email_window,
+                )
+                logger.error(f"Error updating email for user '{current_user['email']}': {e}")
+            finally:
+                conn.close()
+        save_email_button = ttk.Button(
+            email_window, text="Save Email", command=perform_email_change
+        )
+        save_email_button.pack(pady=15)
+        cancel_button = ttk.Button(
+            email_window, text="Cancel", command=email_window.destroy
+        )
+        cancel_button.pack(pady=(0,10))
 
     def change_password():
         """Changes Password"""
@@ -2105,7 +2192,18 @@ def show_profile(frame):
     )
     change_password_button.pack(pady=10, padx=10, fill="x")
 
-
+    change_email_button = tk.Button(
+        settings_frame,
+        text="Change Email",
+        command=change_email,
+        bg=TP_ACCENT,
+        fg=TP_TEXT_PRIMARY,
+        activebackground=TP_ACCENT,
+        activeforeground=TP_TEXT_PRIMARY,
+        bd=0,
+        font=BASE_FONT,
+    )
+    change_email_button.pack(pady=10, padx=10, fill="x")
 # Placeholder for Help Page
 def show_help(frame):
     """Display the Help Page"""
