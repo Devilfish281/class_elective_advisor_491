@@ -25,11 +25,8 @@ def get_titanpark_base_url() -> str:
               requests.
     :rtype: str
     """
-    raw = os.getenv("TITANPARK_API_BASE_URL", "http://127.0.0.1:8000")
-    url = raw.rstrip("/") or "http://127.0.0.1:8000"
-    if raw != url:
-        logger.debug("Normalizing TITANPARK_API_BASE_URL from %r to %r", raw, url)
-    return url
+    #  STUB: always return the default URL; students should read from the environment.
+    return "http://127.0.0.1:8000"
 
 
 def get_titanpark_timeout(default: float = 10.0) -> float:
@@ -45,19 +42,5 @@ def get_titanpark_timeout(default: float = 10.0) -> float:
     :returns: Timeout in seconds.
     :rtype: float
     """
-    raw = os.getenv("TITANPARK_API_TIMEOUT")
-    if raw is None:
-        return float(default)
-    try:
-        value = float(raw)
-        if value <= 0:
-            raise ValueError("timeout must be positive")
-        return value
-    except Exception as exc:
-        logger.warning(
-            "Invalid TITANPARK_API_TIMEOUT=%r (%s); using default %s s",
-            raw,
-            exc,
-            default,
-        )
-        return float(default)
+    #  STUB: simply echo the default timeout; students should parse the env var.
+    return float(default)

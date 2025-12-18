@@ -81,70 +81,14 @@ def normalize_structure_dict(raw: Dict[str, Any]) -> ParkingStructureSnapshot:
     :raises ValueError: If required fields such as ``total_spots`` or
         ``available_spots`` are missing or invalid.
     """
-    # Name: support both "name" and "structure_name", with a fallback.  # Added Code
-    name = (  #  Changed Code
-        raw.get("name")  #  Changed Code
-        or raw.get("structure_name")  #  Changed Code
-        or str(raw.get("id", "Unknown Structure"))  #  Changed Code
-    )  #  Changed Code
-
-    # Total/available: handle both old (total_spots / available_spots)     # Added Code
-    # and new (total / available) TitanPark keys.                          # Added Code
-    try:  #  Changed Code
-        total_value = raw.get("total_spots")  #  Changed Code
-        if total_value is None:  #  Changed Code
-            total_value = raw.get("total")  #  Changed Code
-        available_value = raw.get("available_spots")  #  Changed Code
-        if available_value is None:  #  Changed Code
-            available_value = raw.get("available")  #  Changed Code
-
-        total = int(total_value)  #  Changed Code
-        available = int(available_value)  #  Changed Code
-    except Exception as exc:  #  Changed Code
-        raise ValueError(
-            f"Invalid structure payload for {name!r}: {raw}"
-        ) from exc  #  Changed Code
-
-    # Occupied spots: use explicit field if present, otherwise derive.     # Added Code
-    occupied_raw = raw.get("occupied_spots")  #  Changed Code
-    if occupied_raw is None:  #  Changed Code
-        occupied = max(total - available, 0)  #  Changed Code
-    else:  #  Changed Code
-        occupied = int(occupied_raw)  #  Changed Code
-
-    # Occupancy rate: try explicit fields first (occupancy_rate / perc_full),  # Added Code
-    # otherwise compute from occupied / total.                                  # Added Code
-    rate: Optional[float] = None  # Added Code
-
-    if "occupancy_rate" in raw:  # Added Code
-        try:  # Added Code
-            rate_candidate = float(raw["occupancy_rate"])  # Added Code
-            # If backend gives 0–100, normalize to 0–1.                         # Added Code
-            if rate_candidate > 1.0:  # Added Code
-                rate_candidate /= 100.0  # Added Code
-            rate = rate_candidate  # Added Code
-        except Exception:  # Added Code
-            rate = None  # Added Code
-    elif "perc_full" in raw:  # Added Code
-        try:  # Added Code
-            perc_full = float(raw["perc_full"])  # Added Code
-            rate = max(0.0, min(1.0, perc_full / 100.0))  # Added Code
-        except Exception:  # Added Code
-            rate = None  # Added Code
-
-    if rate is None:  # Added Code
-        if total <= 0:  # Added Code
-            rate = 1.0  # Added Code
-        else:  # Added Code
-            rate = max(0.0, min(1.0, occupied / float(total)))  # Added Code
-
-    return ParkingStructureSnapshot(  #  Changed Code
-        name=name,  #  Changed Code
-        total_spots=total,  #  Changed Code
-        available_spots=available,  #  Changed Code
-        occupied_spots=occupied,  #  Changed Code
-        occupancy_rate=rate,  #  Changed Code
-    )  #  Changed Code
+    #  STUB: return a dummy snapshot; students should normalize the real dict.
+    return ParkingStructureSnapshot(
+        name="Dummy Structure",
+        total_spots=0,
+        available_spots=0,
+        occupied_spots=0,
+        occupancy_rate=0.0,
+    )
 
 
 def recommend_parking_destination(
@@ -168,40 +112,8 @@ def recommend_parking_destination(
     * low occupancy → lower floor numbers
     * high occupancy → upper floors
     """
-    if not structures:
-        return None
-    candidates = list(structures)
-    preferred_set = {s.strip().lower() for s in preferred_structures or []}
-    if preferred_set:
-        filtered = [s for s in candidates if s.name.strip().lower() in preferred_set]
-        if filtered:
-            candidates = filtered
-    min_ratio = max(0.0, float(min_free_ratio))
-    candidates = [
-        s
-        for s in candidates
-        if s.total_spots > 0 and (s.available_spots / s.total_spots) >= min_ratio
-    ]
-    if not candidates:
-        return None
-    best = max(candidates, key=lambda s: s.available_spots)
-    free_ratio = best.available_spots / float(best.total_spots or 1)
-    free_ratio = max(0.0, min(1.0, free_ratio))
-    occupied_fraction = 1.0 - free_ratio
-    if num_floors <= 1:
-        floor = 1
-    else:
-        floor = int(round(occupied_fraction * (num_floors - 1))) + 1
-    explanation = (  #  Changed Code
-        f"Recommended structure: {best.name}. "  #  Changed Code
-        f"{best.available_spots} of {best.total_spots} spots are free "  #  Changed Code
-        f"({free_ratio:.0%} availability). "  #  Changed Code
-        f"Start by driving to floor {floor}; lower floors are likely to be "  #  Changed Code
-        f"busier when the structure is this full."  #  Changed Code
-    )  #  Changed Code
-    return ParkingRecommendation(
-        structure=best, suggested_floor=floor, explanation=explanation
-    )
+    #  STUB: no recommendation yet; students should implement the selection logic.
+    return None
 
 
 def recommend_parking_now(
@@ -233,19 +145,5 @@ def recommend_parking_now(
     :rtype: ParkingRecommendation | None
     :raises TitanParkError: If the backend request fails.
     """
-    raw_snapshot = fetch_parking_snapshot()
-    snapshots: List[ParkingStructureSnapshot] = []
-    for raw in raw_snapshot:
-        try:
-            snapshots.append(normalize_structure_dict(raw))
-        except ValueError as exc:
-            logger.warning("Skipping invalid structure payload: %s", exc)
-    if not snapshots:
-        logger.warning("No valid parking structures available in snapshot")
-        return None
-    return recommend_parking_destination(
-        snapshots,
-        preferred_structures=preferred_structures,
-        min_free_ratio=min_free_ratio,
-        num_floors=num_floors,
-    )
+    #  STUB: return no recommendation; students should call the client and compute a result.
+    return None
