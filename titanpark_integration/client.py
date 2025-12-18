@@ -45,8 +45,10 @@ def _build_url(path: str) -> str:
     :returns: Absolute URL to be used with :mod:`requests`.
     :rtype: str
     """
-    # TODO: Build a real URL from the base URL and path.
-    return "http://127.0.0.1:8000/dummy"
+    base = get_titanpark_base_url()
+    if not path.startswith("/"):
+        path = "/" + path
+    return base + path
 
 
 def fetch_parking_snapshot() -> List[Dict[str, Any]]:
@@ -69,17 +71,111 @@ def fetch_parking_snapshot() -> List[Dict[str, Any]]:
     :raises TitanParkError: On network error, non-2xx status code, or
         invalid JSON response.
     """
-    #  STUB: return a dummy list; students should implement the real HTTP call.
-    return [
-        {
-            "name": "Dummy Structure",
-            "structure_name": "Dummy Structure",
-            "total_spots": 0,
-            "available_spots": 0,
-            "occupied_spots": 0,
-            "occupancy_rate": 0.0,
-        }
-    ]
+    url = _build_url("/parking_data/all")
+    timeout = get_titanpark_timeout()
+    logger.info("Requesting TitanPark snapshot from %s (timeout=%s)", url, timeout)
+    try:
+        resp = requests.get(url, timeout=timeout)
+    except Exception as exc:
+        raise TitanParkError(f"Error contacting TitanPark at {url}: {exc}") from exc
+    if not resp.ok:
+        raise TitanParkError(
+            f"TitanPark responded with HTTP {resp.status_code}: {resp.text!r}"
+        )
+    try:
+        payload = resp.json()
+    except Exception as exc:
+        raise TitanParkError(f"Invalid JSON from TitanPark: {exc}") from exc
+
+    # TitanPark returns a dict keyed by structure ID (e.g. "Nutwood_Structure").
+    # Normalize that into a list of per-structure dicts that match our expectations.
+    if isinstance(payload, dict):
+        structures: List[Dict[str, Any]] = []
+        for key, raw in payload.items():
+            if not isinstance(raw, dict):
+                logger.warning("Skipping non-dict structure %r: %r", key, raw)
+                continue
+
+            # Prefer the human-readable name from the payload, fall back to the key.
+            name = raw.get("name") or raw.get("structure_name") or key.replace("_", " ")
+
+            # TitanPark cheat sheet uses `total` / `available`; also accept legacy names.
+            total_raw = raw.get("total_spots", raw.get("total"))
+            available_raw = raw.get("available_spots", raw.get("available"))
+            if total_raw is None or available_raw is None:
+                logger.warning(
+                    "Skipping structure %r with missing total/available: %r",
+                    key,
+                    raw,
+                )
+                continue
+            try:
+                total = int(total_raw)
+                available = int(available_raw)
+            except (TypeError, ValueError) as exc:
+                logger.warning(
+                    "Skipping structure %r with invalid total/available: %s",
+                    key,
+                    exc,
+                )
+                continue
+
+            if total < 0:
+                total = 0
+            if available < 0:
+                available = 0
+            if available > total:
+                available = total
+
+            occupied = max(total - available, 0)
+
+            perc_full = raw.get("perc_full")
+            occupancy_rate: float
+            if perc_full is not None:
+                try:
+                    perc_full_f = float(perc_full)
+                    # perc_full is a percentage [0,100]; convert to [0.0,1.0].
+                    occupancy_rate = max(0.0, min(1.0, perc_full_f / 100.0))
+                except (TypeError, ValueError):
+                    occupancy_rate = (
+                        float(occupied) / float(total or 1) if total > 0 else 1.0
+                    )
+            else:
+                occupancy_rate = (
+                    float(occupied) / float(total or 1) if total > 0 else 1.0
+                )
+
+            normalized: Dict[str, Any] = {
+                "name": name,
+                "structure_name": name,
+                "total_spots": total,
+                "available_spots": available,
+                "occupied_spots": occupied,
+                "occupancy_rate": occupancy_rate,
+            }
+
+            # Preserve pricing info if present so callers can use it.
+            if "price_in_cents" in raw:
+                normalized["price_in_cents"] = raw["price_in_cents"]
+
+            structures.append(normalized)
+
+        logger.debug(
+            "Normalized TitanPark dict payload with %d structures", len(structures)
+        )
+        return structures
+
+    # If the backend ever returns a list (old behavior), keep supporting it.
+    if isinstance(payload, list):
+        logger.debug(
+            "Received list payload from TitanPark with %d structures", len(payload)
+        )
+        return payload
+
+    raise TitanParkError(
+        f"Expected dict or list of structures, got {type(payload).__name__}"
+    )
+
 
 
 def fetch_structure_details(structure_name: str) -> Dict[str, Any]:
@@ -97,14 +193,38 @@ def fetch_structure_details(structure_name: str) -> Dict[str, Any]:
     :rtype: dict[str, Any]
     :raises TitanParkError: On network error, non-2xx status code, or invalid JSON.
     """
-    #  STUB: return a dummy structure; students should call the real endpoint.
-    return {
-        "structure_name": structure_name,
-        "total_spots": 0,
-        "available_spots": 0,
-        "occupied_spots": 0,
-        "occupancy_rate": 0.0,
-    }
+    # Normalize to the ID-style name with underscores, as required by the API.
+    struct_id = structure_name.strip().replace(" ", "_")
+    encoded = quote(struct_id, safe="_")
+    url = _build_url(f"/parking_data/{encoded}")
+    timeout = get_titanpark_timeout()
+    logger.info(
+        "Requesting TitanPark structure %r (ID %r) from %s (timeout=%s)",
+        structure_name,
+        struct_id,
+        url,
+        timeout,
+    )
+    try:
+        resp = requests.get(url, timeout=timeout)
+    except Exception as exc:
+        raise TitanParkError(f"Error contacting TitanPark at {url}: {exc}") from exc
+    if not resp.ok:
+        raise TitanParkError(
+            f"TitanPark responded with HTTP {resp.status_code}: {resp.text!r}"
+        )
+    try:
+        payload = resp.json()
+    except Exception as exc:
+        raise TitanParkError(f"Invalid JSON from TitanPark: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise TitanParkError(
+            f"Expected dict for structure, got {type(payload).__name__}"
+        )
+    logger.debug(
+        "Received structure %r (ID %r) from TitanPark", structure_name, struct_id
+    )
+    return payload
 
 
 def find_structure_snapshot(
@@ -123,5 +243,13 @@ def find_structure_snapshot(
     :returns: Matching structure dictionary, or ``None`` if not found.
     :rtype: dict[str, Any] | None
     """
-    #  STUB: students should search through *structures* for the matching name.
+    target = name.strip().lower()
+    for struct in structures:
+        raw_name = (
+            struct.get("name") or struct.get("structure_name") or struct.get("id")
+        )
+        if not isinstance(raw_name, str):
+            continue
+        if raw_name.strip().lower() == target:
+            return struct
     return None
