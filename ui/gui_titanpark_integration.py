@@ -115,8 +115,8 @@ def show_parking_history_helper(frame):
             history_df['datetime'] = history_df['datetime'].dt.tz_localize('US/Pacific')
 
             # Create graph
-            fig = Figure(figsize=(10, 6), dpi=100)
-            ax = fig.add_subplot(111)
+            fig = Figure(figsize=(10, 6), dpi=100, facecolor=theme.TITAN_BG)
+            ax = fig.add_subplot(111, facecolor=theme.TITAN_BG)
 
             # Plot each structure
             for struct_name in history_df['struct_name'].unique():
@@ -131,12 +131,20 @@ def show_parking_history_helper(frame):
                     )
                 
             # Set labels
-            ax.set_xlabel("Time", fontsize=12)
-            ax.set_ylabel("Percent Full (%)", fontsize=12)
-            ax.set_title(f"Parking Structure Occupancy ({selected_date})")
-            ax.legend(loc='best')
-            ax.grid(True, alpha=0.3)
+            ax.set_xlabel("Time", fontsize=12, color=theme.TEXT_PRIMARY)
+            ax.set_ylabel("Percent Full (%)", fontsize=12, color=theme.TEXT_PRIMARY)
+            ax.set_title(f"Parking Structure Occupancy ({selected_date})", color=theme.TEXT_PRIMARY)
+            legend = ax.legend(loc='best', facecolor=theme.CARD_BG, edgecolor=theme.CARD_BORDER)
+            for text in legend.get_texts():
+                text.set_color(theme.TEXT_PRIMARY)
+
+            ax.grid(True, alpha=0.3, color=theme.TEXT_PRIMARY)
             ax.set_ylim(0, 100)
+            ax.tick_params(colors=theme.TEXT_PRIMARY, which='both')
+            ax.spines['bottom'].set_color(theme.CARD_BORDER)
+            ax.spines['top'].set_color(theme.CARD_BORDER)
+            ax.spines['left'].set_color(theme.CARD_BORDER)
+            ax.spines['right'].set_color(theme.CARD_BORDER)
 
             # Format x-axis time
             ax.xaxis.set_major_formatter(mdates.DateFormatter('%I:%M %p', tz='US/Pacific'))
@@ -149,16 +157,56 @@ def show_parking_history_helper(frame):
             graph_frame.pack(pady=0, fill=tk.BOTH, expand=True)
 
     # Header
-    header = tk.Label(frame, text="Parking Occupancy History", font=("Helvetica", 16))
+    header = tk.Label(
+        frame,
+        text="Parking Occupancy History",
+        font=theme.FONT_TITLE,
+        bg=theme.CONTENT_BG,
+        fg=theme.TEXT_PRIMARY,
+        )
 
     # Calendar
     today = date.today()
-    cal = Calendar(frame, selectmode = 'day', 
-                   year = today.year, month = today.month, day = today.day)
+    cal = Calendar(
+        frame,
+        selectmode='day',
+        year=today.year,
+        month=today.month,
+        day=today.day,
+        background=theme.CONTENT_BG,
+        foreground=theme.TEXT_PRIMARY,
+        bordercolor=theme.CONTENT_BG,
+        headersbackground='#0a0f24',
+        headersforeground=theme.TEXT_PRIMARY,
+        selectbackground=theme.ACCENT_ORANGE,
+        selectforeground='white',
+        normalbackground=theme.CONTENT_BG,
+        normalforeground=theme.TEXT_PRIMARY,
+        weekendbackground=theme.CONTENT_BG,
+        weekendforeground='#9ca3af',
+        othermonthforeground='#4b5563',
+        othermonthbackground=theme.CONTENT_BG,
+        othermonthweforeground='#374151',
+        othermonthwebackground=theme.CONTENT_BG
+        )
 
-    data_btn = tk.Button(frame, text = "Update Graph", command = _refresh)
+    data_btn = tk.Button(
+        frame,
+        text="Update Graph",
+        command=_refresh,
+        background=theme.INPUT_BG,
+        fg=theme.TEXT_PRIMARY
+        )
     graph_frame = tk.Frame(frame)
-    result_label = tk.Label(frame, text="", wraplength=600, justify="left")
+    result_label = tk.Label(
+        frame,
+        text="",
+        wraplength=600,
+        justify="left",
+        font=theme.FONT_BODY,
+        bg=theme.CONTENT_BG,
+        fg=theme.TEXT_MUTED,
+        )
 
     # Display elements
     header.pack(pady=10)
