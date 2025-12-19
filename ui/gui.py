@@ -188,7 +188,7 @@ def main_int_ui() -> None:
         ("Recommendations", "icons/recommendations.png", show_recommendations),
         ("Profile", "icons/profile.png", show_profile),
         ("Parking", "icons/parking.png", show_parking),  
-        ("Parking History", "icons/parking-area.png", show_parking_history_helper),
+        ("Parking History", "icons/parking_area.png", show_parking_history_helper),
         ("Help", "icons/help.png", show_help),
     ]
 
